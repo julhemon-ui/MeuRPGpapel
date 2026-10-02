@@ -1,116 +1,326 @@
+
+
 <!DOCTYPE html>
 <html lang="pt-BR">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>3v3 Paper RPG</title>
+    <title>3v3 Paper RPG - Battle Engine</title>
     <style>
         * { box-sizing: border-box; margin: 0; padding: 0; user-select: none; }
-        body { background: #2b2b2b; font-family: sans-serif; display: flex; justify-content: center; align-items: center; min-height: 100vh; }
-        #game { width: 95%; max-width: 500px; background: #f4ecd8; border: 4px solid #5c4033; border-radius: 8px; padding: 15px; }
-        .flex { display: flex; justify-content: space-between; margin-bottom: 15px; }
-        .box { width: 45%; text-align: center; background: rgba(255,255,255,0.5); padding: 10px; border-radius: 6px; }
-        .bar { width: 100%; height: 12px; background: #ccc; border: 1px solid #000; border-radius: 3px; overflow: hidden; margin-top: 5px; }
-        .hp { height: 100%; background: #4caf50; width: 100%; transition: width 0.3s; }
-        #turn { text-align: center; font-weight: bold; margin-bottom: 10px; color: #5c4033; }
-        #log { background: #fff; border: 1px solid #5c4033; height: 90px; padding: 8px; font-size: 12px; overflow-y: auto; margin-bottom: 15px; }
-        .grid { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; }
-        button { background: #faf0d7; border: 2px solid #5c4033; padding: 12px 5px; font-weight: bold; border-radius: 6px; font-size: 11px; }
-        button:disabled { opacity: 0.5; background: #ddd; }
+        body { background: #1a1a1a; font-family: 'Courier New', Courier, monospace; color: #333; display: flex; justify-content: center; align-items: center; min-height: 100vh; }
+        
+        #game-container {
+            width: 100%; max-width: 650px; background: #f4ecd8;
+            background-image: linear-gradient(#ccc 0.05em, transparent 0.05em), linear-gradient(90deg, #ccc 0.05em, transparent 0.05em);
+            background-size: 20px 20px; border: 5px solid #5c4033; border-radius: 12px; padding: 12px; display: flex; flex-direction: column; gap: 10px;
+        }
+
+        /* Arena PvP em Triângulo */
+        .field { display: flex; justify-content: space-between; background: rgba(0,0,0,0.05); border: 2px dashed #8b5a2b; border-radius: 8px; padding: 15px 5px; position: relative; }
+        .team-side { display: flex; flex-direction: column; justify-content: center; width: 45%; height: 180px; position: relative; }
+        
+        /* Formação Vanguarda (Meio pra frente) e Retaguarda */
+        .pos-front { position: absolute; left: 60%; top: 35%; transform: translateY(-50%); }
+        .pos-back-top { position: absolute; left: 10%; top: 5%; }
+        .pos-back-bottom { position: absolute; left: 10%; bottom: 5%; }
+
+        /* Inversão do Time Inimigo */
+        .enemy-side .pos-front { left: 10%; }
+        .enemy-side .pos-back-top { left: 60%; }
+        .enemy-side .pos-back-bottom { left: 60%; }
+
+        /* Card de Unidade estilo Paper Cutout */
+        .unit-card {
+            width: 85px; background: #fff8dc; border: 2px solid #5c4033; border-radius: 6px; padding: 5px; text-align: center;
+            font-size: 10px; cursor: pointer; transition: transform 0.2s, box-shadow 0.2s; position: relative;
+        }
+        .unit-card.selected-target { border: 3px solid #d32f2f; box-shadow: 0 0 10px #d32f2f; transform: scale(1.08); }
+        .unit-card.active-attacker { border: 3px solid #2e7d32; box-shadow: 0 0 8px #2e7d32; }
+        .unit-card.dead { opacity: 0.3; filter: grayscale(100%); cursor: not-allowed; }
+
+        /* Cursor de Alvo (Seta estilo Pokémon) */
+        .target-cursor {
+            position: absolute; top: -18px; left: 50%; transform: translateX(-50%);
+            color: #d32f2f; font-size: 14px; font-weight: bold; display: none; animation: bounce 0.5s infinite alternate;
+        }
+        .selected-target .target-cursor { display: block; }
+
+        @keyframes bounce { from { top: -18px; } to { top: -24px; } }
+
+        /* Barras de Status */
+        .bar-bg { width: 100%; background: #ddd; height: 8px; border: 1px solid #000; border-radius: 2px; margin-top: 2px; overflow: hidden; }
+        .fill-hp { height: 100%; background: #4caf50; width: 100%; transition: width 0.3s; }
+        .fill-limit { height: 100%; background: #ffca28; width: 0%; transition: width 0.3s; }
+
+        /* Painel de Controle e Log */
+        #status-header { text-align: center; font-weight: bold; font-size: 14px; color: #5c4033; }
+        #log-box { background: #fff; border: 2px solid #5c4033; height: 85px; padding: 6px; font-size: 11px; overflow-y: auto; border-radius: 4px; }
+        
+        .action-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 6px; }
+        button { background: #fff8dc; border: 2px solid #5c4033; padding: 8px 4px; font-weight: bold; font-size: 11px; cursor: pointer; border-radius: 4px; }
+        button:disabled { opacity: 0.5; background: #ccc; cursor: not-allowed; }
+        #btn-limit { grid-column: span 2; background: #ffecb3; border-color: #b78103; color: #8c5b00; }
+        #btn-limit.ready { background: #ff9800; color: #fff; }
     </style>
 </head>
 <body>
 
-<div id="game">
-    <div id="turn">SEU TURNO</div>
+<div id="game-container">
+    <div id="status-header">TURNO: TIME ALIANÇA</div>
 
-    <div class="flex">
-        <div class="box">
-            <strong>Ysma</strong>
-            <div class="bar"><div id="ysma-hp" class="hp"></div></div>
+    <!-- Arena 3v3 -->
+    <div class="field">
+        <!-- Time Aliança (Player) -->
+        <div class="team-side ally-side">
+            <div id="unit-p0" class="unit-card pos-back-top" onclick="selecionarAlvo('p0')">
+                <div class="target-cursor">▼ ALVO</div>
+                <div id="name-p0">P1</div>
+                <div class="bar-bg"><div id="hp-p0" class="fill-hp"></div></div>
+                <div class="bar-bg"><div id="limit-p0" class="fill-limit"></div></div>
+            </div>
+            <div id="unit-p1" class="unit-card pos-front" onclick="selecionarAlvo('p1')">
+                <div class="target-cursor">▼ ALVO</div>
+                <div id="name-p1">P2</div>
+                <div class="bar-bg"><div id="hp-p1" class="fill-hp"></div></div>
+                <div class="bar-bg"><div id="limit-p1" class="fill-limit"></div></div>
+            </div>
+            <div id="unit-p2" class="unit-card pos-back-bottom" onclick="selecionarAlvo('p2')">
+                <div class="target-cursor">▼ ALVO</div>
+                <div id="name-p2">P3</div>
+                <div class="bar-bg"><div id="hp-p2" class="fill-hp"></div></div>
+                <div class="bar-bg"><div id="limit-p2" class="fill-limit"></div></div>
+            </div>
         </div>
-        <div class="box">
-            <strong>Golem Planta</strong>
-            <div class="bar"><div id="enemy-hp" class="hp"></div></div>
+
+        <!-- Time Horda (Inimigo) -->
+        <div class="team-side enemy-side">
+            <div id="unit-e0" class="unit-card pos-back-top" onclick="selecionarAlvo('e0')">
+                <div class="target-cursor">▼ ALVO</div>
+                <div id="name-e0">E1</div>
+                <div class="bar-bg"><div id="hp-e0" class="fill-hp"></div></div>
+                <div class="bar-bg"><div id="limit-e0" class="fill-limit"></div></div>
+            </div>
+            <div id="unit-e1" class="unit-card pos-front" onclick="selecionarAlvo('e1')">
+                <div class="target-cursor">▼ ALVO</div>
+                <div id="name-e1">E2</div>
+                <div class="bar-bg"><div id="hp-e1" class="fill-hp"></div></div>
+                <div class="bar-bg"><div id="limit-e1" class="fill-limit"></div></div>
+            </div>
+            <div id="unit-e2" class="unit-card pos-back-bottom" onclick="selecionarAlvo('e2')">
+                <div class="target-cursor">▼ ALVO</div>
+                <div id="name-e2">E3</div>
+                <div class="bar-bg"><div id="hp-e2" class="fill-hp"></div></div>
+                <div class="bar-bg"><div id="limit-e2" class="fill-limit"></div></div>
+            </div>
         </div>
     </div>
 
-    <div id="log">> A batalha começou!</div>
+    <!-- Log de Ações -->
+    <div id="log-box">> Selecione um alvo inimigo e use uma habilidade!</div>
 
-    <div class="grid">
-        <button id="btn1" onclick="jogar('Ataque Básico', 15, 0, 'btn1')">Acerto Perfurante</button>
-        <button id="btn2" onclick="jogar('Bola de Fogo', 35, 2, 'btn2')">Bola de Fogo 🔥 (2T)</button>
-        <button id="btn3" onclick="jogar('Raio de Gelo', 20, 1, 'btn3')">Raio de Gelo ❄️️ (1T)</button>
-        <button id="btn4" onclick="jogar('Explosão Prisma', 50, 3, 'btn4')">Explosão Prisma (3T)</button>
+    <!-- Painel de Ações -->
+    <div class="action-grid">
+        <button id="btn-atq1" onclick="executarAção(0)">Ataque Básico</button>
+        <button id="btn-atq2" onclick="executarAção(1)">Habilidade 1</button>
+        <button id="btn-atq3" onclick="executarAção(2)">Habilidade 2</button>
+        <button id="btn-limit" disabled onclick="executarAção('limit')">QUEBRA DE LIMITES (0%)</button>
     </div>
 </div>
 
 <script>
-    let ysmaHp = 100, enemyHp = 100;
-    let turnosRecarga = { btn1: 0, btn2: 0, btn3: 0, btn4: 0 };
+    // 1. SISTEMA DE ELEMENTOS
+    const ELEMENTOS = ["Água", "Terra", "Fogo", "Vento", "Elétrico", "Biológico", "Purificação", "Corrupção"];
 
-    function log(txt) {
-        const l = document.getElementById('log');
-        l.innerHTML += `<br>> ${txt}`;
-        l.scrollTop = l.scrollHeight;
+    // 2. ESTRUTURA BASE DOS PERSONAGENS (Pronta para integração via Sheets)
+    const BANCO_DE_DADOS_PERSONAGENS = {
+        "Ysma": {
+            classe: "Mago",
+            hpMax: 100,
+            danoFisico: 10,
+            elementoBase: "Fogo",
+            fraqueza: "Água",       // Toma +20 de dano desse elemento
+            imunidade: "Fogo",      // Toma 0 de dano desse elemento
+            habilidades: [
+                { nome: "Chama Rápida", dano: 15, elemento: "Fogo", cdMax: 0, cdAtual: 0 },
+                { nome: "Bola de Fogo", dano: 30, elemento: "Fogo", cdMax: 2, cdAtual: 0 },
+                { nome: "Onda de Vento", dano: 20, elemento: "Vento", cdMax: 1, cdAtual: 0 }
+            ],
+            limitBreak: { nome: "Explosão Prisma", dano: 70, elemento: "Purificação" }
+        },
+        "InimigoPadrao": {
+            classe: "Guerreiro",
+            hpMax: 90,
+            danoFisico: 12,
+            elementoBase: "Terra",
+            fraqueza: "Fogo",
+            imunidade: "Elétrico",
+            habilidades: [
+                { nome: "Golpe de Pedra", dano: 15, elemento: "Terra", cdMax: 0, cdAtual: 0 }
+            ],
+            limitBreak: { nome: "Terremoto", dano: 50, elemento: "Terra" }
+        }
+    };
+
+    // 3. ESTADO DA BATALHA PvP
+    let unidades = {
+        // Time Jogador (Aliança)
+        'p0': criarInstancia("Ysma", "p0"),
+        'p1': criarInstancia("Ysma", "p1"),
+        'p2': criarInstancia("Ysma", "p2"),
+        // Time Inimigo (Horda)
+        'e0': criarInstancia("InimigoPadrao", "e0"),
+        'e1': criarInstancia("InimigoPadrao", "e1"),
+        'e2': criarInstancia("InimigoPadrao", "e2")
+    };
+
+    let atacanteAtualId = 'p1'; // P1 é a vanguarda
+    let alvoSelecionadoId = 'e1'; // E1 é o alvo padrão
+
+    function criarInstancia(nomeModelo, id) {
+        let base = BANCO_DE_DADOS_PERSONAGENS[nomeModelo];
+        return {
+            id: id,
+            nome: nomeModelo,
+            classe: base.classe,
+            hpMax: base.hpMax,
+            hpAtual: base.hpMax,
+            danoFisico: base.danoFisico,
+            fraqueza: base.fraqueza,
+            imunidade: base.imunidade,
+            limite: 0,
+            habilidades: JSON.parse(JSON.stringify(base.habilidades)),
+            limitBreak: JSON.parse(JSON.stringify(base.limitBreak))
+        };
     }
 
-    function atualizarBotoes(desabilitarTudo) {
-        ['btn1', 'btn2', 'btn3', 'btn4'].forEach(id => {
-            const btn = document.getElementById(id);
-            if (desabilitarTudo) {
-                btn.disabled = true;
-            } else {
-                btn.disabled = turnosRecarga[id] > 0;
-            }
-        });
+    // 4. LÓGICA DE ALVO E SELEÇÃO
+    function selecionarAlvo(id) {
+        if (unidades[id].hpAtual <= 0) return;
+        alvoSelecionadoId = id;
+        atualizarUI();
     }
 
-    function jogar(nome, dano, cd, btnId) {
-        // Dano no Inimigo
-        enemyHp = Math.max(0, enemyHp - dano);
-        document.getElementById('enemy-hp').style.width = enemyHp + '%';
-        log(`Ysma usou <b>${nome}</b> e causou ${dano} de dano!`);
+    // 5. CÁLCULO DE COMBATE
+    function calcularDano(atacante, defensor, habilidade) {
+        // Imunidade Elemental -> Dano Zero
+        if (habilidade.elemento === defensor.imunidade) {
+            log(`<b style="color:blue;">IMUNE!</b> ${defensor.nome} não recebeu dano do elemento ${habilidade.elemento}.`);
+            return 0;
+        }
 
-        if (enemyHp <= 0) {
-            log('<b style="color:green;">Vitória! O inimigo foi derrotado.</b>');
-            atualizarBotoes(true);
+        let danoFinal = habilidade.dano + atacante.danoFisico;
+
+        // Fraqueza Elemental -> +20 de Dano Bônus
+        if (habilidade.elemento === defensor.fraqueza) {
+            danoFinal += 20;
+            log(`<b style="color:red;">FRAQUEZA APLICADA! (+20 Dano)</b>`);
+        }
+
+        return danoFinal;
+    }
+
+    function carregarLimite(unidade, quantidade) {
+        unidade.limite = Math.min(100, unidade.limite + quantidade);
+    }
+
+    // 6. EXECUÇÃO DA AÇÃO
+    function executarAção(indiceHab) {
+        let atacante = unidades[atacanteAtualId];
+        let defensor = unidades[alvoSelecionadoId];
+
+        if (!defensor || defensor.hpAtual <= 0) {
+            log("Selecione um alvo vivo primeiro!");
             return;
         }
 
-        // Aplica cooldown na habilidade usada
-        if (cd > 0) turnosRecarga[btnId] = cd + 1;
+        let habilidade = (indiceHab === 'limit') ? atacante.limitBreak : atacante.habilidades[indiceHab];
 
-        // Entra no Turno do Inimigo
-        document.getElementById('turn').innerText = 'TURNO DO INIMIGO...';
-        document.getElementById('turn').style.color = 'red';
-        atualizarBotoes(true);
+        // Processa Dano
+        let dano = calcularDano(atacante, defensor, habilidade);
+        defensor.hpAtual = Math.max(0, defensor.hpAtual - dano);
 
-        // Ação do Inimigo após 1 segundo
-        setTimeout(() => {
-            let danoInimigo = 12;
-            ysmaHp = Math.max(0, ysmaHp - danoInimigo);
-            document.getElementById('ysma-hp').style.width = ysmaHp + '%';
-            log(`Golem ataca Ysma e causa ${danoInimigo} de dano.`);
+        // Atualiza Limite ao causar e receber dano
+        carregarLimite(atacante, 20); // Atacante ganha +20%
+        carregarLimite(defensor, 15);  // Quem recebe o golpe ganha +15%
 
-            if (ysmaHp <= 0) {
-                log('<b style="color:red;">Derrota! Ysma caiu em batalha.</b>');
-                return;
-            }
+        if (indiceHab === 'limit') {
+            atacante.limite = 0; // Reseta limite após o uso supremo
+        } else if (habilidade.cdMax > 0) {
+            habilidade.cdAtual = habilidade.cdMax + 1; // Ativa cooldown
+        }
 
-            // Reduz recargas
-            for (let id in turnosRecarga) {
-                if (turnosRecarga[id] > 0) turnosRecarga[id]--;
-            }
+        log(`<b>${atacante.nome}</b> usou <i>${habilidade.nome}</i> em <b>${defensor.nome}</b> causando ${dano} de dano!`);
 
-            // Devolve para o Turno do Jogador
-            document.getElementById('turn').innerText = 'SEU TURNO';
-            document.getElementById('turn').style.color = '#5c4033';
-            atualizarBotoes(false);
-        }, 1000);
+        // Passa o turno e atualiza recargas
+        passarTurno();
     }
+
+    function passarTurno() {
+        // Reduz cooldowns do atacante atual
+        unidades[atacanteAtualId].habilidades.forEach(h => {
+            if (h.cdAtual > 0) h.cdAtual--;
+        });
+
+        atualizarUI();
+    }
+
+    function log(msg) {
+        let box = document.getElementById('log-box');
+        box.innerHTML += `<br>> ${msg}`;
+        box.scrollTop = box.scrollHeight;
+    }
+
+    // 7. ATUALIZAÇÃO DA INTERFACE VISUAL
+    function atualizarUI() {
+        for (let id in unidades) {
+            let u = unidades[id];
+            
+            // Atualiza Nome e Vida
+            document.getElementById(`name-${id}`).innerText = u.nome;
+            document.getElementById(`hp-${id}`).style.width = (u.hpAtual / u.hpMax * 100) + '%';
+            document.getElementById(`limit-${id}`).style.width = u.limite + '%';
+
+            // Marca Unidades Mortas
+            let card = document.getElementById(`unit-${id}`);
+            if (u.hpAtual <= 0) {
+                card.classList.add('dead');
+            }
+
+            // Atualiza Cursor do Alvo
+            if (id === alvoSelecionadoId) {
+                card.classList.add('selected-target');
+            } else {
+                card.classList.remove('selected-target');
+            }
+        }
+
+        // Atualiza Botões do Atacante
+        let atq = unidades[atacanteAtualId];
+        atq.habilidades.forEach((h, i) => {
+            let btn = document.getElementById(`btn-atq${i+1}`);
+            if (btn) {
+                let textoCd = h.cdAtual > 0 ? ` (${h.cdAtual}T)` : '';
+                btn.innerText = `${h.nome}${textoCd}`;
+                btn.disabled = h.cdAtual > 0;
+            }
+        });
+
+        // Botão de Limit Break
+        let btnLimit = document.getElementById('btn-limit');
+        btnLimit.innerText = `QUEBRA DE LIMITES (${atq.limite}%)`;
+        if (atq.limite >= 100) {
+            btnLimit.disabled = false;
+            btnLimit.classList.add('ready');
+        } else {
+            btnLimit.disabled = true;
+            btnLimit.classList.remove('ready');
+        }
+    }
+
+    // Inicialização da Tela
+    atualizarUI();
 </script>
 
 </body>
 </html>
-
