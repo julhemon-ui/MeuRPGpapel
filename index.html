@@ -1,11 +1,10 @@
 
-
 <!DOCTYPE html>
 <html lang="pt-BR">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>3v3 Paper RPG - Battle Engine</title>
+    <title>3v3 Paper RPG - Engine Ajustada</title>
     <style>
         * { box-sizing: border-box; margin: 0; padding: 0; user-select: none; }
         body { background: #1a1a1a; font-family: 'Courier New', Courier, monospace; color: #333; display: flex; justify-content: center; align-items: center; min-height: 100vh; }
@@ -16,19 +15,19 @@
             background-size: 20px 20px; border: 5px solid #5c4033; border-radius: 12px; padding: 12px; display: flex; flex-direction: column; gap: 10px;
         }
 
-        /* Arena PvP em Triângulo */
-        .field { display: flex; justify-content: space-between; background: rgba(0,0,0,0.05); border: 2px dashed #8b5a2b; border-radius: 8px; padding: 15px 5px; position: relative; }
-        .team-side { display: flex; flex-direction: column; justify-content: center; width: 45%; height: 180px; position: relative; }
+        /* Arena PvP em Triângulo Real */
+        .field { display: flex; justify-content: space-between; background: rgba(0,0,0,0.05); border: 2px dashed #8b5a2b; border-radius: 8px; padding: 10px; height: 210px; position: relative; }
+        .team-side { width: 48%; height: 100%; position: relative; }
         
-        /* Formação Vanguarda (Meio pra frente) e Retaguarda */
-        .pos-front { position: absolute; left: 60%; top: 35%; transform: translateY(-50%); }
-        .pos-back-top { position: absolute; left: 10%; top: 5%; }
-        .pos-back-bottom { position: absolute; left: 10%; bottom: 5%; }
+        /* Posições do Triângulo - Time do Jogador (Apontando para a Direita ->) */
+        .ally-side .pos-back-top { position: absolute; left: 5%; top: 5%; }
+        .ally-side .pos-front { position: absolute; left: 55%; top: 35%; } /* Vanguarda no meio */
+        .ally-side .pos-back-bottom { position: absolute; left: 5%; bottom: 5%; }
 
-        /* Inversão do Time Inimigo */
-        .enemy-side .pos-front { left: 10%; }
-        .enemy-side .pos-back-top { left: 60%; }
-        .enemy-side .pos-back-bottom { left: 60%; }
+        /* Posições do Triângulo - Time Inimigo (Apontando para a Esquerda <-) */
+        .enemy-side .pos-back-top { position: absolute; right: 5%; top: 5%; }
+        .enemy-side .pos-front { position: absolute; right: 55%; top: 35%; } /* Vanguarda no meio */
+        .enemy-side .pos-back-bottom { position: absolute; right: 5%; bottom: 5%; }
 
         /* Card de Unidade estilo Paper Cutout */
         .unit-card {
@@ -36,10 +35,9 @@
             font-size: 10px; cursor: pointer; transition: transform 0.2s, box-shadow 0.2s; position: relative;
         }
         .unit-card.selected-target { border: 3px solid #d32f2f; box-shadow: 0 0 10px #d32f2f; transform: scale(1.08); }
-        .unit-card.active-attacker { border: 3px solid #2e7d32; box-shadow: 0 0 8px #2e7d32; }
         .unit-card.dead { opacity: 0.3; filter: grayscale(100%); cursor: not-allowed; }
 
-        /* Cursor de Alvo (Seta estilo Pokémon) */
+        /* Cursor de Alvo (Seta) */
         .target-cursor {
             position: absolute; top: -18px; left: 50%; transform: translateX(-50%);
             color: #d32f2f; font-size: 14px; font-weight: bold; display: none; animation: bounce 0.5s infinite alternate;
@@ -53,7 +51,6 @@
         .fill-hp { height: 100%; background: #4caf50; width: 100%; transition: width 0.3s; }
         .fill-limit { height: 100%; background: #ffca28; width: 0%; transition: width 0.3s; }
 
-        /* Painel de Controle e Log */
         #status-header { text-align: center; font-weight: bold; font-size: 14px; color: #5c4033; }
         #log-box { background: #fff; border: 2px solid #5c4033; height: 85px; padding: 6px; font-size: 11px; overflow-y: auto; border-radius: 4px; }
         
@@ -67,47 +64,44 @@
 <body>
 
 <div id="game-container">
-    <div id="status-header">TURNO: TIME ALIANÇA</div>
+    <div id="status-header">SEU TURNO</div>
 
     <!-- Arena 3v3 -->
     <div class="field">
-        <!-- Time Aliança (Player) -->
+        <!-- Time do Jogador (Não selecionável como alvo) -->
         <div class="team-side ally-side">
-            <div id="unit-p0" class="unit-card pos-back-top" onclick="selecionarAlvo('p0')">
-                <div class="target-cursor">▼ ALVO</div>
+            <div id="unit-p0" class="unit-card pos-back-top">
                 <div id="name-p0">P1</div>
                 <div class="bar-bg"><div id="hp-p0" class="fill-hp"></div></div>
                 <div class="bar-bg"><div id="limit-p0" class="fill-limit"></div></div>
             </div>
-            <div id="unit-p1" class="unit-card pos-front" onclick="selecionarAlvo('p1')">
-                <div class="target-cursor">▼ ALVO</div>
-                <div id="name-p1">P2</div>
+            <div id="unit-p1" class="unit-card pos-front">
+                <div id="name-p1">P2 (Vanguarda)</div>
                 <div class="bar-bg"><div id="hp-p1" class="fill-hp"></div></div>
                 <div class="bar-bg"><div id="limit-p1" class="fill-limit"></div></div>
             </div>
-            <div id="unit-p2" class="unit-card pos-back-bottom" onclick="selecionarAlvo('p2')">
-                <div class="target-cursor">▼ ALVO</div>
+            <div id="unit-p2" class="unit-card pos-back-bottom">
                 <div id="name-p2">P3</div>
                 <div class="bar-bg"><div id="hp-p2" class="fill-hp"></div></div>
                 <div class="bar-bg"><div id="limit-p2" class="fill-limit"></div></div>
             </div>
         </div>
 
-        <!-- Time Horda (Inimigo) -->
+        <!-- Time Inimigo (Clicável para selecionar o alvo) -->
         <div class="team-side enemy-side">
-            <div id="unit-e0" class="unit-card pos-back-top" onclick="selecionarAlvo('e0')">
+            <div id="unit-e0" class="unit-card pos-back-top" onclick="selecionarAlvoInimigo('e0')">
                 <div class="target-cursor">▼ ALVO</div>
                 <div id="name-e0">E1</div>
                 <div class="bar-bg"><div id="hp-e0" class="fill-hp"></div></div>
                 <div class="bar-bg"><div id="limit-e0" class="fill-limit"></div></div>
             </div>
-            <div id="unit-e1" class="unit-card pos-front" onclick="selecionarAlvo('e1')">
+            <div id="unit-e1" class="unit-card pos-front" onclick="selecionarAlvoInimigo('e1')">
                 <div class="target-cursor">▼ ALVO</div>
-                <div id="name-e1">E2</div>
+                <div id="name-e1">E2 (Vanguarda)</div>
                 <div class="bar-bg"><div id="hp-e1" class="fill-hp"></div></div>
                 <div class="bar-bg"><div id="limit-e1" class="fill-limit"></div></div>
             </div>
-            <div id="unit-e2" class="unit-card pos-back-bottom" onclick="selecionarAlvo('e2')">
+            <div id="unit-e2" class="unit-card pos-back-bottom" onclick="selecionarAlvoInimigo('e2')">
                 <div class="target-cursor">▼ ALVO</div>
                 <div id="name-e2">E3</div>
                 <div class="bar-bg"><div id="hp-e2" class="fill-hp"></div></div>
@@ -117,30 +111,22 @@
     </div>
 
     <!-- Log de Ações -->
-    <div id="log-box">> Selecione um alvo inimigo e use uma habilidade!</div>
+    <div id="log-box">> Escolha um alvo no time inimigo e ataque!</div>
 
     <!-- Painel de Ações -->
     <div class="action-grid">
-        <button id="btn-atq1" onclick="executarAção(0)">Ataque Básico</button>
-        <button id="btn-atq2" onclick="executarAção(1)">Habilidade 1</button>
-        <button id="btn-atq3" onclick="executarAção(2)">Habilidade 2</button>
-        <button id="btn-limit" disabled onclick="executarAção('limit')">QUEBRA DE LIMITES (0%)</button>
+        <button id="btn-atq1" onclick="executarAcaoJogador(0)">Ataque Básico</button>
+        <button id="btn-atq2" onclick="executarAcaoJogador(1)">Habilidade 1</button>
+        <button id="btn-atq3" onclick="executarAcaoJogador(2)">Habilidade 2</button>
+        <button id="btn-limit" disabled onclick="executarAcaoJogador('limit')">QUEBRA DE LIMITES (0%)</button>
     </div>
 </div>
 
 <script>
-    // 1. SISTEMA DE ELEMENTOS
-    const ELEMENTOS = ["Água", "Terra", "Fogo", "Vento", "Elétrico", "Biológico", "Purificação", "Corrupção"];
-
-    // 2. ESTRUTURA BASE DOS PERSONAGENS (Pronta para integração via Sheets)
+    // 1. ESTRUTURA BASE DOS PERSONAGENS
     const BANCO_DE_DADOS_PERSONAGENS = {
         "Ysma": {
-            classe: "Mago",
-            hpMax: 100,
-            danoFisico: 10,
-            elementoBase: "Fogo",
-            fraqueza: "Água",       // Toma +20 de dano desse elemento
-            imunidade: "Fogo",      // Toma 0 de dano desse elemento
+            hpMax: 100, danoFisico: 10, fraqueza: "Água", imunidade: "Fogo",
             habilidades: [
                 { nome: "Chama Rápida", dano: 15, elemento: "Fogo", cdMax: 0, cdAtual: 0 },
                 { nome: "Bola de Fogo", dano: 30, elemento: "Fogo", cdMax: 2, cdAtual: 0 },
@@ -149,120 +135,167 @@
             limitBreak: { nome: "Explosão Prisma", dano: 70, elemento: "Purificação" }
         },
         "InimigoPadrao": {
-            classe: "Guerreiro",
-            hpMax: 90,
-            danoFisico: 12,
-            elementoBase: "Terra",
-            fraqueza: "Fogo",
-            imunidade: "Elétrico",
+            hpMax: 80, danoFisico: 8, fraqueza: "Fogo", imunidade: "Elétrico",
             habilidades: [
-                { nome: "Golpe de Pedra", dano: 15, elemento: "Terra", cdMax: 0, cdAtual: 0 }
+                { nome: "Golpe de Pedra", dano: 12, elemento: "Terra", cdMax: 0, cdAtual: 0 }
             ],
-            limitBreak: { nome: "Terremoto", dano: 50, elemento: "Terra" }
+            limitBreak: { nome: "Terremoto", dano: 40, elemento: "Terra" }
         }
     };
 
-    // 3. ESTADO DA BATALHA PvP
+    // 2. ESTADO DA BATALHA
     let unidades = {
-        // Time Jogador (Aliança)
         'p0': criarInstancia("Ysma", "p0"),
         'p1': criarInstancia("Ysma", "p1"),
         'p2': criarInstancia("Ysma", "p2"),
-        // Time Inimigo (Horda)
         'e0': criarInstancia("InimigoPadrao", "e0"),
         'e1': criarInstancia("InimigoPadrao", "e1"),
         'e2': criarInstancia("InimigoPadrao", "e2")
     };
 
-    let atacanteAtualId = 'p1'; // P1 é a vanguarda
-    let alvoSelecionadoId = 'e1'; // E1 é o alvo padrão
+    let atacanteAtualId = 'p1'; // Vanguarda do Jogador
+    let alvoInimigoId = 'e1';   // Vanguarda Inimiga (Alvo Padrão)
+    let emTurnoInimigo = false;
 
     function criarInstancia(nomeModelo, id) {
         let base = BANCO_DE_DADOS_PERSONAGENS[nomeModelo];
         return {
-            id: id,
-            nome: nomeModelo,
-            classe: base.classe,
-            hpMax: base.hpMax,
-            hpAtual: base.hpMax,
-            danoFisico: base.danoFisico,
-            fraqueza: base.fraqueza,
-            imunidade: base.imunidade,
-            limite: 0,
-            habilidades: JSON.parse(JSON.stringify(base.habilidades)),
+            id: id, nome: nomeModelo, hpMax: base.hpMax, hpAtual: base.hpMax,
+            danoFisico: base.danoFisico, fraqueza: base.fraqueza, imunidade: base.imunidade,
+            limite: 0, habilidades: JSON.parse(JSON.stringify(base.habilidades)),
             limitBreak: JSON.parse(JSON.stringify(base.limitBreak))
         };
     }
 
-    // 4. LÓGICA DE ALVO E SELEÇÃO
-    function selecionarAlvo(id) {
-        if (unidades[id].hpAtual <= 0) return;
-        alvoSelecionadoId = id;
+    // 3. SELEÇÃO DE ALVO (Apenas Inimigos)
+    function selecionarAlvoInimigo(id) {
+        if (emTurnoInimigo || unidades[id].hpAtual <= 0) return;
+        alvoInimigoId = id;
         atualizarUI();
     }
 
-    // 5. CÁLCULO DE COMBATE
+    // 4. CÁLCULO DE COMBATE
     function calcularDano(atacante, defensor, habilidade) {
-        // Imunidade Elemental -> Dano Zero
         if (habilidade.elemento === defensor.imunidade) {
-            log(`<b style="color:blue;">IMUNE!</b> ${defensor.nome} não recebeu dano do elemento ${habilidade.elemento}.`);
+            log(`<b style="color:blue;">IMUNE!</b> Dano anulado.`);
             return 0;
         }
-
         let danoFinal = habilidade.dano + atacante.danoFisico;
-
-        // Fraqueza Elemental -> +20 de Dano Bônus
         if (habilidade.elemento === defensor.fraqueza) {
             danoFinal += 20;
-            log(`<b style="color:red;">FRAQUEZA APLICADA! (+20 Dano)</b>`);
+            log(`<b style="color:red;">SUPER EFETIVO! (+20 Dano)</b>`);
         }
-
         return danoFinal;
     }
 
-    function carregarLimite(unidade, quantidade) {
-        unidade.limite = Math.min(100, unidade.limite + quantidade);
+    function carregarLimite(unidade, qtd) {
+        unidade.limite = Math.min(100, unidade.limite + qtd);
     }
 
-    // 6. EXECUÇÃO DA AÇÃO
-    function executarAção(indiceHab) {
+    // 5. ATAQUE DO JOGADOR
+    function executarAcaoJogador(indiceHab) {
+        if (emTurnoInimigo) return;
+
         let atacante = unidades[atacanteAtualId];
-        let defensor = unidades[alvoSelecionadoId];
+        let defensor = unidades[alvoInimigoId];
 
         if (!defensor || defensor.hpAtual <= 0) {
-            log("Selecione um alvo vivo primeiro!");
+            log("Escolha um inimigo vivo como alvo!");
             return;
         }
 
         let habilidade = (indiceHab === 'limit') ? atacante.limitBreak : atacante.habilidades[indiceHab];
 
-        // Processa Dano
         let dano = calcularDano(atacante, defensor, habilidade);
         defensor.hpAtual = Math.max(0, defensor.hpAtual - dano);
 
-        // Atualiza Limite ao causar e receber dano
-        carregarLimite(atacante, 20); // Atacante ganha +20%
-        carregarLimite(defensor, 15);  // Quem recebe o golpe ganha +15%
+        carregarLimite(atacante, 20);
+        carregarLimite(defensor, 15);
 
         if (indiceHab === 'limit') {
-            atacante.limite = 0; // Reseta limite após o uso supremo
+            atacante.limite = 0;
         } else if (habilidade.cdMax > 0) {
-            habilidade.cdAtual = habilidade.cdMax + 1; // Ativa cooldown
+            habilidade.cdAtual = habilidade.cdMax + 1;
         }
 
-        log(`<b>${atacante.nome}</b> usou <i>${habilidade.nome}</i> em <b>${defensor.nome}</b> causando ${dano} de dano!`);
+        log(`<b>${atacante.nome}</b> atacou <b>${defensor.nome}</b> causando ${dano} de dano!`);
 
-        // Passa o turno e atualiza recargas
-        passarTurno();
+        // Verifica Vitória
+        if (verificarVitoria()) return;
+
+        // Inicia Turno Inimigo
+        iniciarTurnoInimigo();
     }
 
-    function passarTurno() {
-        // Reduz cooldowns do atacante atual
+    // 6. TURNO DO INIMIGO (AUTOMAÇÃO)
+    function iniciarTurnoInimigo() {
+        emTurnoInimigo = true;
+        document.getElementById('status-header').innerText = 'TURNO INIMIGO...';
+        document.getElementById('status-header').style.color = 'red';
+        
+        // Reduz cooldowns do jogador ao passar a vez
         unidades[atacanteAtualId].habilidades.forEach(h => {
             if (h.cdAtual > 0) h.cdAtual--;
         });
 
         atualizarUI();
+
+        setTimeout(() => {
+            // Seleciona um inimigo vivo para atacar
+            let inimigosVivos = ['e0', 'e1', 'e2'].filter(id => unidades[id].hpAtual > 0);
+            let aliadosVivos = ['p0', 'p1', 'p2'].filter(id => unidades[id].hpAtual > 0);
+
+            if (inimigosVivos.length > 0 && aliadosVivos.length > 0) {
+                let atacanteInimigo = unidades[inimigosVivos[0]];
+                let alvoAliado = unidades[aliadosVivos[Math.floor(Math.random() * aliadosVivos.length)]];
+                let habInimiga = atacanteInimigo.habilidades[0];
+
+                let dano = calcularDano(atacanteInimigo, alvoAliado, habInimiga);
+                alvoAliado.hpAtual = Math.max(0, alvoAliado.hpAtual - dano);
+
+                log(`👹 <b>${atacanteInimigo.nome}</b> contra-atacou <b>${alvoAliado.nome}</b> causando ${dano} de dano!`);
+            }
+
+            if (verificarDerrota()) return;
+
+            // Retorna ao Jogador
+            emTurnoInimigo = false;
+            document.getElementById('status-header').innerText = 'SEU TURNO';
+            document.getElementById('status-header').style.color = '#5c4033';
+            
+            // Re-garante um alvo inimigo vivo selecionado
+            garantirAlvoValido();
+            atualizarUI();
+        }, 1200);
+    }
+
+    function garantirAlvoValido() {
+        if (unidades[alvoInimigoId].hpAtual <= 0) {
+            let vivo = ['e1', 'e0', 'e2'].find(id => unidades[id].hpAtual > 0);
+            if (vivo) alvoInimigoId = vivo;
+        }
+    }
+
+    function verificarVitoria() {
+        let todosInimigosMortos = ['e0', 'e1', 'e2'].every(id => unidades[id].hpAtual <= 0);
+        if (todosInimigosMortos) {
+            log("<b style='color:green;'>VITÓRIA! Todo o time inimigo foi derrotado.</b>");
+            emTurnoInimigo = true;
+            atualizarUI();
+            return true;
+        }
+        return false;
+    }
+
+    function verificarDerrota() {
+        let todosAliadosMortos = ['p0', 'p1', 'p2'].every(id => unidades[id].hpAtual <= 0);
+        if (todosAliadosMortos) {
+            log("<b style='color:red;'>DERROTA! Seu time foi exterminado.</b>");
+            emTurnoInimigo = true;
+            atualizarUI();
+            return true;
+        }
+        return false;
     }
 
     function log(msg) {
@@ -271,45 +304,42 @@
         box.scrollTop = box.scrollHeight;
     }
 
-    // 7. ATUALIZAÇÃO DA INTERFACE VISUAL
+    // 7. INTERFACE VISUAL
     function atualizarUI() {
         for (let id in unidades) {
             let u = unidades[id];
             
-            // Atualiza Nome e Vida
             document.getElementById(`name-${id}`).innerText = u.nome;
             document.getElementById(`hp-${id}`).style.width = (u.hpAtual / u.hpMax * 100) + '%';
             document.getElementById(`limit-${id}`).style.width = u.limite + '%';
 
-            // Marca Unidades Mortas
             let card = document.getElementById(`unit-${id}`);
             if (u.hpAtual <= 0) {
                 card.classList.add('dead');
             }
 
-            // Atualiza Cursor do Alvo
-            if (id === alvoSelecionadoId) {
+            // Seleção visual restrita apenas aos inimigos
+            if (id === alvoInimigoId && id.startsWith('e')) {
                 card.classList.add('selected-target');
             } else {
                 card.classList.remove('selected-target');
             }
         }
 
-        // Atualiza Botões do Atacante
+        // Bloqueio de Botões no Turno Inimigo
         let atq = unidades[atacanteAtualId];
         atq.habilidades.forEach((h, i) => {
             let btn = document.getElementById(`btn-atq${i+1}`);
             if (btn) {
                 let textoCd = h.cdAtual > 0 ? ` (${h.cdAtual}T)` : '';
                 btn.innerText = `${h.nome}${textoCd}`;
-                btn.disabled = h.cdAtual > 0;
+                btn.disabled = (h.cdAtual > 0 || emTurnoInimigo);
             }
         });
 
-        // Botão de Limit Break
         let btnLimit = document.getElementById('btn-limit');
         btnLimit.innerText = `QUEBRA DE LIMITES (${atq.limite}%)`;
-        if (atq.limite >= 100) {
+        if (atq.limite >= 100 && !emTurnoInimigo) {
             btnLimit.disabled = false;
             btnLimit.classList.add('ready');
         } else {
@@ -318,7 +348,6 @@
         }
     }
 
-    // Inicialização da Tela
     atualizarUI();
 </script>
 
