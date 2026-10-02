@@ -4,45 +4,52 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>RPG 3v3 - Ysma Completa</title>
+    <title>RPG 3v3 - Sistema Completo</title>
     <style>
         * { box-sizing: border-box; font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; user-select: none; }
         body { background: #121214; color: #fff; margin: 0; padding: 15px; display: flex; flex-direction: column; align-items: center; }
         h1 { margin-bottom: 5px; color: #ff9d00; font-size: 1.4rem; }
         
-        .setup-container { background: #202024; padding: 10px; border-radius: 8px; margin-bottom: 15px; width: 100%; max-width: 800px; text-align: center; }
-        input[type="text"] { width: 65%; padding: 8px; border-radius: 4px; border: 1px solid #444; background: #121214; color: #fff; font-size: 12px; }
+        .setup-container { background: #202024; padding: 10px; border-radius: 8px; margin-bottom: 15px; width: 100%; max-width: 900px; text-align: center; }
+        input[type="text"] { width: 60%; padding: 8px; border-radius: 4px; border: 1px solid #444; background: #121214; color: #fff; font-size: 12px; }
         button { padding: 8px 12px; background: #8257e5; color: white; border: none; border-radius: 4px; cursor: pointer; font-weight: bold; font-size: 12px; }
+        button:hover { background: #996dff; }
 
-        .battle-field { display: flex; justify-content: space-between; width: 100%; max-width: 900px; margin-bottom: 15px; gap: 10px; }
+        .battle-field { display: flex; justify-content: space-between; width: 100%; max-width: 900px; margin-bottom: 15px; gap: 15px; }
         .team { flex: 1; background: #202024; padding: 10px; border-radius: 8px; border: 2px solid #323238; }
         .team-title { text-align: center; font-size: 1rem; margin-bottom: 10px; font-weight: bold; }
         .player-team { border-color: #00875f; }
         .enemy-team { border-color: #f75a68; }
 
-        .card { background: #121214; padding: 8px; border-radius: 6px; margin-bottom: 8px; border: 1px solid #323238; display: flex; align-items: center; gap: 8px; font-size: 11px; }
-        .card img { width: 40px; height: 40px; border-radius: 50%; object-fit: cover; border: 2px solid #ff9d00; }
+        .card { background: #121214; padding: 8px; border-radius: 6px; margin-bottom: 8px; border: 2px solid #323238; display: flex; align-items: center; gap: 8px; font-size: 11px; cursor: pointer; transition: 0.2s; }
+        .card:hover { border-color: #ff9d00; }
+        .card.selected { border-color: #ff9d00; background: #201a00; }
+        .card.dead { opacity: 0.4; cursor: not-allowed; border-color: #444; }
+        .card img { width: 42px; height: 42px; border-radius: 50%; object-fit: cover; border: 2px solid #ff9d00; }
         .card-info { flex: 1; }
-        .hp-bar-bg { background: #323238; height: 10px; border-radius: 4px; overflow: hidden; margin-top: 4px; }
-        .hp-bar-fill { background: #00b37e; height: 100%; width: 100%; transition: width 0.3s; }
+        
+        .bar-bg { background: #323238; height: 8px; border-radius: 4px; overflow: hidden; margin-top: 3px; }
+        .bar-hp { background: #00b37e; height: 100%; width: 100%; transition: width 0.3s; }
+        .bar-limit { background: #ff9d00; height: 100%; width: 0%; transition: width 0.3s; }
 
         .actions-panel { background: #202024; padding: 12px; border-radius: 8px; width: 100%; max-width: 900px; display: grid; grid-template-columns: 1fr 1fr; gap: 8px; }
         .btn-skill { background: #29292e; border: 1px solid #00875f; color: #fff; padding: 10px; border-radius: 6px; cursor: pointer; text-align: left; font-size: 11px; }
-        .btn-skill:hover { background: #00875f; }
+        .btn-skill:hover:not(:disabled) { background: #00875f; }
+        .btn-skill:disabled { opacity: 0.4; cursor: not-allowed; border-color: #444; }
         .btn-limit { grid-column: span 2; border-color: #ff9d00; background: #321b00; text-align: center; }
-        .btn-limit:hover { background: #ff9d00; color: #000; }
+        .btn-limit:hover:not(:disabled) { background: #ff9d00; color: #000; }
 
-        #log { background: #121214; width: 100%; max-width: 900px; height: 100px; overflow-y: auto; padding: 8px; border-radius: 8px; border: 1px solid #323238; margin-top: 10px; font-family: monospace; font-size: 0.8rem; }
+        #log { background: #121214; width: 100%; max-width: 900px; height: 120px; overflow-y: auto; padding: 8px; border-radius: 8px; border: 1px solid #323238; margin-top: 10px; font-family: monospace; font-size: 0.8rem; }
         .log-entry { margin-bottom: 3px; }
     </style>
 </head>
 <body>
 
-    <h1>⚔️ RPG Turnos 3v3 - Ysma Completa</h1>
+    <h1>⚔️️ RPG Turnos 3v3 - Batalha Completa</h1>
 
     <div class="setup-container">
-        <input type="text" id="sheetUrl" placeholder="Cole aqui o link .csv do Google Sheets">
-        <button onclick="carregarDadosPlanilha()">Carregar Planilha</button>
+        <input type="text" id="sheetUrl" placeholder="Cole o link CSV publicado do Google Sheets">
+        <button onclick="carregarDadosPlanilha()">Sincronizar Planilha</button>
     </div>
 
     <div class="battle-field">
@@ -51,7 +58,7 @@
             <div id="player-cards"></div>
         </div>
         <div class="team enemy-team">
-            <div class="team-title" style="color:#f75a68">Inimigos</div>
+            <div class="team-title" style="color:#f75a68">Inimigos (Clique para selecionar o Alvo)</div>
             <div id="enemy-cards"></div>
         </div>
     </div>
@@ -59,35 +66,36 @@
     <div class="actions-panel" id="actionsPanel"></div>
 
     <div id="log">
-        <div class="log-entry">> Batalha pronta com o kit completo da Ysma.</div>
+        <div class="log-entry">> Batalha iniciada. Selecione uma habilidade e um alvo!</div>
     </div>
 
     <script>
-        // Objeto Padrão com TODAS as 4 Habilidades (Atacar + H1 + H2 + H3 + Limit)
-        let ysmaData = {
-            Nome: "Ysma",
-            Classe: "Maga / Controle Elemental",
-            HP: 90, HP_Max: 90,
-            DanoFisico: 15,
-            ElementoBase: "Mágico",
-            Fraqueza: "Purificação",
-            Imunidade: "Fogo",
-            FotoURL: "https://via.placeholder.com/150/ff4500/ffffff?text=Ysma",
-            Habilidades: [
-                { nome: "Acerto Perfurante", dano: 15, elem: "Físico", cd: 0 },
-                { nome: "Bola de Fogo", dano: 45, elem: "Fogo", cd: 2 },
-                { nome: "Raio de Gelo", dano: 10, elem: "Gelo", cd: 4 },
-                { nome: "Furacão", dano: 25, elem: "Vento", cd: 4 }
-            ],
-            Limit: { nome: "Explosão de Cristal Prisma", dano: 50, elem: "Mágico" }
-        };
-
-        let playerTeam = [ Object.assign({}, ysmaData) ];
-        let enemyTeam = [
-            { Nome: "Treino A", HP: 100, HP_Max: 100, Fraqueza: "Fogo", Imunidade: "Nenhuma" },
-            { Nome: "Treino B", HP: 100, HP_Max: 100, Fraqueza: "Vento", Imunidade: "Fogo" },
-            { Nome: "Treino C", HP: 100, HP_Max: 100, Fraqueza: "Gelo", Imunidade: "Nenhuma" }
+        // Dados Padrão de Personagens com Cooldowns e Barras de Limite
+        let playerTeam = [
+            {
+                Nome: "Ysma",
+                Classe: "Maga",
+                HP: 90, HP_Max: 90,
+                LimitEnergy: 0,
+                Fraqueza: "Purificação", Imunidade: "Fogo",
+                FotoURL: "https://via.placeholder.com/150/ff4500/ffffff?text=Ysma",
+                Habilidades: [
+                    { nome: "Acerto Perfurante", dano: 15, elem: "Físico", cdMax: 0, cdAtual: 0 },
+                    { nome: "Bola de Fogo", dano: 45, elem: "Fogo", cdMax: 2, cdAtual: 0 },
+                    { nome: "Raio de Gelo", dano: 10, elem: "Gelo", cdMax: 4, cdAtual: 0 },
+                    { nome: "Furacão", dano: 25, elem: "Vento", cdMax: 4, cdAtual: 0 }
+                ],
+                Limit: { nome: "Explosão de Cristal Prisma", dano: 50, elem: "Mágico" }
+            }
         ];
+
+        let enemyTeam = [
+            { id: 0, Nome: "Inimigo Alfa", HP: 100, HP_Max: 100, Fraqueza: "Fogo", Imunidade: "Nenhuma" },
+            { id: 1, Nome: "Inimigo Beta", HP: 100, HP_Max: 100, Fraqueza: "Vento", Imunidade: "Fogo" },
+            { id: 2, Nome: "Inimigo Gama", HP: 100, HP_Max: 100, Fraqueza: "Gelo", Imunidade: "Nenhuma" }
+        ];
+
+        let targetEnemyIndex = 0; // Alvo selecionado por padrão
 
         function log(msg) {
             const logDiv = document.getElementById("log");
@@ -95,42 +103,11 @@
             logDiv.scrollTop = logDiv.scrollHeight;
         }
 
-        async function carregarDadosPlanilha() {
-            const url = document.getElementById("sheetUrl").value;
-            if(!url) return alert("Cole o link CSV publicado do Sheets!");
-
-            try {
-                log("Lendo dados do Google Sheets...");
-                let response = await fetch(url);
-                let csvText = await response.text();
-                
-                let linhas = csvText.split("\n").map(row => row.split(","));
-                let dadosYsma = linhas[1].map(c => c.trim());
-
-                ysmaData = {
-                    Nome: dadosYsma[0],
-                    Classe: dadosYsma[1],
-                    HP: parseInt(dadosYsma[2]), HP_Max: parseInt(dadosYsma[2]),
-                    DanoFisico: parseInt(dadosYsma[3]),
-                    ElementoBase: dadosYsma[4],
-                    Fraqueza: dadosYsma[5],
-                    Imunidade: dadosYsma[6],
-                    FotoURL: dadosYsma[7],
-                    Habilidades: [
-                        { nome: "Acerto Perfurante", dano: parseInt(dadosYsma[3]), elem: "Físico", cd: 0 },
-                        { nome: dadosYsma[8], dano: parseInt(dadosYsma[9]), elem: dadosYsma[10], cd: parseInt(dadosYsma[11]) },
-                        { nome: dadosYsma[12], dano: parseInt(dadosYsma[13]), elem: dadosYsma[14], cd: parseInt(dadosYsma[15]) },
-                        { nome: dadosYsma[16], dano: parseInt(dadosYsma[17]), elem: dadosYsma[18], cd: parseInt(dadosYsma[19]) }
-                    ],
-                    Limit: { nome: dadosYsma[20], dano: parseInt(dadosYsma[21]), elem: dadosYsma[22] }
-                };
-
-                playerTeam[0] = Object.assign({}, ysmaData);
-                log(`✅ Dados de ${ysmaData.Nome} atualizados com as 3 habilidades!`);
-                render();
-            } catch (err) {
-                log("❌ Erro ao ler planilha. Verifique as colunas.");
-            }
+        function selecionarAlvo(index) {
+            if (enemyTeam[index].HP <= 0) return log("Este inimigo já foi derrotado!");
+            targetEnemyIndex = index;
+            log(`🎯 Alvo selecionado: ${enemyTeam[index].Nome}`);
+            render();
         }
 
         function calcularDano(atacante, alvo, habilidade) {
@@ -143,31 +120,41 @@
 
             if (alvo.Fraqueza === habilidade.elem) {
                 danoFinal += 30;
-                log(`💥 FRAQUEZA! +30 de dano contra ${alvo.Nome} por ser fraco a ${habilidade.elem}!`);
+                log(`💥 FRAQUEZA! +30 de dano em ${alvo.Nome}!`);
             }
 
             return danoFinal;
         }
 
-        function usarHabilidade(indexHab, alvoIndex = 0) {
+        function usarHabilidade(indexHab) {
             let ysma = playerTeam[0];
             let hab = ysma.Habilidades[indexHab];
-            let alvo = enemyTeam[alvoIndex];
+            let alvo = enemyTeam[targetEnemyIndex];
 
-            if (alvo.HP <= 0) return log("Alvo já derrotado!");
+            if (alvo.HP <= 0) return log("Selecione um alvo vivo!");
+            if (hab.cdAtual > 0) return log("Habilidade em Cooldown!");
 
             let dano = calcularDano(ysma, alvo, hab);
             alvo.HP = Math.max(0, alvo.HP - dano);
 
+            // Iniciar Cooldown da Habilidade usada
+            hab.cdAtual = hab.cdMax;
+
+            // Carregar Barra de Quebra de Limites (+25% por ataque)
+            ysma.LimitEnergy = Math.min(100, ysma.LimitEnergy + 25);
+
             log(`✨ ${ysma.Nome} usou [${hab.nome}] em ${alvo.Nome} causando ${dano} de dano!`);
-            render();
+
+            passarTurno();
         }
 
         function usarQuebraDeLimites() {
             let ysma = playerTeam[0];
             let limit = ysma.Limit;
 
-            log(`🔥 QUEBRA DE LIMITES! ${ysma.Nome} invoca [${limit.nome}] atingindo o grupo!`);
+            if (ysma.LimitEnergy < 100) return log("Barra de Quebra de Limites ainda não está cheia!");
+
+            log(`🔥 QUEBRA DE LIMITES! ${ysma.Nome} invoca [${limit.nome}] atirando em TODOS os inimigos!`);
 
             enemyTeam.forEach((alvo) => {
                 if(alvo.HP > 0) {
@@ -177,43 +164,106 @@
                 }
             });
 
+            ysma.LimitEnergy = 0; // Reseta a barra
+            passarTurno();
+        }
+
+        function passarTurno() {
+            // Reduzir Cooldowns dos aliados a cada turno
+            playerTeam.forEach(p => {
+                p.Habilidades.forEach(h => {
+                    if (h.cdAtual > 0) h.cdAtual--;
+                });
+            });
+
+            // Mudar alvo automaticamente caso o atual morra
+            if (enemyTeam[targetEnemyIndex].HP <= 0) {
+                let proximoVivo = enemyTeam.findIndex(e => e.HP > 0);
+                if (proximoVivo !== -1) targetEnemyIndex = proximoVivo;
+            }
+
             render();
         }
 
+        async function carregarDadosPlanilha() {
+            const url = document.getElementById("sheetUrl").value;
+            if(!url) return alert("Cole o link CSV publicado do Google Sheets!");
+
+            try {
+                log("Lendo dados do Google Sheets...");
+                let response = await fetch(url);
+                let csvText = await response.text();
+                
+                let linhas = csvText.split("\n").map(row => row.split(","));
+                let dadosYsma = linhas[1].map(c => c.trim());
+
+                playerTeam[0] = {
+                    Nome: dadosYsma[0],
+                    Classe: dadosYsma[1],
+                    HP: parseInt(dadosYsma[2]), HP_Max: parseInt(dadosYsma[2]),
+                    LimitEnergy: 0,
+                    DanoFisico: parseInt(dadosYsma[3]),
+                    ElementoBase: dadosYsma[4],
+                    Fraqueza: dadosYsma[5],
+                    Imunidade: dadosYsma[6],
+                    FotoURL: dadosYsma[7],
+                    Habilidades: [
+                        { nome: "Acerto Perfurante", dano: parseInt(dadosYsma[3]), elem: "Físico", cdMax: 0, cdAtual: 0 },
+                        { nome: dadosYsma[8], dano: parseInt(dadosYsma[9]), elem: dadosYsma[10], cdMax: parseInt(dadosYsma[11]), cdAtual: 0 },
+                        { nome: dadosYsma[12], dano: parseInt(dadosYsma[13]), elem: dadosYsma[14], cdMax: parseInt(dadosYsma[15]), cdAtual: 0 },
+                        { nome: dadosYsma[16], dano: parseInt(dadosYsma[17]), elem: dadosYsma[18], cdMax: parseInt(dadosYsma[19]), cdAtual: 0 }
+                    ],
+                    Limit: { nome: dadosYsma[20], dano: parseInt(dadosYsma[21]), elem: dadosYsma[22] }
+                };
+
+                log(`✅ Personagem ${playerTeam[0].Nome} atualizado com dados da planilha!`);
+                render();
+            } catch (err) {
+                log("❌ Erro ao ler a planilha. Verifique a ordem das colunas.");
+            }
+        }
+
         function render() {
+            // Render Aliados
             const pDiv = document.getElementById("player-cards");
             pDiv.innerHTML = playerTeam.map(p => `
-                <div class="card">
+                <div class="card ${p.HP <= 0 ? 'dead' : ''}">
                     <img src="${p.FotoURL}" alt="${p.Nome}">
                     <div class="card-info">
                         <strong>${p.Nome}</strong> (${p.Classe})<br>
                         HP: ${p.HP}/${p.HP_Max}
-                        <div class="hp-bar-bg"><div class="hp-bar-fill" style="width:${(p.HP/p.HP_Max)*100}%"></div></div>
+                        <div class="bar-bg"><div class="bar-hp" style="width:${(p.HP/p.HP_Max)*100}%"></div></div>
+                        Limite: ${p.LimitEnergy}%
+                        <div class="bar-bg"><div class="bar-limit" style="width:${p.LimitEnergy}%"></div></div>
                     </div>
                 </div>
             `).join('');
 
+            // Render Inimigos com Seleção de Alvo
             const eDiv = document.getElementById("enemy-cards");
-            eDiv.innerHTML = enemyTeam.map((e) => `
-                <div class="card">
+            eDiv.innerHTML = enemyTeam.map((e, idx) => `
+                <div class="card ${idx === targetEnemyIndex ? 'selected' : ''} ${e.HP <= 0 ? 'dead' : ''}" onclick="selecionarAlvo(${idx})">
                     <div class="card-info">
                         <strong>${e.Nome}</strong> [Fraco: ${e.Fraqueza} | Imune: ${e.Imunidade}]<br>
                         HP: ${e.HP}/${e.HP_Max}
-                        <div class="hp-bar-bg"><div class="hp-bar-fill" style="width:${(e.HP/e.HP_Max)*100}%; background:#f75a68"></div></div>
+                        <div class="bar-bg"><div class="bar-hp" style="width:${(e.HP/e.HP_Max)*100}%; background:#f75a68"></div></div>
                     </div>
                 </div>
             `).join('');
 
+            // Render Botões de Ação
             const y = playerTeam[0];
             const btnPanel = document.getElementById("actionsPanel");
             btnPanel.innerHTML = `
                 ${y.Habilidades.map((h, i) => `
-                    <button class="btn-skill" onclick="usarHabilidade(${i}, 0)">
-                        <b>${h.nome}</b><br><small>Dano:${h.dano} | Elem: ${h.elem} \vert{} CD:${h.cd}T</small>
+                    <button class="btn-skill" ${h.cdAtual > 0 ? 'disabled' : ''} onclick="usarHabilidade(${i})">
+                        <b>${h.nome}</b><br>
+                        <small>Dano: ${h.dano} (${h.elem})${h.cdAtual > 0 ? `| ⏳ ${h.cdAtual} T` : ''}</small>
                     </button>
                 `).join('')}
-                <button class="btn-skill btn-limit" onclick="usarQuebraDeLimites()">
-                    💥 <b>${y.Limit.nome}</b><br><small>Dano em Área: ${y.Limit.dano} (${y.Limit.elem})</small>
+                <button class="btn-skill btn-limit" ${y.LimitEnergy < 100 ? 'disabled' : ''} onclick="usarQuebraDeLimites()">
+                    💥 <b>${y.Limit.nome}</b><br>
+                    <small>Dano Área: ${y.Limit.dano} (${y.Limit.elem}) | ${y.LimitEnergy < 100 ? `Energia: ${y.LimitEnergy}/100%` : 'PRONTO!'}</small>
                 </button>
             `;
         }
