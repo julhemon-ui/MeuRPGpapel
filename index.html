@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>3v3 Paper RPG - Sistemas</title>
+    <title>3v3 Paper RPG - Turnos e Cooldowns</title>
     <style>
         * { box-sizing: border-box; margin: 0; padding: 0; user-select: none; }
         body { background-color: #2b2b2b; font-family: 'Courier New', Courier, monospace; display: flex; justify-content: center; align-items: center; min-height: 100vh; }
@@ -11,78 +11,98 @@
         #game-container {
             width: 95%; max-width: 600px; background-color: #f4ecd8;
             background-image: linear-gradient(#999 0.05em, transparent 0.05em), linear-gradient(90deg, #999 0.05em, transparent 0.05em);
-            background-size: 20px 20px; border: 6px solid #5c4033; border-radius: 12px; padding: 15px; display: flex; flex-direction: column; gap: 15px;
+            background-size: 20px 20px; border: 6px solid #5c4033; border-radius: 12px; padding: 15px; display: flex; flex-direction: column; gap: 12px;
+        }
+
+        /* Animação de Dano (Tremida) */
+        .hit-shake { animation: shake 0.3s ease-in-out; }
+        @keyframes shake {
+            0% { transform: translateX(0); }
+            25% { transform: translateX(-8px); }
+            50% { transform: translateX(8px); }
+            75% { transform: translateX(-4px); }
+            100% { transform: translateX(0); }
         }
 
         .battle-area { display: flex; justify-content: space-around; align-items: center; min-height: 140px; background: rgba(255,255,255,0.4); border-radius: 8px; padding: 10px; }
-        .unit-box { text-align: center; width: 120px; }
+        .unit-box { text-align: center; width: 120px; transition: transform 0.2s; }
         .hp-bar, .limit-bar { width: 100%; background: #ccc; height: 12px; border: 1px solid #000; border-radius: 3px; overflow: hidden; margin-top: 4px; }
         .hp-fill { height: 100%; background: #4caf50; width: 100%; transition: width 0.3s; }
         .limit-fill { height: 100%; background: #ffca28; width: 0%; transition: width 0.3s; }
 
-        #log-box { background: #fff; border: 2px solid #5c4033; height: 100px; padding: 8px; font-size: 12px; border-radius: 6px; overflow-y: auto; }
+        #log-box { background: #fff; border: 2px solid #5c4033; height: 110px; padding: 8px; font-size: 12px; border-radius: 6px; overflow-y: auto; }
         
         .grid-buttons { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; }
-        button { background: #faf0d7; border: 2px solid #5c4033; padding: 10px 5px; font-weight: bold; font-size: 11px; cursor: pointer; border-radius: 6px; }
-        button:disabled { opacity: 0.5; cursor: not-allowed; }
+        button { background: #faf0d7; border: 2px solid #5c4033; padding: 10px 5px; font-weight: bold; font-size: 11px; cursor: pointer; border-radius: 6px; position: relative; }
+        button:disabled { opacity: 0.5; cursor: not-allowed; background: #dcdcdc; }
         
-        /* Botão do Limit Break */
         #btn-limit { background: #ffecb3; border-color: #b78103; color: #8c5b00; grid-column: span 2; }
         #btn-limit.ready { background: #ff9800; color: #fff; animation: pulse 1s infinite alternate; }
 
         @keyframes pulse {
-            from { transform: scale(1); box-shadow: 0 0 5px #ff9800; }
-            to { transform: scale(1.02); box-shadow: 0 0 15px #ff5722; }
+            from { transform: scale(1); }
+            to { transform: scale(1.02); }
         }
     </style>
 </head>
 <body>
 
 <div id="game-container">
-    <h3 style="text-align: center;">📜 Teste de Mecânicas RPG</h3>
+    <h3 style="text-align: center;">⚔️ Sistema de Turnos & Recarga</h3>
 
     <div class="battle-area">
         <!-- Ysma -->
-        <div class="unit-box">
-            <strong>Ysma</strong> (Fogo)
+        <div id="ysma-box" class="unit-box">
+            <strong>Ysma</strong>
             <div class="hp-bar"><div id="ysma-hp" class="hp-fill"></div></div>
-            <div style="font-size: 10px; margin-top:3px;">Limite:</div>
+            <div style="font-size: 9px; margin-top:2px;">Limite:</div>
             <div class="limit-bar"><div id="ysma-limit" class="limit-fill"></div></div>
         </div>
 
-        <div style="font-size: 20px; font-weight: bold;">VS</div>
+        <div id="turn-indicator" style="font-size: 14px; font-weight: bold; color: #5c4033;">Sua Vez!</div>
 
-        <!-- Inimigo Teste -->
-        <div class="unit-box">
-            <strong>Golem de Planta</strong>
-            <div style="font-size: 10px; color: green;">Tipo: Planta</div>
+        <!-- Inimigo -->
+        <div id="enemy-box" class="unit-box">
+            <strong>Golem Planta</strong>
             <div class="hp-bar"><div id="enemy-hp" class="hp-fill"></div></div>
         </div>
     </div>
 
-    <!-- Log de Combate -->
+    <!-- Log de Batalha -->
     <div id="log-box">
-        <p>> Batalha iniciada! O inimigo é do tipo Planta.</p>
+        <p>> A batalha começou! Escolha sua habilidade.</p>
     </div>
 
-    <!-- Botões de Ação -->
+    <!-- Painel de Ações -->
     <div class="grid-buttons">
-        <button onclick="usarAtaque('Acerto Perfurante', 15, 'Físico')">Acerto Perfurante (Físico)</button>
-        <button onclick="usarAtaque('Bola de Fogo', 30, 'Fogo')">Bola de Fogo (Fogo 🔥)</button>
-        <button onclick="usarAtaque('Raio de Gelo', 20, 'Gelo')">Raio de Gelo (Gelo ❄️)</button>
-        <button id="btn-limit" disabled onclick="usarLimitBreak()">QUEBRA DE LIMITES (0%)</button>
+        <button id="btn-atq1" onclick="usarAtaque('Acerto Perfurante', 15, 'Físico', 0, 'btn-atq1')">
+            Acerto Perfurante (Básico)
+        </button>
+        
+        <button id="btn-atq2" onclick="usarAtaque('Bola de Fogo', 30, 'Fogo', 2, 'btn-atq2')">
+            Bola de Fogo 🔥 <span id="cd-btn-atq2"></span>
+        </button>
+        
+        <button id="btn-atq3" onclick="usarAtaque('Raio de Gelo', 20, 'Gelo', 1, 'btn-atq3')">
+            Raio de Gelo ❄️ <span id="cd-btn-atq3"></span>
+        </button>
+        
+        <button id="btn-limit" disabled onclick="usarLimitBreak()">
+            QUEBRA DE LIMITES (0%)
+        </button>
     </div>
 </div>
 
 <script>
-    let enemyHpMax = 120, enemyHp = 120, enemyElement = 'Planta';
-    let limitValue = 0; // 0 a 100
+    let ysmaHpMax = 100, ysmaHp = 100;
+    let enemyHpMax = 120, enemyHp = 120;
+    let limitValue = 0;
+    let emTurnoInimigo = false;
 
-    // Tabela de Vantagens Simples
-    const fraquezas = {
-        'Planta': 'Fogo',
-        'Água': 'Eletricidade',
-        'Fogo': 'Água'
+    // Gerenciamento de Cooldowns { idBotao: turnosRestantes }
+    let cooldowns = {
+        'btn-atq2': 0,
+        'btn-atq3': 0
     };
 
     function log(msg) {
@@ -91,63 +111,134 @@
         box.scrollTop = box.scrollHeight;
     }
 
+    function tremer(elementId) {
+        const el = document.getElementById(elementId);
+        el.classList.add('hit-shake');
+        setTimeout(() => el.classList.remove('hit-shake'), 300);
+    }
+
+    function atualizarCooldownsUI() {
+        for (let btnId in cooldowns) {
+            const btn = document.getElementById(btnId);
+            const span = document.getElementById('cd-' + btnId);
+            if (cooldowns[btnId] > 0) {
+                btn.disabled = true;
+                span.innerText = `(${cooldowns[btnId]}T)`;
+            } else if (!emTurnoInimigo) {
+                btn.disabled = false;
+                span.innerText = '';
+            }
+        }
+    }
+
+    function reduzirCooldowns() {
+        for (let btnId in cooldowns) {
+            if (cooldowns[btnId] > 0) {
+                cooldowns[btnId]--;
+            }
+        }
+        atualizarCooldownsUI();
+    }
+
+    function alternarBotoes(bloquear) {
+        const botoes = document.querySelectorAll('.grid-buttons button');
+        botoes.forEach(b => {
+            if (b.id !== 'btn-limit') b.disabled = bloquear;
+        });
+        if (!bloquear) atualizarCooldownsUI();
+    }
+
     function ganhaLimite(qtd) {
         limitValue = Math.min(100, limitValue + qtd);
-        const limitBar = document.getElementById('ysma-limit');
+        document.getElementById('ysma-limit').style.width = limitValue + '%';
         const limitBtn = document.getElementById('btn-limit');
-        
-        limitBar.style.width = limitValue + '%';
         
         if (limitValue >= 100) {
             limitBtn.disabled = false;
             limitBtn.classList.add('ready');
             limitBtn.innerText = '⚡ QUEBRA DE LIMITES PRONTA! ⚡';
-        } else {
-            limitBtn.innerText = `QUEBRA DE LIMITES (${limitValue}%)`;
         }
     }
 
-    function usarAtaque(nome, danoBase, elemento) {
-        let multiplicador = 1.0;
-        let msgEfeito = "";
+    function usarAtaque(nome, danoBase, elemento, cdMax, btnId) {
+        if (emTurnoInimigo) return;
 
-        // Checagem de Tipo
-        if (fraquezas[enemyElement] === elemento) {
-            multiplicador = 1.5;
-            msgEfeito = " <span style='color:red; font-weight:bold;'>[SUPER EFETIVO! +50%]</span>";
-        }
-
-        let danoFinal = Math.floor(danoBase * multiplicador);
+        // Aplica dano com fraqueza
+        let mult = (elemento === 'Fogo') ? 1.5 : 1.0;
+        let danoFinal = Math.floor(danoBase * mult);
         enemyHp = Math.max(0, enemyHp - danoFinal);
-
-        document.getElementById('enemy-hp').style.width = (enemyHp / enemyHpMax * 100) + '%';
         
-        log(`Ysma usou <strong>${nome}</strong>! Caused <strong>${danoFinal}</strong> de dano.${msgEfeito}`);
+        document.getElementById('enemy-hp').style.width = (enemyHp / enemyHpMax * 100) + '%';
+        tremer('enemy-box');
 
-        // Aumenta a barra de Limite
+        log(`Ysma usou <strong>${nome}</strong>! Causou ${danoFinal} de dano.`);
+
+        // Aplica Cooldown
+        if (cdMax > 0) cooldowns[btnId] = cdMax + 1; // +1 porque vai reduzir ao passar o turno
+
         ganhaLimite(25);
 
         if (enemyHp === 0) {
-            log("<strong style='color:green;'>O Golem de Planta foi destruído!</strong>");
+            log("<strong style='color:green;'>O Golem foi derrotado! Vitória!</strong>");
+            alternarBotoes(true);
+            return;
         }
+
+        // Passa o turno para o Inimigo
+        iniciarTurnoInimigo();
     }
 
     function usarLimitBreak() {
-        if (limitValue < 100) return;
+        if (limitValue < 100 || emTurnoInimigo) return;
 
-        let danoFinal = 80; // Dano massivo
-        enemyHp = Math.max(0, enemyHp - danoFinal);
+        enemyHp = Math.max(0, enemyHp - 80);
         document.getElementById('enemy-hp').style.width = (enemyHp / enemyHpMax * 100) + '%';
+        tremer('enemy-box');
 
-        log(`<strong style='color:purple;'>✨ Ysma ativou a QUEBRA DE LIMITES: Explosão Prisma! Causou ${danoFinal} de dano elemental puro!</strong>`);
+        log(`<strong style='color:purple;'>✨ Explosão Prisma! Causou 80 de dano puríssimo!</strong>`);
 
-        // Reseta Limite
         limitValue = 0;
         document.getElementById('ysma-limit').style.width = '0%';
         const limitBtn = document.getElementById('btn-limit');
         limitBtn.disabled = true;
         limitBtn.classList.remove('ready');
         limitBtn.innerText = 'QUEBRA DE LIMITES (0%)';
+
+        if (enemyHp === 0) {
+            log("<strong style='color:green;'>O Golem foi pulverizado!</strong>");
+            return;
+        }
+
+        iniciarTurnoInimigo();
+    }
+
+    function iniciarTurnoInimigo() {
+        emTurnoInimigo = true;
+        alternarBotoes(true);
+        document.getElementById('turn-indicator').innerText = 'Turno Inimigo...';
+        document.getElementById('turn-indicator').style.color = 'red';
+
+        // Inimigo ataca após 1.2 segundos
+        setTimeout(() => {
+            let danoInimigo = 15;
+            ysmaHp = Math.max(0, ysmaHp - danoInimigo);
+            document.getElementById('ysma-hp').style.width = (ysmaHp / ysmaHpMax * 100) + '%';
+            tremer('ysma-box');
+
+            log(`👹 Golem de Planta atacou Ysma! Causou <strong>${danoInimigo}</strong> de dano.`);
+
+            if (ysmaHp === 0) {
+                log("<strong style='color:red;'>Ysma foi derrotada! Fim de jogo.</strong>");
+                return;
+            }
+
+            // Volta para o turno do jogador
+            reduzirCooldowns();
+            emTurnoInimigo = false;
+            document.getElementById('turn-indicator').innerText = 'Sua Vez!';
+            document.getElementById('turn-indicator').style.color = '#5c4033';
+            alternarBotoes(false);
+        }, 1200);
     }
 </script>
 
