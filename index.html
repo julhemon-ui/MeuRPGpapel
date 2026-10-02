@@ -3,210 +3,151 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>3v3 RPG - Paper Cutout</title>
+    <title>3v3 Paper RPG - Sistemas</title>
     <style>
-        * {
-            box-sizing: border-box;
-            margin: 0;
-            padding: 0;
-            user-select: none;
-        }
-
-        body {
-            background-color: #2b2b2b;
-            font-family: 'Courier New', Courier, monospace;
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            min-height: 100vh;
-        }
-
-        /* Tela do Jogo estilo Caderno */
+        * { box-sizing: border-box; margin: 0; padding: 0; user-select: none; }
+        body { background-color: #2b2b2b; font-family: 'Courier New', Courier, monospace; display: flex; justify-content: center; align-items: center; min-height: 100vh; }
+        
         #game-container {
-            width: 800px;
-            height: 500px;
-            background-color: #f4ecd8;
-            background-image: 
-                linear-gradient(#999 0.05em, transparent 0.05em),
-                linear-gradient(90deg, #999 0.05em, transparent 0.05em);
-            background-size: 20px 20px;
-            border: 8px solid #5c4033;
-            border-radius: 12px;
-            box-shadow: 0 10px 25px rgba(0,0,0,0.5);
-            position: relative;
-            display: flex;
-            flex-direction: column;
-            justify-content: space-between;
-            overflow: hidden;
+            width: 95%; max-width: 600px; background-color: #f4ecd8;
+            background-image: linear-gradient(#999 0.05em, transparent 0.05em), linear-gradient(90deg, #999 0.05em, transparent 0.05em);
+            background-size: 20px 20px; border: 6px solid #5c4033; border-radius: 12px; padding: 15px; display: flex; flex-direction: column; gap: 15px;
         }
 
-        /* Campo de Batalha */
-        #battle-field {
-            flex: 1;
-            position: relative;
-            display: flex;
-            justify-content: space-around;
-            align-items: center;
-        }
+        .battle-area { display: flex; justify-content: space-around; align-items: center; min-height: 140px; background: rgba(255,255,255,0.4); border-radius: 8px; padding: 10px; }
+        .unit-box { text-align: center; width: 120px; }
+        .hp-bar, .limit-bar { width: 100%; background: #ccc; height: 12px; border: 1px solid #000; border-radius: 3px; overflow: hidden; margin-top: 4px; }
+        .hp-fill { height: 100%; background: #4caf50; width: 100%; transition: width 0.3s; }
+        .limit-fill { height: 100%; background: #ffca28; width: 0%; transition: width 0.3s; }
 
-        /* Sprite do Personagem estilo Recorte de Papel */
-        .paper-character {
-            width: 120px;
-            height: 160px;
-            position: relative;
-            filter: drop-shadow(4px 8px 0px rgba(0,0,0,0.25));
-            transition: transform 0.1s ease-in-out;
-        }
+        #log-box { background: #fff; border: 2px solid #5c4033; height: 100px; padding: 8px; font-size: 12px; border-radius: 6px; overflow-y: auto; }
+        
+        .grid-buttons { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; }
+        button { background: #faf0d7; border: 2px solid #5c4033; padding: 10px 5px; font-weight: bold; font-size: 11px; cursor: pointer; border-radius: 6px; }
+        button:disabled { opacity: 0.5; cursor: not-allowed; }
+        
+        /* Botão do Limit Break */
+        #btn-limit { background: #ffecb3; border-color: #b78103; color: #8c5b00; grid-column: span 2; }
+        #btn-limit.ready { background: #ff9800; color: #fff; animation: pulse 1s infinite alternate; }
 
-        .paper-character img {
-            width: 100%;
-            height: 100%;
-            object-fit: contain;
-        }
-
-        /* Animação de Ataque (Pulo do Papel) */
-        .attacking {
-            transform: translateX(60px) rotate(5deg) scale(1.1);
-        }
-
-        /* HUD de HP */
-        .hp-bar-container {
-            width: 100%;
-            background: #d3d3d3;
-            border: 2px solid #000;
-            height: 16px;
-            margin-top: 5px;
-            border-radius: 4px;
-            overflow: hidden;
-        }
-
-        .hp-bar-fill {
-            height: 100%;
-            background: #4caf50;
-            width: 100%;
-            transition: width 0.3s;
-        }
-
-        /* Painel de Controle Inferior */
-        #control-panel {
-            height: 160px;
-            background: #e8dfc8;
-            border-top: 4px dashed #5c4033;
-            padding: 10px;
-            display: flex;
-            gap: 10px;
-        }
-
-        #log-box {
-            flex: 1;
-            background: #fff;
-            border: 2px solid #5c4033;
-            padding: 10px;
-            font-size: 14px;
-            border-radius: 6px;
-            overflow-y: auto;
-        }
-
-        #action-buttons {
-            flex: 1;
-            display: grid;
-            grid-template-columns: 1fr 1fr;
-            gap: 8px;
-        }
-
-        button {
-            background: #faf0d7;
-            border: 2px solid #5c4033;
-            font-family: inherit;
-            font-weight: bold;
-            font-size: 13px;
-            cursor: pointer;
-            border-radius: 6px;
-            box-shadow: 2px 2px 0px #5c4033;
-            transition: all 0.1s;
-        }
-
-        button:active {
-            transform: translate(2px, 2px);
-            box-shadow: 0px 0px 0px #5c4033;
-        }
-
-        button:hover {
-            background: #fff;
+        @keyframes pulse {
+            from { transform: scale(1); box-shadow: 0 0 5px #ff9800; }
+            to { transform: scale(1.02); box-shadow: 0 0 15px #ff5722; }
         }
     </style>
 </head>
 <body>
 
 <div id="game-container">
-    <!-- Campo de Batalha -->
-    <div id="battle-field">
-        <!-- Time dos Jogadores (Lado Esquerdo) -->
-        <div id="hero-team">
-            <div id="ysma-character" class="paper-character">
-                <img src="ysma.png" alt="Ysma" id="ysma-img">
-                <div style="font-weight: bold; font-size: 12px; text-align: center;">Ysma</div>
-                <div class="hp-bar-container">
-                    <div id="ysma-hp" class="hp-bar-fill"></div>
-                </div>
-            </div>
+    <h3 style="text-align: center;">📜 Teste de Mecânicas RPG</h3>
+
+    <div class="battle-area">
+        <!-- Ysma -->
+        <div class="unit-box">
+            <strong>Ysma</strong> (Fogo)
+            <div class="hp-bar"><div id="ysma-hp" class="hp-fill"></div></div>
+            <div style="font-size: 10px; margin-top:3px;">Limite:</div>
+            <div class="limit-bar"><div id="ysma-limit" class="limit-fill"></div></div>
         </div>
 
-        <!-- Inimigo de Teste (Lado Direito) -->
-        <div id="enemy-team">
-            <div id="dummy-character" class="paper-character" style="filter: drop-shadow(-4px 8px 0px rgba(0,0,0,0.25));">
-                <div style="width: 100px; height: 120px; background: #c2b280; border: 2px dashed #000; display: flex; align-items: center; justify-content: center; margin: 0 auto;">
-                    👾 Boneco
-                </div>
-                <div style="font-weight: bold; font-size: 12px; text-align: center; margin-top: 5px;">Inimigo Teste</div>
-                <div class="hp-bar-container">
-                    <div id="enemy-hp" class="hp-bar-fill"></div>
-                </div>
-            </div>
+        <div style="font-size: 20px; font-weight: bold;">VS</div>
+
+        <!-- Inimigo Teste -->
+        <div class="unit-box">
+            <strong>Golem de Planta</strong>
+            <div style="font-size: 10px; color: green;">Tipo: Planta</div>
+            <div class="hp-bar"><div id="enemy-hp" class="hp-fill"></div></div>
         </div>
     </div>
 
-    <!-- Painel de Controle -->
-    <div id="control-panel">
-        <div id="log-box">
-            <p><strong>Batalha iniciada!</strong> Escolha uma ação para Ysma.</p>
-        </div>
-        <div id="action-buttons">
-            <button onclick="usarHabilidade('Atacar', 15, 'Físico')">Acerto Perfurante</button>
-            <button onclick="usarHabilidade('Bola de Fogo', 45, 'Fogo')">Bola de Fogo</button>
-            <button onclick="usarHabilidade('Raio de Gelo', 10, 'Gelo')">Raio de Gelo</button>
-            <button onclick="usarHabilidade('Explosão Prisma', 50, 'Mágico')">Quebra de Limites</button>
-        </div>
+    <!-- Log de Combate -->
+    <div id="log-box">
+        <p>> Batalha iniciada! O inimigo é do tipo Planta.</p>
+    </div>
+
+    <!-- Botões de Ação -->
+    <div class="grid-buttons">
+        <button onclick="usarAtaque('Acerto Perfurante', 15, 'Físico')">Acerto Perfurante (Físico)</button>
+        <button onclick="usarAtaque('Bola de Fogo', 30, 'Fogo')">Bola de Fogo (Fogo 🔥)</button>
+        <button onclick="usarAtaque('Raio de Gelo', 20, 'Gelo')">Raio de Gelo (Gelo ❄️)</button>
+        <button id="btn-limit" disabled onclick="usarLimitBreak()">QUEBRA DE LIMITES (0%)</button>
     </div>
 </div>
 
 <script>
-    let enemyMaxHp = 150;
-    let enemyCurrentHp = 150;
+    let enemyHpMax = 120, enemyHp = 120, enemyElement = 'Planta';
+    let limitValue = 0; // 0 a 100
 
-    function log(mensagem) {
-        const logBox = document.getElementById('log-box');
-        logBox.innerHTML += `<p style="margin-bottom: 4px;">> ${mensagem}</p>`;
-        logBox.scrollTop = logBox.scrollHeight;
+    // Tabela de Vantagens Simples
+    const fraquezas = {
+        'Planta': 'Fogo',
+        'Água': 'Eletricidade',
+        'Fogo': 'Água'
+    };
+
+    function log(msg) {
+        const box = document.getElementById('log-box');
+        box.innerHTML += `<p style="margin-bottom:3px;">> ${msg}</p>`;
+        box.scrollTop = box.scrollHeight;
     }
 
-    function usarHabilidade(nome, dano, elemento) {
-        const ysma = document.getElementById('ysma-character');
+    function ganhaLimite(qtd) {
+        limitValue = Math.min(100, limitValue + qtd);
+        const limitBar = document.getElementById('ysma-limit');
+        const limitBtn = document.getElementById('btn-limit');
         
-        // Animação de pulo de papel
-        ysma.classList.add('attacking');
-        setTimeout(() => ysma.classList.remove('attacking'), 200);
-
-        // Aplicação do Dano
-        enemyCurrentHp = Math.max(0, enemyCurrentHp - dano);
-        const porcentagemHp = (enemyCurrentHp / enemyMaxHp) * 100;
-        document.getElementById('enemy-hp').style.width = porcentagemHp + '%';
-
-        log(`<strong>Ysma</strong> usou <span>${nome}</span>! Causou <strong>${dano}</strong> de dano (${elemento}).`);
-
-        if (enemyCurrentHp === 0) {
-            log(`<span style="color: red;">O Inimigo de Teste foi derrotado!</span>`);
+        limitBar.style.width = limitValue + '%';
+        
+        if (limitValue >= 100) {
+            limitBtn.disabled = false;
+            limitBtn.classList.add('ready');
+            limitBtn.innerText = '⚡ QUEBRA DE LIMITES PRONTA! ⚡';
+        } else {
+            limitBtn.innerText = `QUEBRA DE LIMITES (${limitValue}%)`;
         }
+    }
+
+    function usarAtaque(nome, danoBase, elemento) {
+        let multiplicador = 1.0;
+        let msgEfeito = "";
+
+        // Checagem de Tipo
+        if (fraquezas[enemyElement] === elemento) {
+            multiplicador = 1.5;
+            msgEfeito = " <span style='color:red; font-weight:bold;'>[SUPER EFETIVO! +50%]</span>";
+        }
+
+        let danoFinal = Math.floor(danoBase * multiplicador);
+        enemyHp = Math.max(0, enemyHp - danoFinal);
+
+        document.getElementById('enemy-hp').style.width = (enemyHp / enemyHpMax * 100) + '%';
+        
+        log(`Ysma usou <strong>${nome}</strong>! Caused <strong>${danoFinal}</strong> de dano.${msgEfeito}`);
+
+        // Aumenta a barra de Limite
+        ganhaLimite(25);
+
+        if (enemyHp === 0) {
+            log("<strong style='color:green;'>O Golem de Planta foi destruído!</strong>");
+        }
+    }
+
+    function usarLimitBreak() {
+        if (limitValue < 100) return;
+
+        let danoFinal = 80; // Dano massivo
+        enemyHp = Math.max(0, enemyHp - danoFinal);
+        document.getElementById('enemy-hp').style.width = (enemyHp / enemyHpMax * 100) + '%';
+
+        log(`<strong style='color:purple;'>✨ Ysma ativou a QUEBRA DE LIMITES: Explosão Prisma! Causou ${danoFinal} de dano elemental puro!</strong>`);
+
+        // Reseta Limite
+        limitValue = 0;
+        document.getElementById('ysma-limit').style.width = '0%';
+        const limitBtn = document.getElementById('btn-limit');
+        limitBtn.disabled = true;
+        limitBtn.classList.remove('ready');
+        limitBtn.innerText = 'QUEBRA DE LIMITES (0%)';
     }
 </script>
 
