@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>3v3 Paper RPG - Ysma Oficial</title>
+    <title>3v3 Paper RPG - Ysma & Seleção de Aliados</title>
     <style>
         * { box-sizing: border-box; margin: 0; padding: 0; user-select: none; }
         body { background: #1a1a1a; font-family: 'Courier New', Courier, monospace; color: #333; display: flex; justify-content: center; align-items: center; min-height: 100vh; }
@@ -14,16 +14,15 @@
             background-size: 20px 20px; border: 5px solid #5c4033; border-radius: 12px; padding: 12px; display: flex; flex-direction: column; gap: 10px;
         }
 
-        /* Arena PvP em Triângulo Real */
+        /* Arena PvP em Triângulo */
         .field { display: flex; justify-content: space-between; background: rgba(0,0,0,0.05); border: 2px dashed #8b5a2b; border-radius: 8px; padding: 10px; height: 210px; position: relative; }
         .team-side { width: 48%; height: 100%; position: relative; }
         
-        /* Posições do Triângulo - Time do Jogador */
+        /* Posições */
         .ally-side .pos-back-top { position: absolute; left: 5%; top: 5%; }
         .ally-side .pos-front { position: absolute; left: 55%; top: 35%; }
         .ally-side .pos-back-bottom { position: absolute; left: 5%; bottom: 5%; }
 
-        /* Posições do Triângulo - Time Inimigo */
         .enemy-side .pos-back-top { position: absolute; right: 5%; top: 5%; }
         .enemy-side .pos-front { position: absolute; right: 55%; top: 35%; }
         .enemy-side .pos-back-bottom { position: absolute; right: 5%; bottom: 5%; }
@@ -33,15 +32,25 @@
             width: 85px; background: #fff8dc; border: 2px solid #5c4033; border-radius: 6px; padding: 5px; text-align: center;
             font-size: 10px; cursor: pointer; transition: transform 0.2s, box-shadow 0.2s; position: relative;
         }
+        
+        /* Destaque para Alvo Inimigo */
         .unit-card.selected-target { border: 3px solid #d32f2f; box-shadow: 0 0 10px #d32f2f; transform: scale(1.08); }
+        
+        /* Destaque DOURADO para o Aliado Ativo no Turno */
+        .unit-card.active-attacker { border: 3px solid #f39c12; box-shadow: 0 0 12px #f1c40f; transform: scale(1.08); background: #fffdf0; }
+        
         .unit-card.dead { opacity: 0.3; filter: grayscale(100%); cursor: not-allowed; }
 
-        /* Cursor de Alvo */
-        .target-cursor {
+        /* Cursores Indicadores */
+        .target-cursor, .attacker-cursor {
             position: absolute; top: -18px; left: 50%; transform: translateX(-50%);
-            color: #d32f2f; font-size: 14px; font-weight: bold; display: none; animation: bounce 0.5s infinite alternate;
+            font-size: 11px; font-weight: bold; display: none; animation: bounce 0.5s infinite alternate;
         }
+        .target-cursor { color: #d32f2f; }
+        .attacker-cursor { color: #d35400; }
+
         .selected-target .target-cursor { display: block; }
+        .active-attacker .attacker-cursor { display: block; }
 
         @keyframes bounce { from { top: -18px; } to { top: -24px; } }
 
@@ -51,8 +60,12 @@
         .fill-limit { height: 100%; background: #ffca28; width: 0%; transition: width 0.3s; }
 
         #status-header { text-align: center; font-weight: bold; font-size: 14px; color: #5c4033; }
-        #log-box { background: #fff; border: 2px solid #5c4033; height: 85px; padding: 6px; font-size: 11px; overflow-y: auto; border-radius: 4px; }
+        #log-box { background: #fff; border: 2px solid #5c4033; height: 80px; padding: 6px; font-size: 11px; overflow-y: auto; border-radius: 4px; }
         
+        /* Seletor de Aliado Ativo */
+        .attacker-selector { display: flex; justify-content: space-around; background: #e8dcc4; padding: 4px; border-radius: 4px; border: 1px solid #8b5a2b; }
+        .attacker-selector label { font-size: 11px; font-weight: bold; cursor: pointer; }
+
         .action-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 6px; }
         button { background: #fff8dc; border: 2px solid #5c4033; padding: 8px 4px; font-weight: bold; font-size: 10px; cursor: pointer; border-radius: 4px; }
         button:disabled { opacity: 0.5; background: #ccc; cursor: not-allowed; }
@@ -63,24 +76,27 @@
 <body>
 
 <div id="game-container">
-    <div id="status-header">SEU TURNO</div>
+    <div id="status-header">SEU TURNO - ESCOLHA O ATACANTE</div>
 
     <!-- Arena 3v3 -->
     <div class="field">
         <!-- Time do Jogador -->
         <div class="team-side ally-side">
-            <div id="unit-p0" class="unit-card pos-back-top">
-                <div id="name-p0">P1</div>
+            <div id="unit-p0" class="unit-card pos-back-top" onclick="selecionarAtacante('p0')">
+                <div class="attacker-cursor">★ TURNO</div>
+                <div id="name-p0">Ysma 1</div>
                 <div class="bar-bg"><div id="hp-p0" class="fill-hp"></div></div>
                 <div class="bar-bg"><div id="limit-p0" class="fill-limit"></div></div>
             </div>
-            <div id="unit-p1" class="unit-card pos-front">
-                <div id="name-p1">P2 (Vanguarda)</div>
+            <div id="unit-p1" class="unit-card pos-front" onclick="selecionarAtacante('p1')">
+                <div class="attacker-cursor">★ TURNO</div>
+                <div id="name-p1">Ysma 2</div>
                 <div class="bar-bg"><div id="hp-p1" class="fill-hp"></div></div>
                 <div class="bar-bg"><div id="limit-p1" class="fill-limit"></div></div>
             </div>
-            <div id="unit-p2" class="unit-card pos-back-bottom">
-                <div id="name-p2">P3</div>
+            <div id="unit-p2" class="unit-card pos-back-bottom" onclick="selecionarAtacante('p2')">
+                <div class="attacker-cursor">★ TURNO</div>
+                <div id="name-p2">Ysma 3</div>
                 <div class="bar-bg"><div id="hp-p2" class="fill-hp"></div></div>
                 <div class="bar-bg"><div id="limit-p2" class="fill-limit"></div></div>
             </div>
@@ -96,7 +112,7 @@
             </div>
             <div id="unit-e1" class="unit-card pos-front" onclick="selecionarAlvoInimigo('e1')">
                 <div class="target-cursor">▼ ALVO</div>
-                <div id="name-e1">E2 (Vanguarda)</div>
+                <div id="name-e1">E2</div>
                 <div class="bar-bg"><div id="hp-e1" class="fill-hp"></div></div>
                 <div class="bar-bg"><div id="limit-e1" class="fill-limit"></div></div>
             </div>
@@ -109,10 +125,18 @@
         </div>
     </div>
 
-    <!-- Log de Ações -->
-    <div id="log-box">> Escolha um alvo no time inimigo e escolha um ataque da Ysma!</div>
+    <!-- Barra de Troca Rápida de Atacante -->
+    <div class="attacker-selector">
+        <span style="font-size: 11px; font-weight: bold;">Atacando com:</span>
+        <label><input type="radio" name="atq-select" value="p0" onclick="selecionarAtacante('p0')"> Ysma 1</label>
+        <label><input type="radio" name="atq-select" value="p1" onclick="selecionarAtacante('p1')" checked> Ysma 2</label>
+        <label><input type="radio" name="atq-select" value="p2" onclick="selecionarAtacante('p2')"> Ysma 3</label>
+    </div>
 
-    <!-- Painel de Ações (4 Botões Normais + Limit) -->
+    <!-- Log de Ações -->
+    <div id="log-box">> Clique no seu personagem para escolher quem vai agir e selecione a habilidade!</div>
+
+    <!-- Painel de Ações da Ysma Ativa -->
     <div class="action-grid">
         <button id="btn-atq1" onclick="executarAcaoJogador(0)">Acerto Perfurante</button>
         <button id="btn-atq2" onclick="executarAcaoJogador(1)">Bola de Fogo</button>
@@ -123,7 +147,6 @@
 </div>
 
 <script>
-    // 1. BANCO DE DADOS COM FICHA OFICIAL DA YSMA
     const BANCO_DE_DADOS_PERSONAGENS = {
         "Ysma": {
             hpMax: 90, danoFisico: 15, elementoBase: "Mágico", fraqueza: "Purificação", imunidade: "Fogo",
@@ -144,38 +167,47 @@
         }
     };
 
-    // 2. ESTADO DA BATALHA
     let unidades = {
-        'p0': criarInstancia("Ysma", "p0"),
-        'p1': criarInstancia("Ysma", "p1"),
-        'p2': criarInstancia("Ysma", "p2"),
-        'e0': criarInstancia("InimigoPadrao", "e0"),
-        'e1': criarInstancia("InimigoPadrao", "e1"),
-        'e2': criarInstancia("InimigoPadrao", "e2")
+        'p0': criarInstancia("Ysma", "p0", "Ysma Topo"),
+        'p1': criarInstancia("Ysma", "p1", "Ysma Frente"),
+        'p2': criarInstancia("Ysma", "p2", "Ysma Baixo"),
+        'e0': criarInstancia("InimigoPadrao", "e0", "Inimigo 1"),
+        'e1': criarInstancia("InimigoPadrao", "e1", "Inimigo 2"),
+        'e2': criarInstancia("InimigoPadrao", "e2", "Inimigo 3")
     };
 
-    let atacanteAtualId = 'p1'; // Vanguarda do Jogador
-    let alvoInimigoId = 'e1';   // Vanguarda Inimiga
+    let atacanteAtualId = 'p1'; // Padrão: Vanguarda
+    let alvoInimigoId = 'e1';
     let emTurnoInimigo = false;
 
-    function criarInstancia(nomeModelo, id) {
+    function criarInstancia(nomeModelo, id, apelido) {
         let base = BANCO_DE_DADOS_PERSONAGENS[nomeModelo];
         return {
-            id: id, nome: nomeModelo, hpMax: base.hpMax, hpAtual: base.hpMax,
+            id: id, nome: apelido || nomeModelo, hpMax: base.hpMax, hpAtual: base.hpMax,
             danoFisico: base.danoFisico, fraqueza: base.fraqueza, imunidade: base.imunidade,
             limite: 0, habilidades: JSON.parse(JSON.stringify(base.habilidades)),
             limitBreak: JSON.parse(JSON.stringify(base.limitBreak))
         };
     }
 
-    // 3. SELEÇÃO DE ALVO
+    // Seleção de quem do seu time vai atacar
+    function selecionarAtacante(id) {
+        if (emTurnoInimigo || unidades[id].hpAtual <= 0) return;
+        atacanteAtualId = id;
+        
+        // Atualiza a radio button
+        let radios = document.getElementsByName('atq-select');
+        radios.forEach(r => { if(r.value === id) r.checked = true; });
+
+        atualizarUI();
+    }
+
     function selecionarAlvoInimigo(id) {
         if (emTurnoInimigo || unidades[id].hpAtual <= 0) return;
         alvoInimigoId = id;
         atualizarUI();
     }
 
-    // 4. CÁLCULO DE COMBATE (Imunidade & Fraqueza)
     function calcularDano(atacante, defensor, habilidade) {
         if (habilidade.elemento === defensor.imunidade) {
             log(`<b style="color:blue;">IMUNE!</b> ${defensor.nome} não recebeu dano.`);
@@ -183,7 +215,7 @@
         }
         let danoFinal = habilidade.dano;
         if (habilidade.elemento === defensor.fraqueza) {
-            danoFinal += 30; // +30 por Fraqueza conforme a regra
+            danoFinal += 30;
             log(`<b style="color:red;">FRAQUEZA! (+30 Dano em ${defensor.nome})</b>`);
         }
         return danoFinal;
@@ -193,21 +225,19 @@
         unidade.limite = Math.min(100, unidade.limite + qtd);
     }
 
-    // 5. ATAQUE DO JOGADOR
     function executarAcaoJogador(indiceHab) {
         if (emTurnoInimigo) return;
 
         let atacante = unidades[atacanteAtualId];
         let defensor = unidades[alvoInimigoId];
 
-        if (!defensor || defensor.hpAtual <= 0) {
-            log("Escolha um inimigo vivo como alvo!");
+        if (atacante.hpAtual <= 0) {
+            log("O personagem selecionado está derrotado!");
             return;
         }
 
         let habilidade = (indiceHab === 'limit') ? atacante.limitBreak : atacante.habilidades[indiceHab];
 
-        // Se for o Limite (Ataque em área nos 3 inimigos)
         if (indiceHab === 'limit') {
             log(`🔥 <b>${atacante.nome}</b> usou <b style="color:#b78103;">${habilidade.nome}</b>!`);
             ['e0', 'e1', 'e2'].forEach(eId => {
@@ -220,7 +250,6 @@
             });
             atacante.limite = 0;
         } else {
-            // Ataque Normal direcionado
             let dano = calcularDano(atacante, defensor, habilidade);
             defensor.hpAtual = Math.max(0, defensor.hpAtual - dano);
 
@@ -238,13 +267,12 @@
         iniciarTurnoInimigo();
     }
 
-    // 6. TURNO DO INIMIGO
     function iniciarTurnoInimigo() {
         emTurnoInimigo = true;
         document.getElementById('status-header').innerText = 'TURNO INIMIGO...';
         document.getElementById('status-header').style.color = 'red';
         
-        // Reduz cooldowns da Ysma ao passar o turno
+        // Reduz cooldowns do atacante ativo
         unidades[atacanteAtualId].habilidades.forEach(h => {
             if (h.cdAtual > 0) h.cdAtual--;
         });
@@ -272,9 +300,17 @@
             document.getElementById('status-header').innerText = 'SEU TURNO';
             document.getElementById('status-header').style.color = '#5c4033';
             
+            garantirAtacanteValido();
             garantirAlvoValido();
             atualizarUI();
         }, 1200);
+    }
+
+    function garantirAtacanteValido() {
+        if (unidades[atacanteAtualId].hpAtual <= 0) {
+            let vivo = ['p1', 'p0', 'p2'].find(id => unidades[id].hpAtual > 0);
+            if (vivo) selecionarAtacante(vivo);
+        }
     }
 
     function garantirAlvoValido() {
@@ -312,7 +348,6 @@
         box.scrollTop = box.scrollHeight;
     }
 
-    // 7. INTERFACE VISUAL
     function atualizarUI() {
         for (let id in unidades) {
             let u = unidades[id];
@@ -322,18 +357,26 @@
             document.getElementById(`limit-${id}`).style.width = u.limite + '%';
 
             let card = document.getElementById(`unit-${id}`);
+            
+            // Limpa classes de estado
+            card.classList.remove('selected-target', 'active-attacker', 'dead');
+
             if (u.hpAtual <= 0) {
                 card.classList.add('dead');
             }
 
+            // Destaca Alvo
             if (id === alvoInimigoId && id.startsWith('e')) {
                 card.classList.add('selected-target');
-            } else {
-                card.classList.remove('selected-target');
+            }
+
+            // Destaca Atacante Ativo
+            if (id === atacanteAtualId && id.startsWith('p')) {
+                card.classList.add('active-attacker');
             }
         }
 
-        // Atualizar Botões de Ataque da Ysma
+        // Atualizar Botões de Ataque do Atacante Ativo
         let atq = unidades[atacanteAtualId];
         atq.habilidades.forEach((h, i) => {
             let btn = document.getElementById(`btn-atq${i+1}`);
