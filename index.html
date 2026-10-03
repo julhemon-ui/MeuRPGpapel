@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>3v3 Paper RPG - Ysma & Seleção de Aliados</title>
+    <title>3v3 Paper RPG - Ysma & Campos</title>
     <style>
         * { box-sizing: border-box; margin: 0; padding: 0; user-select: none; }
         body { background: #1a1a1a; font-family: 'Courier New', Courier, monospace; color: #333; display: flex; justify-content: center; align-items: center; min-height: 100vh; }
@@ -33,13 +33,11 @@
             font-size: 10px; cursor: pointer; transition: transform 0.2s, box-shadow 0.2s; position: relative;
         }
         
-        /* Destaque para Alvo Inimigo */
+        /* Destaques Visuais */
         .unit-card.selected-target { border: 3px solid #d32f2f; box-shadow: 0 0 10px #d32f2f; transform: scale(1.08); }
-        
-        /* Destaque DOURADO para o Aliado Ativo no Turno */
         .unit-card.active-attacker { border: 3px solid #f39c12; box-shadow: 0 0 12px #f1c40f; transform: scale(1.08); background: #fffdf0; }
-        
         .unit-card.dead { opacity: 0.3; filter: grayscale(100%); cursor: not-allowed; }
+        .unit-card.shielded { border-color: #27ae60; background: #e8f8f5; }
 
         /* Cursores Indicadores */
         .target-cursor, .attacker-cursor {
@@ -84,19 +82,19 @@
         <div class="team-side ally-side">
             <div id="unit-p0" class="unit-card pos-back-top" onclick="selecionarAtacante('p0')">
                 <div class="attacker-cursor">★ TURNO</div>
-                <div id="name-p0">Ysma 1</div>
+                <div id="name-p0">Ysma</div>
                 <div class="bar-bg"><div id="hp-p0" class="fill-hp"></div></div>
                 <div class="bar-bg"><div id="limit-p0" class="fill-limit"></div></div>
             </div>
             <div id="unit-p1" class="unit-card pos-front" onclick="selecionarAtacante('p1')">
                 <div class="attacker-cursor">★ TURNO</div>
-                <div id="name-p1">Ysma 2</div>
+                <div id="name-p1">Campos</div>
                 <div class="bar-bg"><div id="hp-p1" class="fill-hp"></div></div>
                 <div class="bar-bg"><div id="limit-p1" class="fill-limit"></div></div>
             </div>
             <div id="unit-p2" class="unit-card pos-back-bottom" onclick="selecionarAtacante('p2')">
                 <div class="attacker-cursor">★ TURNO</div>
-                <div id="name-p2">Ysma 3</div>
+                <div id="name-p2">Ysma 2</div>
                 <div class="bar-bg"><div id="hp-p2" class="fill-hp"></div></div>
                 <div class="bar-bg"><div id="limit-p2" class="fill-limit"></div></div>
             </div>
@@ -128,74 +126,84 @@
     <!-- Barra de Troca Rápida de Atacante -->
     <div class="attacker-selector">
         <span style="font-size: 11px; font-weight: bold;">Atacando com:</span>
-        <label><input type="radio" name="atq-select" value="p0" onclick="selecionarAtacante('p0')"> Ysma 1</label>
-        <label><input type="radio" name="atq-select" value="p1" onclick="selecionarAtacante('p1')" checked> Ysma 2</label>
-        <label><input type="radio" name="atq-select" value="p2" onclick="selecionarAtacante('p2')"> Ysma 3</label>
+        <label><input type="radio" name="atq-select" value="p0" onclick="selecionarAtacante('p0')"> Ysma</label>
+        <label><input type="radio" name="atq-select" value="p1" onclick="selecionarAtacante('p1')" checked> Campos</label>
+        <label><input type="radio" name="atq-select" value="p2" onclick="selecionarAtacante('p2')"> Ysma 2</label>
     </div>
 
     <!-- Log de Ações -->
-    <div id="log-box">> Clique no seu personagem para escolher quem vai agir e selecione a habilidade!</div>
+    <div id="log-box">> Selecione quem agirá no turno e escolha a habilidade!</div>
 
-    <!-- Painel de Ações da Ysma Ativa -->
+    <!-- Painel de Ações do Personagem Ativo -->
     <div class="action-grid">
-        <button id="btn-atq1" onclick="executarAcaoJogador(0)">Acerto Perfurante</button>
-        <button id="btn-atq2" onclick="executarAcaoJogador(1)">Bola de Fogo</button>
-        <button id="btn-atq3" onclick="executarAcaoJogador(2)">Raio de Gelo</button>
-        <button id="btn-atq4" onclick="executarAcaoJogador(3)">Furacão</button>
+        <button id="btn-atq1" onclick="executarAcaoJogador(0)">Atacar</button>
+        <button id="btn-atq2" onclick="executarAcaoJogador(1)">Habilidade 1</button>
+        <button id="btn-atq3" onclick="executarAcaoJogador(2)">Habilidade 2</button>
+        <button id="btn-atq4" onclick="executarAcaoJogador(3)">Habilidade 3</button>
         <button id="btn-limit" disabled onclick="executarAcaoJogador('limit')">QUEBRA DE LIMITES (0%)</button>
     </div>
 </div>
 
 <script>
+    // BANCO DE DADOS COM YSMA E CAMPOS
     const BANCO_DE_DADOS_PERSONAGENS = {
         "Ysma": {
             hpMax: 90, danoFisico: 15, elementoBase: "Mágico", fraqueza: "Purificação", imunidade: "Fogo",
             habilidades: [
-                { nome: "Acerto Perfurante", dano: 15, elemento: "Físico", cdMax: 0, cdAtual: 0 },
-                { nome: "Bola de Fogo", dano: 45, elemento: "Fogo", cdMax: 2, cdAtual: 0 },
-                { nome: "Raio de Gelo", dano: 10, elemento: "Gelo", cdMax: 4, cdAtual: 0 },
-                { nome: "Furacão", dano: 25, elemento: "Vento", cdMax: 4, cdAtual: 0 }
+                { nome: "Acerto Perfurante", dano: 15, elemento: "Físico", cdMax: 0, cdAtual: 0, tipo: "dano" },
+                { nome: "Bola de Fogo", dano: 45, elemento: "Fogo", cdMax: 2, cdAtual: 0, tipo: "dano" },
+                { nome: "Raio de Gelo", dano: 10, elemento: "Gelo", cdMax: 4, cdAtual: 0, tipo: "dano" },
+                { nome: "Furacão", dano: 25, elemento: "Vento", cdMax: 4, cdAtual: 0, tipo: "dano" }
             ],
-            limitBreak: { nome: "Explosão de Cristal Prisma", dano: 50, elemento: "Mágico" }
+            limitBreak: { nome: "Explosão de Cristal Prisma", dano: 50, elemento: "Mágico", tipo: "area" }
+        },
+        "Campos": {
+            hpMax: 200, danoFisico: 20, elementoBase: "Corrupção", fraqueza: "Purificação", imunidade: "Corrupção",
+            habilidades: [
+                { nome: "Garras Vorazes", dano: 20, elemento: "Físico", cdMax: 0, cdAtual: 0, tipo: "dano" },
+                { nome: "Surto Corrupto", dano: 40, elemento: "Corrupção", cdMax: 3, cdAtual: 0, tipo: "dano" },
+                { nome: "Simbiose", dano: 0, elemento: "Suporte", cdMax: 4, cdAtual: 0, tipo: "escudo" },
+                { nome: "Laceração", dano: 20, elemento: "Corrupção", cdMax: 3, cdAtual: 0, tipo: "dano" }
+            ],
+            limitBreak: { nome: "Banquete Simbiótico", dano: 60, elemento: "Corrupção", tipo: "life_steal" }
         },
         "InimigoPadrao": {
             hpMax: 80, danoFisico: 10, fraqueza: "Fogo", imunidade: "Nenhuma",
             habilidades: [
-                { nome: "Golpe Purificador", dano: 10, elemento: "Purificação", cdMax: 0, cdAtual: 0 }
+                { nome: "Golpe Purificador", dano: 10, elemento: "Purificação", cdMax: 0, cdAtual: 0, tipo: "dano" }
             ],
-            limitBreak: { nome: "Ataque Pesado", dano: 30, elemento: "Físico" }
+            limitBreak: { nome: "Ataque Pesado", dano: 30, elemento: "Físico", tipo: "dano" }
         }
     };
 
     let unidades = {
-        'p0': criarInstancia("Ysma", "p0", "Ysma Topo"),
-        'p1': criarInstancia("Ysma", "p1", "Ysma Frente"),
-        'p2': criarInstancia("Ysma", "p2", "Ysma Baixo"),
+        'p0': criarInstancia("Ysma", "p0", "Ysma"),
+        'p1': criarInstancia("Campos", "p1", "Campos"),
+        'p2': criarInstancia("Ysma", "p2", "Ysma 2"),
         'e0': criarInstancia("InimigoPadrao", "e0", "Inimigo 1"),
         'e1': criarInstancia("InimigoPadrao", "e1", "Inimigo 2"),
         'e2': criarInstancia("InimigoPadrao", "e2", "Inimigo 3")
     };
 
-    let atacanteAtualId = 'p1'; // Padrão: Vanguarda
+    let atacanteAtualId = 'p1'; // Campos como Vanguarda padrão
     let alvoInimigoId = 'e1';
     let emTurnoInimigo = false;
 
     function criarInstancia(nomeModelo, id, apelido) {
         let base = BANCO_DE_DADOS_PERSONAGENS[nomeModelo];
         return {
-            id: id, nome: apelido || nomeModelo, hpMax: base.hpMax, hpAtual: base.hpMax,
+            id: id, nome: apelido || nomeModelo, modelo: nomeModelo, hpMax: base.hpMax, hpAtual: base.hpMax,
             danoFisico: base.danoFisico, fraqueza: base.fraqueza, imunidade: base.imunidade,
-            limite: 0, habilidades: JSON.parse(JSON.stringify(base.habilidades)),
+            limite: 0, duracaoEscudo: 0,
+            habilidades: JSON.parse(JSON.stringify(base.habilidades)),
             limitBreak: JSON.parse(JSON.stringify(base.limitBreak))
         };
     }
 
-    // Seleção de quem do seu time vai atacar
     function selecionarAtacante(id) {
         if (emTurnoInimigo || unidades[id].hpAtual <= 0) return;
         atacanteAtualId = id;
         
-        // Atualiza a radio button
         let radios = document.getElementsByName('atq-select');
         radios.forEach(r => { if(r.value === id) r.checked = true; });
 
@@ -218,6 +226,13 @@
             danoFinal += 30;
             log(`<b style="color:red;">FRAQUEZA! (+30 Dano em ${defensor.nome})</b>`);
         }
+
+        // Aplica o escudo da Simbiose (-20 de dano recebido)
+        if (defensor.duracaoEscudo > 0) {
+            danoFinal = Math.max(0, danoFinal - 20);
+            log(`🛡️ <b>ESCUDO DE SIMBIOSE!</b> Dano reduzido em 20 em ${defensor.nome}.`);
+        }
+
         return danoFinal;
     }
 
@@ -238,7 +253,14 @@
 
         let habilidade = (indiceHab === 'limit') ? atacante.limitBreak : atacante.habilidades[indiceHab];
 
-        if (indiceHab === 'limit') {
+        // Habilidade de Suporte (Simbiose)
+        if (habilidade.tipo === 'escudo') {
+            atacante.duracaoEscudo = 2; // Concede redução por 2 turnos
+            log(`🛡️ <b>${atacante.nome}</b> usou <b>${habilidade.nome}</b> e ganhou um escudo (-20 de dano recebido por 2 turnos)!`);
+            carregarLimite(atacante, 20);
+        }
+        // Quebra de Limite da Ysma (Ataque em Área)
+        else if (indiceHab === 'limit' && atacante.modelo === "Ysma") {
             log(`🔥 <b>${atacante.nome}</b> usou <b style="color:#b78103;">${habilidade.nome}</b>!`);
             ['e0', 'e1', 'e2'].forEach(eId => {
                 let target = unidades[eId];
@@ -249,18 +271,38 @@
                 }
             });
             atacante.limite = 0;
-        } else {
+        } 
+        // Quebra de Limite do Campos (Banquete Simbiótico - Dano + Cura em Área)
+        else if (indiceHab === 'limit' && atacante.modelo === "Campos") {
+            let dano = calcularDano(atacante, defensor, habilidade);
+            defensor.hpAtual = Math.max(0, defensor.hpAtual - dano);
+            
+            let cura = Math.floor(dano * 0.30);
+            log(`🩸 <b>${atacante.nome}</b> usou <b style="color:#b78103;">${habilidade.nome}</b> causando ${dano} de dano em <b>${defensor.nome}</b>!`);
+            
+            ['p0', 'p1', 'p2'].forEach(pId => {
+                let aliado = unidades[pId];
+                if (aliado.hpAtual > 0) {
+                    aliado.hpAtual = Math.min(aliado.hpMax, aliado.hpAtual + cura);
+                    log(`  -> 💖 <b>${aliado.nome}</b> foi curado em ${cura} HP!`);
+                }
+            });
+            atacante.limite = 0;
+        }
+        // Ataques Padrão
+        else {
             let dano = calcularDano(atacante, defensor, habilidade);
             defensor.hpAtual = Math.max(0, defensor.hpAtual - dano);
 
             carregarLimite(atacante, 25);
             carregarLimite(defensor, 15);
 
-            if (habilidade.cdMax > 0) {
-                habilidade.cdAtual = habilidade.cdMax + 1;
-            }
-
             log(`<b>${atacante.nome}</b> usou <b>${habilidade.nome}</b> em <b>${defensor.nome}</b> causando ${dano} de dano!`);
+        }
+
+        // Aplica e consome o Cooldown da habilidade usada
+        if (indiceHab !== 'limit' && habilidade.cdMax > 0) {
+            habilidade.cdAtual = habilidade.cdMax + 1;
         }
 
         if (verificarVitoria()) return;
@@ -272,9 +314,13 @@
         document.getElementById('status-header').innerText = 'TURNO INIMIGO...';
         document.getElementById('status-header').style.color = 'red';
         
-        // Reduz cooldowns do atacante ativo
-        unidades[atacanteAtualId].habilidades.forEach(h => {
-            if (h.cdAtual > 0) h.cdAtual--;
+        // Reduz cooldowns e escudos dos aliados ao passar o turno
+        ['p0', 'p1', 'p2'].forEach(pId => {
+            let p = unidades[pId];
+            if (p.duracaoEscudo > 0) p.duracaoEscudo--;
+            p.habilidades.forEach(h => {
+                if (h.cdAtual > 0) h.cdAtual--;
+            });
         });
 
         atualizarUI();
@@ -357,49 +403,25 @@
             document.getElementById(`limit-${id}`).style.width = u.limite + '%';
 
             let card = document.getElementById(`unit-${id}`);
-            
-            // Limpa classes de estado
-            card.classList.remove('selected-target', 'active-attacker', 'dead');
+            card.classList.remove('selected-target', 'active-attacker', 'dead', 'shielded');
 
             if (u.hpAtual <= 0) {
                 card.classList.add('dead');
             }
-
-            // Destaca Alvo
+            if (u.duracaoEscudo > 0) {
+                card.classList.add('shielded');
+            }
             if (id === alvoInimigoId && id.startsWith('e')) {
                 card.classList.add('selected-target');
             }
-
-            // Destaca Atacante Ativo
             if (id === atacanteAtualId && id.startsWith('p')) {
                 card.classList.add('active-attacker');
             }
         }
 
-        // Atualizar Botões de Ataque do Atacante Ativo
+        // Atualizar Botões do Personagem Selecionado
         let atq = unidades[atacanteAtualId];
         atq.habilidades.forEach((h, i) => {
             let btn = document.getElementById(`btn-atq${i+1}`);
             if (btn) {
-                let textoCd = h.cdAtual > 0 ? ` (${h.cdAtual}T)` : '';
-                btn.innerText = `${h.nome}${textoCd}`;
-                btn.disabled = (h.cdAtual > 0 || emTurnoInimigo);
-            }
-        });
-
-        let btnLimit = document.getElementById('btn-limit');
-        btnLimit.innerText = `QUEBRA DE LIMITES (${atq.limite}%)`;
-        if (atq.limite >= 100 && !emTurnoInimigo) {
-            btnLimit.disabled = false;
-            btnLimit.classList.add('ready');
-        } else {
-            btnLimit.disabled = true;
-            btnLimit.classList.remove('ready');
-        }
-    }
-
-    atualizarUI();
-</script>
-
-</body>
-</html>
+                let textoCd = h.cdAtual > 0 ? ` (${h.cdA
