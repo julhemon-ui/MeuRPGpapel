@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>3v3 Paper RPG - Campos Ficha Oficial</title>
+    <title>3v3 Paper RPG - Teste de Balanceamento Espelho</title>
     <style>
         * { box-sizing: border-box; margin: 0; padding: 0; user-select: none; }
         body { background: #1a1a1a; font-family: 'Courier New', Courier, monospace; color: #333; display: flex; justify-content: center; align-items: center; min-height: 100vh; }
@@ -18,11 +18,12 @@
         .field { display: flex; justify-content: space-between; background: rgba(0,0,0,0.05); border: 2px dashed #8b5a2b; border-radius: 8px; padding: 10px; height: 210px; position: relative; }
         .team-side { width: 48%; height: 100%; position: relative; }
         
-        /* Posições */
+        /* Posições Aliadas */
         .ally-side .pos-back-top { position: absolute; left: 5%; top: 5%; }
         .ally-side .pos-front { position: absolute; left: 55%; top: 35%; }
         .ally-side .pos-back-bottom { position: absolute; left: 5%; bottom: 5%; }
 
+        /* Posições Inimigas */
         .enemy-side .pos-back-top { position: absolute; right: 5%; top: 5%; }
         .enemy-side .pos-front { position: absolute; right: 55%; top: 35%; }
         .enemy-side .pos-back-bottom { position: absolute; right: 5%; bottom: 5%; }
@@ -94,25 +95,25 @@
             </div>
         </div>
 
-        <!-- Time Inimigo -->
+        <!-- Time Inimigo (CÓPIA ESPELHO) -->
         <div class="team-side enemy-side">
             <div id="unit-e0" class="unit-card pos-back-top" onclick="selecionarAlvoInimigo('e0')">
                 <div class="target-cursor">▼ ALVO</div>
-                <div id="name-e0">E1</div>
+                <div id="name-e0">Ysma (Inimiga)</div>
                 <div class="bar-bg"><div id="hp-e0" class="fill-hp"></div></div>
                 <div class="bar-bg"><div id="limit-e0" class="fill-limit"></div></div>
                 <div id="status-e0" class="status-badge"></div>
             </div>
             <div id="unit-e1" class="unit-card pos-front" onclick="selecionarAlvoInimigo('e1')">
                 <div class="target-cursor">▼ ALVO</div>
-                <div id="name-e1">E2 (Vanguarda)</div>
+                <div id="name-e1">Campos (Inimigo)</div>
                 <div class="bar-bg"><div id="hp-e1" class="fill-hp"></div></div>
                 <div class="bar-bg"><div id="limit-e1" class="fill-limit"></div></div>
                 <div id="status-e1" class="status-badge"></div>
             </div>
             <div id="unit-e2" class="unit-card pos-back-bottom" onclick="selecionarAlvoInimigo('e2')">
                 <div class="target-cursor">▼ ALVO</div>
-                <div id="name-e2">E3</div>
+                <div id="name-e2">Ysma (Inimiga)</div>
                 <div class="bar-bg"><div id="hp-e2" class="fill-hp"></div></div>
                 <div class="bar-bg"><div id="limit-e2" class="fill-limit"></div></div>
                 <div id="status-e2" class="status-badge"></div>
@@ -121,7 +122,7 @@
     </div>
 
     <!-- Log de Ações -->
-    <div id="log-box">> Escolha seu personagem, selecione o alvo e realize uma ação!</div>
+    <div id="log-box">> TESTE DE BALANCEAMENTO: Time Inimigo é uma cópia exata do seu time!</div>
 
     <!-- Painel de Ações -->
     <div class="action-grid">
@@ -137,14 +138,14 @@
     // 1. BANCO DE DADOS
     const BANCO_DE_DADOS_PERSONAGENS = {
         "Ysma": {
-            hpMax: 90, danoFisico: 15, elementoBase: "Mágico", fraqueza: "Purificação", imunidade: "Fogo",
+            hpMax: 100, danoFisico: 15, elementoBase: "Mágico", fraqueza: "Purificação", imunidade: "Fogo",
             habilidades: [
-                { nome: "Acerto Perfurante", dano: 15, elemento: "Físico", cdMax: 0, cdAtual: 0 },
-                { nome: "Bola de Fogo", dano: 45, elemento: "Fogo", cdMax: 2, cdAtual: 0 },
-                { nome: "Raio de Gelo", dano: 10, elemento: "Gelo", cdMax: 4, cdAtual: 0 },
-                { nome: "Furacão", dano: 25, elemento: "Vento", cdMax: 4, cdAtual: 0 }
+                { nome: "Acerto Perfurante", dano: 15, elemento: "Físico", cdMax: 0, cdAtual: 0, tipo: "ataque" },
+                { nome: "Bola de Fogo", dano: 35, elemento: "Fogo", cdMax: 2, cdAtual: 0, tipo: "ataque", efeito: "queimadura", chanceEfeito: 10 },
+                { nome: "Raio de Gelo", dano: 10, elemento: "Gelo", cdMax: 4, cdAtual: 0, tipo: "ataque", efeito: "congelamento", chanceEfeito: 40 },
+                { nome: "Furacão", dano: 25, elemento: "Vento", cdMax: 4, cdAtual: 0, tipo: "ataque", efeito: "leve" }
             ],
-            limitBreak: { nome: "Explosão de Cristal Prisma", dano: 50, elemento: "Mágico" }
+            limitBreak: { nome: "Explosão de Cristal Prisma", dano: 50, elemento: "Mágico", tipo: "limit_padrao" }
         },
         "Campos": {
             hpMax: 200, danoFisico: 20, elementoBase: "Corrupção", fraqueza: "Nenhuma", imunidade: "Nenhuma",
@@ -155,24 +156,17 @@
                 { nome: "Laceração", dano: 20, elemento: "Corrupção", cdMax: 3, cdAtual: 0, tipo: "ataque", efeito: "sangramento" }
             ],
             limitBreak: { nome: "Banquete Simbiótico", dano: 60, elemento: "Corrupção", tipo: "limit_banquete" }
-        },
-        "InimigoPadrao": {
-            hpMax: 80, danoFisico: 10, fraqueza: "Fogo", imunidade: "Nenhuma",
-            habilidades: [
-                { nome: "Golpe Purificador", dano: 10, elemento: "Purificação", cdMax: 0, cdAtual: 0 }
-            ],
-            limitBreak: { nome: "Ataque Pesado", dano: 30, elemento: "Físico" }
         }
     };
 
-    // 2. ESTADO DA BATALHA
+    // 2. ESTADO DA BATALHA (ESPELHO EXACTO)
     let unidades = {
         'p0': criarInstancia("Ysma", "p0"),
         'p1': criarInstancia("Campos", "p1"),
         'p2': criarInstancia("Ysma", "p2"),
-        'e0': criarInstancia("InimigoPadrao", "e0"),
-        'e1': criarInstancia("InimigoPadrao", "e1"),
-        'e2': criarInstancia("InimigoPadrao", "e2")
+        'e0': criarInstancia("Ysma", "e0"),
+        'e1': criarInstancia("Campos", "e1"),
+        'e2': criarInstancia("Ysma", "e2")
     };
 
     let atacanteAtualId = 'p1'; 
@@ -187,8 +181,11 @@
             danoFisico: base.danoFisico, fraqueza: base.fraqueza, imunidade: base.imunidade,
             limite: 0, habilidades: JSON.parse(JSON.stringify(base.habilidades)),
             limitBreak: JSON.parse(JSON.stringify(base.limitBreak)),
-            escudoSimbiose: 0, // Turnos restantes do escudo de -20 de dano
-            sangramento: 0     // Turnos restantes do sangramento (-10 HP por turno)
+            escudoSimbiose: 0, 
+            sangramento: 0,
+            queimadura: 0,
+            congelado: false,
+            leve: 0
         };
     }
 
@@ -196,7 +193,6 @@
     function cliqueCardAliado(id) {
         if (emTurnoInimigo || unidades[id].hpAtual <= 0) return;
 
-        // Se estiver no modo de aplicação da habilidade Simbiose
         if (modoSelecaoSimbiose) {
             aplicarSimbioseNoAliado(id);
             return;
@@ -221,12 +217,18 @@
 
         let danoBase = habilidade.dano;
 
+        // Bônus Vento vs Leve
+        if (habilidade.elemento === "Vento" && defensor.leve > 0) {
+            danoBase += 20;
+            log(`💨 <b>BÔNUS LEVE!</b> (+20 Dano de Vento em ${defensor.nome})`);
+        }
+
         if (habilidade.elemento === defensor.fraqueza) {
             danoBase += 30;
             log(`<b style="color:red;">FRAQUEZA! (+30 Dano em ${defensor.nome})</b>`);
         }
 
-        // Aplicação do Escudo da Simbiose (-20 de dano recebido)
+        // Escudo Simbiose (-20 dano)
         if (defensor.escudoSimbiose > 0 && danoBase > 0) {
             danoBase = Math.max(0, danoBase - 20);
             log(`🛡️ <b>Simbiose</b> reduziu o dano em 20 no <b>${defensor.nome}</b>!`);
@@ -239,7 +241,14 @@
         unidade.limite = Math.min(100, unidade.limite + qtd);
     }
 
-    // 5. ATAQUE E HABILIDADES
+    function aplicarDanoPosAtaque(unidade) {
+        if (unidade.hpAtual > 0 && unidade.queimadura > 0) {
+            unidade.hpAtual = Math.max(0, unidade.hpAtual - 10);
+            log(`🔥 <b>${unidade.nome}</b> sofreu 10 de dano por Queimadura após agir!`);
+        }
+    }
+
+    // 5. ATAQUE DO JOGADOR
     function executarAcaoJogador(indiceHab) {
         if (emTurnoInimigo || modoSelecaoSimbiose) return;
 
@@ -251,12 +260,18 @@
             return;
         }
 
+        if (atacante.congelado) {
+            log(`❄ <b>${atacante.nome}</b> está congelado e não pode atacar neste turno!`);
+            atacante.congelado = false; 
+            iniciarTurnoInimigo();
+            return;
+        }
+
         let habilidade = (indiceHab === 'limit') ? atacante.limitBreak : atacante.habilidades[indiceHab];
 
-        // Habilidade: SIMBIOSE (Ativa modo de escolha do aliado)
         if (habilidade.tipo === 'buff_aliado') {
             modoSelecaoSimbiose = true;
-            log("🔵 <b>Simbiose:</b> Clique no card de um aliado (ou no próprio Campos) para aplicar o escudo de -20 de dano!");
+            log("🔵 <b>Simbiose:</b> Clique no card de um aliado para aplicar o escudo de -20 de dano!");
             atualizarUI();
             return;
         }
@@ -266,7 +281,6 @@
             return;
         }
 
-        // Habilidade: BANQUETE SIMBIÓTICO (Quebra de Limites)
         if (habilidade.tipo === 'limit_banquete') {
             let dano = calcularDano(atacante, defensor, habilidade);
             defensor.hpAtual = Math.max(0, defensor.hpAtual - dano);
@@ -284,25 +298,42 @@
             });
 
         } else {
-            // Ataques Normais / Laceração / Surtos
             let dano = calcularDano(atacante, defensor, habilidade);
             defensor.hpAtual = Math.max(0, defensor.hpAtual - dano);
 
-            carregarLimite(atacante, 25);
-            carregarLimite(defensor, 15);
-
-            if (habilidade.cdMax > 0) {
-                habilidade.cdAtual = habilidade.cdMax + 1;
+            if (indiceHab === 'limit') {
+                atacante.limite = 0;
+            } else {
+                carregarLimite(atacante, 25);
+                carregarLimite(defensor, 15);
+                if (habilidade.cdMax > 0) habilidade.cdAtual = habilidade.cdMax + 1;
             }
 
             log(`<b>${atacante.nome}</b> usou <b>${habilidade.nome}</b> em <b>${defensor.nome}</b> causando ${dano} de dano!`);
 
-            // Efeito de Sangramento (Laceração)
             if (habilidade.efeito === 'sangramento') {
-                defensor.sangramento = 3; // Dura 3 turnos de trocas
+                defensor.sangramento = 3;
                 log(`🩸 <b>${defensor.nome}</b> começou a sangrar! (-10 HP por turno)`);
             }
+            else if (habilidade.efeito === 'queimadura') {
+                if (Math.random() * 100 < habilidade.chanceEfeito) {
+                    defensor.queimadura = 2;
+                    log(`🔥 <b>${defensor.nome}</b> foi QUEIMADO por 2 turnos!`);
+                }
+            }
+            else if (habilidade.efeito === 'congelamento') {
+                if (Math.random() * 100 < habilidade.chanceEfeito) {
+                    defensor.congelado = true;
+                    log(`❄️ <b>${defensor.nome}</b> foi CONGELADO! (Perderá o próximo turno)`);
+                }
+            }
+            else if (habilidade.efeito === 'leve') {
+                defensor.leve = 2;
+                log(`🍃 <b>${defensor.nome}</b> ficou LEVE por 2 turnos! (+20 dano de Vento recebido)`);
+            }
         }
+
+        aplicarDanoPosAtaque(atacante);
 
         if (verificarVitoria()) return;
         iniciarTurnoInimigo();
@@ -311,54 +342,61 @@
     function aplicarSimbioseNoAliado(aliadoId) {
         let atacante = unidades[atacanteAtualId];
         let aliadoTarget = unidades[aliadoId];
-        let hab = atacante.habilidades[2]; // Simbiose
+        let hab = atacante.habilidades[2];
 
-        aliadoTarget.escudoSimbiose = 2; // Dura 2 turnos
+        aliadoTarget.escudoSimbiose = 2;
         hab.cdAtual = hab.cdMax + 1;
         carregarLimite(atacante, 15);
 
-        log(`🛡️ <b>${atacante.nome}</b> aplicou <b>Simbiose</b> em <b>${aliadoTarget.nome}</b>! (-20 de dano pelos próximos 2 turnos)`);
+        log(`🛡 <b>${atacante.nome}</b> aplicou <b>Simbiose</b> em <b>${aliadoTarget.nome}</b>! (-20 de dano pelos próximos 2 turnos)`);
 
         modoSelecaoSimbiose = false;
+        aplicarDanoPosAtaque(atacante);
+
         if (verificarVitoria()) return;
         iniciarTurnoInimigo();
     }
 
-    // 6. PROCESSAR EFEITOS DE TURNO
+    // 6. PROCESSAR STATUS NO INÍCIO/FIM DO TURNO
     function processarEfeitosStatus() {
         for (let id in unidades) {
             let u = unidades[id];
             if (u.hpAtual <= 0) continue;
 
-            // Sangramento (-10 HP a cada mudança de turno)
             if (u.sangramento > 0) {
                 u.hpAtual = Math.max(0, u.hpAtual - 10);
                 u.sangramento--;
-                log(`🩸 <b>${u.nome}</b> sofreu 10 de dano por Sangramento!`);
+                log(`🩸 <b>${u.nome} (${id.startsWith('p')?'Aliado':'Inimigo'})</b> sofreu 10 de dano por Sangramento!`);
             }
 
-            // Reduzir contagem do Escudo da Simbiose
+            if (u.queimadura > 0) {
+                u.queimadura--;
+                if (u.queimadura === 0) log(`🔥 A queimadura de <b>${u.nome}</b> passou.`);
+            }
+
+            if (u.leve > 0) {
+                u.leve--;
+                if (u.leve === 0) log(`🍃 O status Leve em <b>${u.nome}</b> expirou.`);
+            }
+
             if (u.escudoSimbiose > 0) {
                 u.escudoSimbiose--;
-                if (u.escudoSimbiose === 0) {
-                    log(`🛡️ O escudo da Simbiose em <b>${u.nome}</b> expirou.`);
-                }
+                if (u.escudoSimbiose === 0) log(`🛡️ O escudo da Simbiose em <b>${u.nome}</b> expirou.`);
             }
         }
     }
 
-    // 7. TURNO DO INIMIGO
+    // 7. IA INTELIGENTE DO TIME INIMIGO (ESPELHO)
     function iniciarTurnoInimigo() {
         emTurnoInimigo = true;
         document.getElementById('status-header').innerText = 'TURNO INIMIGO...';
         document.getElementById('status-header').style.color = 'red';
         
-        // Reduz cooldowns do atacante atual
+        // Reduz cooldowns do jogador
         unidades[atacanteAtualId].habilidades.forEach(h => {
             if (h.cdAtual > 0) h.cdAtual--;
         });
 
-        // Aplica o sangramento/escudos na mudança de turno
         processarEfeitosStatus();
         atualizarUI();
 
@@ -369,15 +407,79 @@
             let aliadosVivos = ['p0', 'p1', 'p2'].filter(id => unidades[id].hpAtual > 0);
 
             if (inimigosVivos.length > 0 && aliadosVivos.length > 0) {
+                // Seleciona um atracante inimigo aleatório
                 let idInimigo = inimigosVivos[Math.floor(Math.random() * inimigosVivos.length)];
                 let atacanteInimigo = unidades[idInimigo];
-                let alvoAliado = unidades[aliadosVivos[Math.floor(Math.random() * aliadosVivos.length)]];
-                let habInimiga = atacanteInimigo.habilidades[0];
 
-                let dano = calcularDano(atacanteInimigo, alvoAliado, habInimiga);
-                alvoAliado.hpAtual = Math.max(0, alvoAliado.hpAtual - dano);
+                // Reduz cooldowns do inimigo que vai agir
+                atacanteInimigo.habilidades.forEach(h => { if(h.cdAtual > 0) h.cdAtual--; });
 
-                log(`👹 <b>${atacanteInimigo.nome}</b> atacou <b>${alvoAliado.nome}</b> com <b>${habInimiga.nome}</b> causando ${dano} de dano!`);
+                if (atacanteInimigo.congelado) {
+                    log(`❄ <b>${atacanteInimigo.nome} (Inimigo)</b> está CONGELADO e perdeu a vez!`);
+                    atacanteInimigo.congelado = false;
+                } else {
+                    let alvoAliadoId = aliadosVivos[Math.floor(Math.random() * aliadosVivos.length)];
+                    let alvoAliado = unidades[alvoAliadoId];
+
+                    // Decisão da IA: Limit Break > Habilidade disponível > Ataque Básico
+                    if (atacanteInimigo.limite >= 100) {
+                        let hab = atacanteInimigo.limitBreak;
+                        if (hab.tipo === 'limit_banquete') {
+                            let dano = calcularDano(atacanteInimigo, alvoAliado, hab);
+                            alvoAliado.hpAtual = Math.max(0, alvoAliado.hpAtual - dano);
+                            atacanteInimigo.limite = 0;
+                            let cura = Math.round(dano * 0.30);
+                            log(`💥 <b>${atacanteInimigo.nome} (Inimigo)</b> usou Banquete Simbiótico causando ${dano} de dano!`);
+                            ['e0', 'e1', 'e2'].forEach(eId => {
+                                if (unidades[eId].hpAtual > 0) unidades[eId].hpAtual = Math.min(unidades[eId].hpMax, unidades[eId].hpAtual + cura);
+                            });
+                        } else {
+                            let dano = calcularDano(atacanteInimigo, alvoAliado, hab);
+                            alvoAliado.hpAtual = Math.max(0, alvoAliado.hpAtual - dano);
+                            atacanteInimigo.limite = 0;
+                            log(`💥 <b>${atacanteInimigo.nome} (Inimigo)</b> usou ${hab.nome} causando ${dano} de dano!`);
+                        }
+                    } else {
+                        // Escolhe entre habilidades prontas
+                        let habsDisponeis = atacanteInimigo.habilidades.filter(h => h.cdAtual === 0);
+                        let habEscolhida = habsDisponeis[Math.floor(Math.random() * habsDisponeis.length)];
+
+                        if (habEscolhida.tipo === 'buff_aliado') {
+                            // Aplica Simbiose no aliado com menos vida
+                            let aliadoPraBuffar = inimigosVivos.map(id => unidades[id]).sort((a,b) => a.hpAtual - b.hpAtual)[0];
+                            aliadoPraBuffar.escudoSimbiose = 2;
+                            habEscolhida.cdAtual = habEscolhida.cdMax + 1;
+                            carregarLimite(atacanteInimigo, 15);
+                            log(`🛡️ <b>${atacanteInimigo.nome} (Inimigo)</b> usou Simbiose em <b>${aliadoPraBuffar.nome}</b>!`);
+                        } else {
+                            let dano = calcularDano(atacanteInimigo, alvoAliado, habEscolhida);
+                            alvoAliado.hpAtual = Math.max(0, alvoAliado.hpAtual - dano);
+                            
+                            carregarLimite(atacanteInimigo, 25);
+                            carregarLimite(alvoAliado, 15);
+
+                            if (habEscolhida.cdMax > 0) habEscolhida.cdAtual = habEscolhida.cdMax + 1;
+
+                            log(`👹 <b>${atacanteInimigo.nome} (Inimigo)</b> usou <b>${habEscolhida.nome}</b> em <b>${alvoAliado.nome}</b> causando ${dano} de dano!`);
+
+                            // Aplica status do inimigo para o jogador
+                            if (habEscolhida.efeito === 'sangramento') {
+                                alvoAliado.sangramento = 3;
+                                log(`🩸 <b>${alvoAliado.nome}</b> começou a sangrar!`);
+                            } else if (habEscolhida.efeito === 'queimadura' && Math.random() * 100 < habEscolhida.chanceEfeito) {
+                                alvoAliado.queimadura = 2;
+                                log(`🔥 <b>${alvoAliado.nome}</b> foi QUEIMADO!`);
+                            } else if (habEscolhida.efeito === 'congelamento' && Math.random() * 100 < habEscolhida.chanceEfeito) {
+                                alvoAliado.congelado = true;
+                                log(`❄️ <b>${alvoAliado.nome}</b> foi CONGELADO!`);
+                            } else if (habEscolhida.efeito === 'leve') {
+                                alvoAliado.leve = 2;
+                                log(`🍃 <b>${alvoAliado.nome}</b> ficou LEVE!`);
+                            }
+                        }
+                    }
+                    aplicarDanoPosAtaque(atacanteInimigo);
+                }
             }
 
             if (verificarDerrota()) return;
@@ -439,15 +541,18 @@
         for (let id in unidades) {
             let u = unidades[id];
             
-            document.getElementById(`name-${id}`).innerText = u.nome;
+            let labelNome = u.nome + (id.startsWith('e') ? ' (Inimigo)' : '');
+            document.getElementById(`name-${id}`).innerText = labelNome;
             document.getElementById(`hp-${id}`).style.width = (u.hpAtual / u.hpMax * 100) + '%';
             document.getElementById(`limit-${id}`).style.width = u.limite + '%';
 
-            // Atualiza marcadores visuais de status
             let stBox = document.getElementById(`status-${id}`);
             let statusTxt = [];
             if (u.escudoSimbiose > 0) statusTxt.push('🛡️Escudo');
             if (u.sangramento > 0) statusTxt.push('🩸Sangria');
+            if (u.queimadura > 0) statusTxt.push('🔥Queima');
+            if (u.congelado) statusTxt.push('❄️Gelo');
+            if (u.leve > 0) statusTxt.push('🍃Leve');
             stBox.innerText = statusTxt.join(' ');
 
             let card = document.getElementById(`unit-${id}`);
@@ -458,18 +563,17 @@
             }
 
             if (modoSelecaoSimbiose && id.startsWith('p') && u.hpAtual > 0) {
-                card.classList.add('target-buff-mode'); // Destaque AZUL no time do jogador
+                card.classList.add('target-buff-mode');
             } else {
                 if (id === alvoInimigoId && id.startsWith('e')) {
                     card.classList.add('selected-target');
                 }
                 if (id === atacanteAtualId && id.startsWith('p')) {
-                    card.classList.add('selected-attacker'); // Borda DOURADA
+                    card.classList.add('selected-attacker');
                 }
             }
         }
 
-        // Atualizar Botões do Personagem Ativo
         let atq = unidades[atacanteAtualId];
         atq.habilidades.forEach((h, i) => {
             let btn = document.getElementById(`btn-atq${i+1}`);
