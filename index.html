@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>3v3 Paper RPG - Sistema de Seleção Original</title>
+    <title>3v3 Paper RPG - Sistema de Seleção Corrigido</title>
     <style>
         * { box-sizing: border-box; margin: 0; padding: 0; user-select: none; }
         body { background: #1a1a1a; font-family: 'Courier New', Courier, monospace; color: #333; display: flex; justify-content: center; align-items: center; min-height: 100vh; }
@@ -32,12 +32,12 @@
             width: 85px; background: #fff8dc; border: 2px solid #5c4033; border-radius: 6px; padding: 5px; text-align: center;
             font-size: 10px; position: relative; transition: all 0.2s;
         }
-        .unit-card.active-attacker { border: 3px solid #f1c40f; box-shadow: 0 0 8px #f1c40f; }
-        .unit-card.active-target { border: 3px solid #d32f2f; box-shadow: 0 0 8px #d32f2f; }
+        .unit-card.active-attacker { border: 3px solid #f1c40f !important; box-shadow: 0 0 10px #f1c40f; }
+        .unit-card.active-target { border: 3px solid #d32f2f !important; box-shadow: 0 0 10px #d32f2f; }
         .unit-card.dead { opacity: 0.3; filter: grayscale(100%); }
 
         /* Status Badge */
-        .status-badge { font-size: 8px; font-weight: bold; margin-top: 2px; }
+        .status-badge { font-size: 8px; font-weight: bold; margin-top: 2px; height: 12px; }
 
         /* Barras de Status */
         .bar-bg { width: 100%; background: #ddd; height: 8px; border: 1px solid #000; border-radius: 2px; margin-top: 2px; overflow: hidden; }
@@ -114,9 +114,9 @@
     </div>
 
     <!-- Log de Ações -->
-    <div id="log-box">> Dunnie entrou na batalha! Escolha quem vai agir e o alvo nos botões abaixo.</div>
+    <div id="log-box">> Batalha iniciada! Escolha quem vai agir e o alvo.</div>
 
-    <!-- Painel de Seleção Original -->
+    <!-- Painel de Seleção -->
     <div class="controls-section">
         <div class="selector-row">
             <span>Quem vai agir:</span>
@@ -127,17 +127,12 @@
             </div>
         </div>
 
-        <div class="selector-row" id="row-alvo">
+        <div class="selector-row">
             <span>Alvo do Ataque:</span>
-            <div class="btn-group" id="group-alvo-inimigo">
+            <div class="btn-group">
                 <button id="sel-e0" class="btn-select" onclick="selecionarAlvo('e0')">Dunnie (E)</button>
                 <button id="sel-e1" class="btn-select" onclick="selecionarAlvo('e1')">Campos (E)</button>
                 <button id="sel-e2" class="btn-select" onclick="selecionarAlvo('e2')">Ysma (E)</button>
-            </div>
-            <div class="btn-group" id="group-alvo-aliado" style="display:none;">
-                <button id="sel-target-p0" class="btn-select" onclick="selecionarAlvoAliado('p0')">Dunnie</button>
-                <button id="sel-target-p1" class="btn-select" onclick="selecionarAlvoAliado('p1')">Campos</button>
-                <button id="sel-target-p2" class="btn-select" onclick="selecionarAlvoAliado('p2')">Ysma</button>
             </div>
         </div>
     </div>
@@ -212,7 +207,7 @@
         };
     }
 
-    // 3. SELEÇÃO VIA BOTÕES ORIGINAIS
+    // 3. SELEÇÃO
     function selecionarAtacante(id) {
         if (emTurnoInimigo || unidades[id].hpAtual <= 0) return;
         atacanteAtualId = id;
@@ -294,17 +289,16 @@
             atacante.hpAtual = Math.min(atacante.hpMax, atacante.hpAtual + 30);
             habilidade.cdAtual = habilidade.cdMax + 1;
             carregarLimite(atacante, 15);
-            log(`🛡️️ <b>${atacante.nome}</b> usou <b>Preparo</b>! Curou 30 HP e ganhou escudo de -30 de dano.`);
+            log(`🛡 <b>${atacante.nome}</b> usou <b>Preparo</b>! Curou 30 HP e ganhou escudo de -30 de dano.`);
             aplicarDanoPosAtaque(atacante);
             if (verificarVitoria()) return;
             iniciarTurnoInimigo();
             return;
         }
 
-        // Campos: Simbiose (Aplica no próprio Campos ou no alvo aliado)
+        // Campos: Simbiose
         if (habilidade.tipo === 'buff_aliado') {
-            let aliadoTarget = unidades[atacanteAtualId]; 
-            aliadoTarget.escudoSimbiose = 2;
+            atacante.escudoSimbiose = 2;
             habilidade.cdAtual = habilidade.cdMax + 1;
             carregarLimite(atacante, 15);
             log(`🛡 <b>${atacante.nome}</b> ativou <b>Simbiose</b>! (-20 de dano pelos próximos 2 turnos)`);
@@ -413,5 +407,16 @@
         unidades[atacanteAtualId].habilidades.forEach(h => { if (h.cdAtual > 0) h.cdAtual--; });
 
         processarEfeitosStatus();
-      
-          
+        atualizarUI();
+
+        if (verificarVitoria() || verificarDerrota()) return;
+
+        setTimeout(() => {
+            let inimigosVivos = ['e0', 'e1', 'e2'].filter(id => unidades[id].hpAtual > 0);
+            let aliadosVivos = ['p0', 'p1', 'p2'].filter(id => unidades[id].hpAtual > 0);
+
+            if (inimigosVivos.length > 0 && aliadosVivos.length > 0) {
+                let idInimigo = inimigosVivos[Math.floor(Math.random() * inimigosVivos.length)];
+                let atacanteInimigo = unidades[idInimigo];
+
+                atacanteInimigo.habilidades.forEach(h => { if(h.cdAtual > 0) h.cdAtual--; 
