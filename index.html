@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>3v3 Paper RPG - Campos & Ysma</title>
+    <title>3v3 Paper RPG - Campos Ficha Oficial</title>
     <style>
         * { box-sizing: border-box; margin: 0; padding: 0; user-select: none; }
         body { background: #1a1a1a; font-family: 'Courier New', Courier, monospace; color: #333; display: flex; justify-content: center; align-items: center; min-height: 100vh; }
@@ -14,35 +14,39 @@
             background-size: 20px 20px; border: 5px solid #5c4033; border-radius: 12px; padding: 12px; display: flex; flex-direction: column; gap: 10px;
         }
 
-        /* Arena PvP em Triângulo Real */
+        /* Arena PvP */
         .field { display: flex; justify-content: space-between; background: rgba(0,0,0,0.05); border: 2px dashed #8b5a2b; border-radius: 8px; padding: 10px; height: 210px; position: relative; }
         .team-side { width: 48%; height: 100%; position: relative; }
         
-        /* Posições do Triângulo - Time do Jogador */
+        /* Posições */
         .ally-side .pos-back-top { position: absolute; left: 5%; top: 5%; }
         .ally-side .pos-front { position: absolute; left: 55%; top: 35%; }
         .ally-side .pos-back-bottom { position: absolute; left: 5%; bottom: 5%; }
 
-        /* Posições do Triângulo - Time Inimigo */
         .enemy-side .pos-back-top { position: absolute; right: 5%; top: 5%; }
         .enemy-side .pos-front { position: absolute; right: 55%; top: 35%; }
         .enemy-side .pos-back-bottom { position: absolute; right: 5%; bottom: 5%; }
 
-        /* Card de Unidade estilo Paper Cutout */
+        /* Card de Unidade */
         .unit-card {
             width: 85px; background: #fff8dc; border: 2px solid #5c4033; border-radius: 6px; padding: 5px; text-align: center;
             font-size: 10px; cursor: pointer; transition: transform 0.2s, box-shadow 0.2s; position: relative;
         }
         .unit-card.selected-target { border: 3px solid #d32f2f; box-shadow: 0 0 10px #d32f2f; transform: scale(1.08); }
         .unit-card.selected-attacker { border: 3px solid #f1c40f; box-shadow: 0 0 10px #f1c40f; transform: scale(1.08); }
+        .unit-card.target-buff-mode { border: 3px solid #2196f3; box-shadow: 0 0 10px #2196f3; transform: scale(1.08); }
         .unit-card.dead { opacity: 0.3; filter: grayscale(100%); cursor: not-allowed; }
 
-        /* Cursor de Alvo */
+        /* Cursores e Status Badge */
         .target-cursor {
             position: absolute; top: -18px; left: 50%; transform: translateX(-50%);
             color: #d32f2f; font-size: 14px; font-weight: bold; display: none; animation: bounce 0.5s infinite alternate;
         }
         .selected-target .target-cursor { display: block; }
+
+        .status-badge {
+            font-size: 8px; font-weight: bold; margin-top: 2px;
+        }
 
         @keyframes bounce { from { top: -18px; } to { top: -24px; } }
 
@@ -70,20 +74,23 @@
     <div class="field">
         <!-- Time do Jogador -->
         <div class="team-side ally-side">
-            <div id="unit-p0" class="unit-card pos-back-top" onclick="selecionarAtacanteJogador('p0')">
+            <div id="unit-p0" class="unit-card pos-back-top" onclick="cliqueCardAliado('p0')">
                 <div id="name-p0">Ysma</div>
                 <div class="bar-bg"><div id="hp-p0" class="fill-hp"></div></div>
                 <div class="bar-bg"><div id="limit-p0" class="fill-limit"></div></div>
+                <div id="status-p0" class="status-badge"></div>
             </div>
-            <div id="unit-p1" class="unit-card pos-front" onclick="selecionarAtacanteJogador('p1')">
+            <div id="unit-p1" class="unit-card pos-front" onclick="cliqueCardAliado('p1')">
                 <div id="name-p1">Campos</div>
                 <div class="bar-bg"><div id="hp-p1" class="fill-hp"></div></div>
                 <div class="bar-bg"><div id="limit-p1" class="fill-limit"></div></div>
+                <div id="status-p1" class="status-badge"></div>
             </div>
-            <div id="unit-p2" class="unit-card pos-back-bottom" onclick="selecionarAtacanteJogador('p2')">
+            <div id="unit-p2" class="unit-card pos-back-bottom" onclick="cliqueCardAliado('p2')">
                 <div id="name-p2">Ysma</div>
                 <div class="bar-bg"><div id="hp-p2" class="fill-hp"></div></div>
                 <div class="bar-bg"><div id="limit-p2" class="fill-limit"></div></div>
+                <div id="status-p2" class="status-badge"></div>
             </div>
         </div>
 
@@ -94,26 +101,29 @@
                 <div id="name-e0">E1</div>
                 <div class="bar-bg"><div id="hp-e0" class="fill-hp"></div></div>
                 <div class="bar-bg"><div id="limit-e0" class="fill-limit"></div></div>
+                <div id="status-e0" class="status-badge"></div>
             </div>
             <div id="unit-e1" class="unit-card pos-front" onclick="selecionarAlvoInimigo('e1')">
                 <div class="target-cursor">▼ ALVO</div>
                 <div id="name-e1">E2 (Vanguarda)</div>
                 <div class="bar-bg"><div id="hp-e1" class="fill-hp"></div></div>
                 <div class="bar-bg"><div id="limit-e1" class="fill-limit"></div></div>
+                <div id="status-e1" class="status-badge"></div>
             </div>
             <div id="unit-e2" class="unit-card pos-back-bottom" onclick="selecionarAlvoInimigo('e2')">
                 <div class="target-cursor">▼ ALVO</div>
                 <div id="name-e2">E3</div>
                 <div class="bar-bg"><div id="hp-e2" class="fill-hp"></div></div>
                 <div class="bar-bg"><div id="limit-e2" class="fill-limit"></div></div>
+                <div id="status-e2" class="status-badge"></div>
             </div>
         </div>
     </div>
 
     <!-- Log de Ações -->
-    <div id="log-box">> Clique no seu personagem para selecionar, escolha o alvo inimigo e ataque!</div>
+    <div id="log-box">> Escolha seu personagem, selecione o alvo e realize uma ação!</div>
 
-    <!-- Painel de Ações (4 Botões Normais + Limit) -->
+    <!-- Painel de Ações -->
     <div class="action-grid">
         <button id="btn-atq1" onclick="executarAcaoJogador(0)">Habilidade 1</button>
         <button id="btn-atq2" onclick="executarAcaoJogador(1)">Habilidade 2</button>
@@ -124,7 +134,7 @@
 </div>
 
 <script>
-    // 1. BANCO DE DADOS COM FICHA OFICIAL DA YSMA E CAMPOS
+    // 1. BANCO DE DADOS
     const BANCO_DE_DADOS_PERSONAGENS = {
         "Ysma": {
             hpMax: 90, danoFisico: 15, elementoBase: "Mágico", fraqueza: "Purificação", imunidade: "Fogo",
@@ -137,14 +147,14 @@
             limitBreak: { nome: "Explosão de Cristal Prisma", dano: 50, elemento: "Mágico" }
         },
         "Campos": {
-            hpMax: 110, danoFisico: 20, elementoBase: "Físico", fraqueza: "Sombra", imunidade: "Nenhuma",
+            hpMax: 200, danoFisico: 20, elementoBase: "Corrupção", fraqueza: "Nenhuma", imunidade: "Nenhuma",
             habilidades: [
-                { nome: "Golpe de Escudo", dano: 20, elemento: "Físico", cdMax: 0, cdAtual: 0 },
-                { nome: "Corte Pesado", dano: 35, elemento: "Físico", cdMax: 2, cdAtual: 0 },
-                { nome: "Pisotão de Terra", dano: 25, elemento: "Terra", cdMax: 3, cdAtual: 0 },
-                { nome: "Grito de Guerra", dano: 15, elemento: "Físico", cdMax: 3, cdAtual: 0 }
+                { nome: "Garras Vorazes", dano: 20, elemento: "Físico", cdMax: 0, cdAtual: 0, tipo: "ataque" },
+                { nome: "Surto Corrupto", dano: 40, elemento: "Corrupção", cdMax: 3, cdAtual: 0, tipo: "ataque" },
+                { nome: "Simbiose", dano: 0, elemento: "Suporte", cdMax: 4, cdAtual: 0, tipo: "buff_aliado" },
+                { nome: "Laceração", dano: 20, elemento: "Corrupção", cdMax: 3, cdAtual: 0, tipo: "ataque", efeito: "sangramento" }
             ],
-            limitBreak: { nome: "Impacto Devastador", dano: 55, elemento: "Físico" }
+            limitBreak: { nome: "Banquete Simbiótico", dano: 60, elemento: "Corrupção", tipo: "limit_banquete" }
         },
         "InimigoPadrao": {
             hpMax: 80, danoFisico: 10, fraqueza: "Fogo", imunidade: "Nenhuma",
@@ -165,9 +175,10 @@
         'e2': criarInstancia("InimigoPadrao", "e2")
     };
 
-    let atacanteAtualId = 'p1'; // Atacante Selecionado do Jogador
-    let alvoInimigoId = 'e1';   // Vanguarda Inimiga
+    let atacanteAtualId = 'p1'; 
+    let alvoInimigoId = 'e1';   
     let emTurnoInimigo = false;
+    let modoSelecaoSimbiose = false; 
 
     function criarInstancia(nomeModelo, id) {
         let base = BANCO_DE_DADOS_PERSONAGENS[nomeModelo];
@@ -175,50 +186,78 @@
             id: id, nome: nomeModelo, hpMax: base.hpMax, hpAtual: base.hpMax,
             danoFisico: base.danoFisico, fraqueza: base.fraqueza, imunidade: base.imunidade,
             limite: 0, habilidades: JSON.parse(JSON.stringify(base.habilidades)),
-            limitBreak: JSON.parse(JSON.stringify(base.limitBreak))
+            limitBreak: JSON.parse(JSON.stringify(base.limitBreak)),
+            escudoSimbiose: 0, // Turnos restantes do escudo de -20 de dano
+            sangramento: 0     // Turnos restantes do sangramento (-10 HP por turno)
         };
     }
 
-    // 3. SELEÇÃO DE ATACANTE E ALVO
-    function selecionarAtacanteJogador(id) {
+    // 3. SELEÇÃO DE PERSONAGENS
+    function cliqueCardAliado(id) {
         if (emTurnoInimigo || unidades[id].hpAtual <= 0) return;
+
+        // Se estiver no modo de aplicação da habilidade Simbiose
+        if (modoSelecaoSimbiose) {
+            aplicarSimbioseNoAliado(id);
+            return;
+        }
+
         atacanteAtualId = id;
         atualizarUI();
     }
 
     function selecionarAlvoInimigo(id) {
-        if (emTurnoInimigo || unidades[id].hpAtual <= 0) return;
+        if (emTurnoInimigo || unidades[id].hpAtual <= 0 || modoSelecaoSimbiose) return;
         alvoInimigoId = id;
         atualizarUI();
     }
 
-    // 4. CÁLCULO DE COMBATE (Imunidade & Fraqueza)
+    // 4. CÁLCULO DE COMBATE
     function calcularDano(atacante, defensor, habilidade) {
         if (habilidade.elemento === defensor.imunidade) {
             log(`<b style="color:blue;">IMUNE!</b> ${defensor.nome} não recebeu dano.`);
             return 0;
         }
-        let danoFinal = habilidade.dano;
+
+        let danoBase = habilidade.dano;
+
         if (habilidade.elemento === defensor.fraqueza) {
-            danoFinal += 30; // +30 por Fraqueza conforme a regra
+            danoBase += 30;
             log(`<b style="color:red;">FRAQUEZA! (+30 Dano em ${defensor.nome})</b>`);
         }
-        return danoFinal;
+
+        // Aplicação do Escudo da Simbiose (-20 de dano recebido)
+        if (defensor.escudoSimbiose > 0 && danoBase > 0) {
+            danoBase = Math.max(0, danoBase - 20);
+            log(`🛡️ <b>Simbiose</b> reduziu o dano em 20 no <b>${defensor.nome}</b>!`);
+        }
+
+        return danoBase;
     }
 
     function carregarLimite(unidade, qtd) {
         unidade.limite = Math.min(100, unidade.limite + qtd);
     }
 
-    // 5. ATAQUE DO JOGADOR
+    // 5. ATAQUE E HABILIDADES
     function executarAcaoJogador(indiceHab) {
-        if (emTurnoInimigo) return;
+        if (emTurnoInimigo || modoSelecaoSimbiose) return;
 
         let atacante = unidades[atacanteAtualId];
         let defensor = unidades[alvoInimigoId];
 
         if (atacante.hpAtual <= 0) {
-            log("Escolha um personagem vivo para atacar!");
+            log("Escolha um personagem vivo para agir!");
+            return;
+        }
+
+        let habilidade = (indiceHab === 'limit') ? atacante.limitBreak : atacante.habilidades[indiceHab];
+
+        // Habilidade: SIMBIOSE (Ativa modo de escolha do aliado)
+        if (habilidade.tipo === 'buff_aliado') {
+            modoSelecaoSimbiose = true;
+            log("🔵 <b>Simbiose:</b> Clique no card de um aliado (ou no próprio Campos) para aplicar o escudo de -20 de dano!");
+            atualizarUI();
             return;
         }
 
@@ -227,22 +266,25 @@
             return;
         }
 
-        let habilidade = (indiceHab === 'limit') ? atacante.limitBreak : atacante.habilidades[indiceHab];
+        // Habilidade: BANQUETE SIMBIÓTICO (Quebra de Limites)
+        if (habilidade.tipo === 'limit_banquete') {
+            let dano = calcularDano(atacante, defensor, habilidade);
+            defensor.hpAtual = Math.max(0, defensor.hpAtual - dano);
+            atacante.limite = 0;
 
-        // Se for o Limite (Ataque em área nos 3 inimigos)
-        if (indiceHab === 'limit') {
-            log(`🔥 <b>${atacante.nome}</b> usou <b style="color:#b78103;">${habilidade.nome}</b>!`);
-            ['e0', 'e1', 'e2'].forEach(eId => {
-                let target = unidades[eId];
-                if (target.hpAtual > 0) {
-                    let d = calcularDano(atacante, target, habilidade);
-                    target.hpAtual = Math.max(0, target.hpAtual - d);
-                    log(`  -> <b>${target.nome}</b> recebeu ${d} de dano!`);
+            let cura = Math.round(dano * 0.30);
+            log(`🔥 <b>${atacante.nome}</b> usou <b style="color:#b78103;">Banquete Simbiótico</b> causando ${dano} de dano em <b>${defensor.nome}</b>!`);
+            
+            ['p0', 'p1', 'p2'].forEach(pId => {
+                let aliado = unidades[pId];
+                if (aliado.hpAtual > 0) {
+                    aliado.hpAtual = Math.min(aliado.hpMax, aliado.hpAtual + cura);
+                    log(`  💚 <b>${aliado.nome}</b> foi curado em ${cura} HP!`);
                 }
             });
-            atacante.limite = 0;
+
         } else {
-            // Ataque Normal direcionado
+            // Ataques Normais / Laceração / Surtos
             let dano = calcularDano(atacante, defensor, habilidade);
             defensor.hpAtual = Math.max(0, defensor.hpAtual - dano);
 
@@ -254,24 +296,73 @@
             }
 
             log(`<b>${atacante.nome}</b> usou <b>${habilidade.nome}</b> em <b>${defensor.nome}</b> causando ${dano} de dano!`);
+
+            // Efeito de Sangramento (Laceração)
+            if (habilidade.efeito === 'sangramento') {
+                defensor.sangramento = 3; // Dura 3 turnos de trocas
+                log(`🩸 <b>${defensor.nome}</b> começou a sangrar! (-10 HP por turno)`);
+            }
         }
 
         if (verificarVitoria()) return;
         iniciarTurnoInimigo();
     }
 
-    // 6. TURNO DO INIMIGO
+    function aplicarSimbioseNoAliado(aliadoId) {
+        let atacante = unidades[atacanteAtualId];
+        let aliadoTarget = unidades[aliadoId];
+        let hab = atacante.habilidades[2]; // Simbiose
+
+        aliadoTarget.escudoSimbiose = 2; // Dura 2 turnos
+        hab.cdAtual = hab.cdMax + 1;
+        carregarLimite(atacante, 15);
+
+        log(`🛡️ <b>${atacante.nome}</b> aplicou <b>Simbiose</b> em <b>${aliadoTarget.nome}</b>! (-20 de dano pelos próximos 2 turnos)`);
+
+        modoSelecaoSimbiose = false;
+        if (verificarVitoria()) return;
+        iniciarTurnoInimigo();
+    }
+
+    // 6. PROCESSAR EFEITOS DE TURNO
+    function processarEfeitosStatus() {
+        for (let id in unidades) {
+            let u = unidades[id];
+            if (u.hpAtual <= 0) continue;
+
+            // Sangramento (-10 HP a cada mudança de turno)
+            if (u.sangramento > 0) {
+                u.hpAtual = Math.max(0, u.hpAtual - 10);
+                u.sangramento--;
+                log(`🩸 <b>${u.nome}</b> sofreu 10 de dano por Sangramento!`);
+            }
+
+            // Reduzir contagem do Escudo da Simbiose
+            if (u.escudoSimbiose > 0) {
+                u.escudoSimbiose--;
+                if (u.escudoSimbiose === 0) {
+                    log(`🛡️ O escudo da Simbiose em <b>${u.nome}</b> expirou.`);
+                }
+            }
+        }
+    }
+
+    // 7. TURNO DO INIMIGO
     function iniciarTurnoInimigo() {
         emTurnoInimigo = true;
         document.getElementById('status-header').innerText = 'TURNO INIMIGO...';
         document.getElementById('status-header').style.color = 'red';
         
-        // Reduz cooldowns do atacante atual ao passar o turno
+        // Reduz cooldowns do atacante atual
         unidades[atacanteAtualId].habilidades.forEach(h => {
             if (h.cdAtual > 0) h.cdAtual--;
         });
 
+        // Aplica o sangramento/escudos na mudança de turno
+        processarEfeitosStatus();
         atualizarUI();
+
+        if (verificarVitoria() || verificarDerrota()) return;
 
         setTimeout(() => {
             let inimigosVivos = ['e0', 'e1', 'e2'].filter(id => unidades[id].hpAtual > 0);
@@ -343,7 +434,7 @@
         box.scrollTop = box.scrollHeight;
     }
 
-    // 7. INTERFACE VISUAL
+    // 8. INTERFACE VISUAL
     function atualizarUI() {
         for (let id in unidades) {
             let u = unidades[id];
@@ -352,36 +443,46 @@
             document.getElementById(`hp-${id}`).style.width = (u.hpAtual / u.hpMax * 100) + '%';
             document.getElementById(`limit-${id}`).style.width = u.limite + '%';
 
+            // Atualiza marcadores visuais de status
+            let stBox = document.getElementById(`status-${id}`);
+            let statusTxt = [];
+            if (u.escudoSimbiose > 0) statusTxt.push('🛡️Escudo');
+            if (u.sangramento > 0) statusTxt.push('🩸Sangria');
+            stBox.innerText = statusTxt.join(' ');
+
             let card = document.getElementById(`unit-${id}`);
-            card.classList.remove('selected-target', 'selected-attacker', 'dead');
+            card.classList.remove('selected-target', 'selected-attacker', 'target-buff-mode', 'dead');
 
             if (u.hpAtual <= 0) {
                 card.classList.add('dead');
             }
 
-            if (id === alvoInimigoId && id.startsWith('e')) {
-                card.classList.add('selected-target');
-            }
-
-            if (id === atacanteAtualId && id.startsWith('p')) {
-                card.classList.add('selected-attacker');
+            if (modoSelecaoSimbiose && id.startsWith('p') && u.hpAtual > 0) {
+                card.classList.add('target-buff-mode'); // Destaque AZUL no time do jogador
+            } else {
+                if (id === alvoInimigoId && id.startsWith('e')) {
+                    card.classList.add('selected-target');
+                }
+                if (id === atacanteAtualId && id.startsWith('p')) {
+                    card.classList.add('selected-attacker'); // Borda DOURADA
+                }
             }
         }
 
-        // Atualizar Botões de Ataque com base no personagem do jogador ativo
+        // Atualizar Botões do Personagem Ativo
         let atq = unidades[atacanteAtualId];
         atq.habilidades.forEach((h, i) => {
             let btn = document.getElementById(`btn-atq${i+1}`);
             if (btn) {
                 let textoCd = h.cdAtual > 0 ? ` (${h.cdAtual}T)` : '';
                 btn.innerText = `${h.nome}${textoCd}`;
-                btn.disabled = (h.cdAtual > 0 || emTurnoInimigo);
+                btn.disabled = (h.cdAtual > 0 || emTurnoInimigo || modoSelecaoSimbiose);
             }
         });
 
         let btnLimit = document.getElementById('btn-limit');
         btnLimit.innerText = `QUEBRA DE LIMITES (${atq.limite}%)`;
-        if (atq.limite >= 100 && !emTurnoInimigo) {
+        if (atq.limite >= 100 && !emTurnoInimigo && !modoSelecaoSimbiose) {
             btnLimit.disabled = false;
             btnLimit.classList.add('ready');
         } else {
