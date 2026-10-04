@@ -3,45 +3,55 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>3v3 Paper RPG - Ysma & Campos</title>
+    <title>3v3 Paper RPG - Batalha de Heróis</title>
     <style>
         * { box-sizing: border-box; margin: 0; padding: 0; user-select: none; }
         body { background: #1a1a1a; font-family: 'Courier New', Courier, monospace; color: #333; display: flex; justify-content: center; align-items: center; min-height: 100vh; }
         
         #game-container {
-            width: 100%; max-width: 650px; background: #f4ecd8;
+            width: 100%; max-width: 680px; background: #f4ecd8;
             background-image: linear-gradient(#ccc 0.05em, transparent 0.05em), linear-gradient(90deg, #ccc 0.05em, transparent 0.05em);
             background-size: 20px 20px; border: 5px solid #5c4033; border-radius: 12px; padding: 12px; display: flex; flex-direction: column; gap: 10px;
         }
 
-        /* Arena PvP em Triângulo Real */
+        /* Arena PvP em Triângulo */
         .field { display: flex; justify-content: space-between; background: rgba(0,0,0,0.05); border: 2px dashed #8b5a2b; border-radius: 8px; padding: 10px; height: 210px; position: relative; }
         .team-side { width: 48%; height: 100%; position: relative; }
         
-        /* Posições do Triângulo - Time do Jogador */
+        /* Posições */
         .ally-side .pos-back-top { position: absolute; left: 5%; top: 5%; }
         .ally-side .pos-front { position: absolute; left: 55%; top: 35%; }
         .ally-side .pos-back-bottom { position: absolute; left: 5%; bottom: 5%; }
 
-        /* Posições do Triângulo - Time Inimigo */
         .enemy-side .pos-back-top { position: absolute; right: 5%; top: 5%; }
         .enemy-side .pos-front { position: absolute; right: 55%; top: 35%; }
         .enemy-side .pos-back-bottom { position: absolute; right: 5%; bottom: 5%; }
 
         /* Card de Unidade estilo Paper Cutout */
         .unit-card {
-            width: 85px; background: #fff8dc; border: 2px solid #5c4033; border-radius: 6px; padding: 5px; text-align: center;
+            width: 90px; background: #fff8dc; border: 2px solid #5c4033; border-radius: 6px; padding: 5px; text-align: center;
             font-size: 10px; cursor: pointer; transition: transform 0.2s, box-shadow 0.2s; position: relative;
         }
+        
+        /* Destaque para Alvo Inimigo ou Aliado Curado */
         .unit-card.selected-target { border: 3px solid #d32f2f; box-shadow: 0 0 10px #d32f2f; transform: scale(1.08); }
+        .unit-card.selected-ally-target { border: 3px solid #27ae60; box-shadow: 0 0 10px #27ae60; transform: scale(1.08); }
+        
+        /* Destaque DOURADO para o Aliado Ativo no Turno */
+        .unit-card.active-attacker { border: 3px solid #f39c12; box-shadow: 0 0 12px #f1c40f; transform: scale(1.08); background: #fffdf0; }
+        
         .unit-card.dead { opacity: 0.3; filter: grayscale(100%); cursor: not-allowed; }
 
-        /* Cursor de Alvo */
-        .target-cursor {
+        /* Cursores Indicadores */
+        .target-cursor, .attacker-cursor {
             position: absolute; top: -18px; left: 50%; transform: translateX(-50%);
-            color: #d32f2f; font-size: 14px; font-weight: bold; display: none; animation: bounce 0.5s infinite alternate;
+            font-size: 10px; font-weight: bold; display: none; animation: bounce 0.5s infinite alternate;
         }
+        .target-cursor { color: #d32f2f; }
+        .attacker-cursor { color: #d35400; }
+
         .selected-target .target-cursor { display: block; }
+        .active-attacker .attacker-cursor { display: block; }
 
         @keyframes bounce { from { top: -18px; } to { top: -24px; } }
 
@@ -53,6 +63,10 @@
         #status-header { text-align: center; font-weight: bold; font-size: 14px; color: #5c4033; }
         #log-box { background: #fff; border: 2px solid #5c4033; height: 85px; padding: 6px; font-size: 11px; overflow-y: auto; border-radius: 4px; }
         
+        /* Seletor de Aliado Ativo */
+        .attacker-selector { display: flex; justify-content: space-around; background: #e8dcc4; padding: 6px; border-radius: 4px; border: 1px solid #8b5a2b; align-items: center; }
+        .attacker-selector label { font-size: 11px; font-weight: bold; cursor: pointer; }
+
         .action-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 6px; }
         button { background: #fff8dc; border: 2px solid #5c4033; padding: 8px 4px; font-weight: bold; font-size: 10px; cursor: pointer; border-radius: 4px; }
         button:disabled { opacity: 0.5; background: #ccc; cursor: not-allowed; }
@@ -63,24 +77,27 @@
 <body>
 
 <div id="game-container">
-    <div id="status-header">SEU TURNO</div>
+    <div id="status-header">SEU TURNO - ESCOLHA O PERSONAGEM</div>
 
     <!-- Arena 3v3 -->
     <div class="field">
         <!-- Time do Jogador -->
         <div class="team-side ally-side">
-            <div id="unit-p0" class="unit-card pos-back-top">
-                <div id="name-p0">P1</div>
+            <div id="unit-p0" class="unit-card pos-back-top" onclick="clicarUnidade('p0')">
+                <div class="attacker-cursor">★ TURNO</div>
+                <div id="name-p0">Doctor</div>
                 <div class="bar-bg"><div id="hp-p0" class="fill-hp"></div></div>
                 <div class="bar-bg"><div id="limit-p0" class="fill-limit"></div></div>
             </div>
-            <div id="unit-p1" class="unit-card pos-front">
-                <div id="name-p1">P2 (Vanguarda)</div>
+            <div id="unit-p1" class="unit-card pos-front" onclick="clicarUnidade('p1')">
+                <div class="attacker-cursor">★ TURNO</div>
+                <div id="name-p1">Groxy</div>
                 <div class="bar-bg"><div id="hp-p1" class="fill-hp"></div></div>
                 <div class="bar-bg"><div id="limit-p1" class="fill-limit"></div></div>
             </div>
-            <div id="unit-p2" class="unit-card pos-back-bottom">
-                <div id="name-p2">P3</div>
+            <div id="unit-p2" class="unit-card pos-back-bottom" onclick="clicarUnidade('p2')">
+                <div class="attacker-cursor">★ TURNO</div>
+                <div id="name-p2">Night</div>
                 <div class="bar-bg"><div id="hp-p2" class="fill-hp"></div></div>
                 <div class="bar-bg"><div id="limit-p2" class="fill-limit"></div></div>
             </div>
@@ -88,104 +105,146 @@
 
         <!-- Time Inimigo -->
         <div class="team-side enemy-side">
-            <div id="unit-e0" class="unit-card pos-back-top" onclick="selecionarAlvoInimigo('e0')">
+            <div id="unit-e0" class="unit-card pos-back-top" onclick="clicarUnidade('e0')">
                 <div class="target-cursor">▼ ALVO</div>
-                <div id="name-e0">E1</div>
+                <div id="name-e0">Sombra A</div>
                 <div class="bar-bg"><div id="hp-e0" class="fill-hp"></div></div>
                 <div class="bar-bg"><div id="limit-e0" class="fill-limit"></div></div>
             </div>
-            <div id="unit-e1" class="unit-card pos-front" onclick="selecionarAlvoInimigo('e1')">
+            <div id="unit-e1" class="unit-card pos-front" onclick="clicarUnidade('e1')">
                 <div class="target-cursor">▼ ALVO</div>
-                <div id="name-e1">E2 (Vanguarda)</div>
+                <div id="name-e1">Mika (Chefe)</div>
                 <div class="bar-bg"><div id="hp-e1" class="fill-hp"></div></div>
                 <div class="bar-bg"><div id="limit-e1" class="fill-limit"></div></div>
             </div>
-            <div id="unit-e2" class="unit-card pos-back-bottom" onclick="selecionarAlvoInimigo('e2')">
+            <div id="unit-e2" class="unit-card pos-back-bottom" onclick="clicarUnidade('e2')">
                 <div class="target-cursor">▼ ALVO</div>
-                <div id="name-e2">E3</div>
+                <div id="name-e2">Sombra B</div>
                 <div class="bar-bg"><div id="hp-e2" class="fill-hp"></div></div>
                 <div class="bar-bg"><div id="limit-e2" class="fill-limit"></div></div>
             </div>
         </div>
     </div>
 
-    <!-- Log de Ações -->
-    <div id="log-box">> Escolha um alvo no time inimigo e escolha um ataque do seu personagem!</div>
+    <!-- Barra de Troca Rápida de Atacante -->
+    <div class="attacker-selector">
+        <span style="font-size: 11px; font-weight: bold;">Atuando com:</span>
+        <label><input type="radio" name="atq-select" value="p0" onclick="selecionarAtacante('p0')"> Doctor (Suporte)</label>
+        <label><input type="radio" name="atq-select" value="p1" onclick="selecionarAtacante('p1')" checked> Groxy (Tanque)</label>
+        <label><input type="radio" name="atq-select" value="p2" onclick="selecionarAtacante('p2')"> Night (DPS)</label>
+    </div>
 
-    <!-- Painel de Ações (4 Botões Normais + Limit) -->
+    <!-- Log de Ações -->
+    <div id="log-box">> Selecione quem vai agir, escolha seu alvo e ative uma habilidade!</div>
+
+    <!-- Painel de Ações do Personagem Selecionado -->
     <div class="action-grid">
-        <button id="btn-atq1" onclick="executarAcaoJogador(0)">Garras Vorazes</button>
-        <button id="btn-atq2" onclick="executarAcaoJogador(1)">Surto Corrupto</button>
-        <button id="btn-atq3" onclick="executarAcaoJogador(2)">Simbiose</button>
-        <button id="btn-atq4" onclick="executarAcaoJogador(3)">Laceração</button>
+        <button id="btn-atq1" onclick="executarAcaoJogador(0)">Habilidade 1</button>
+        <button id="btn-atq2" onclick="executarAcaoJogador(1)">Habilidade 2</button>
+        <button id="btn-atq3" onclick="executarAcaoJogador(2)">Habilidade 3</button>
+        <button id="btn-atq4" onclick="executarAcaoJogador(3)">Habilidade 4</button>
         <button id="btn-limit" disabled onclick="executarAcaoJogador('limit')">QUEBRA DE LIMITES (0%)</button>
     </div>
 </div>
 
 <script>
-    // 1. BANCO DE DADOS COM FICHA DA YSMA E FICHA DO CAMPOS
     const BANCO_DE_DADOS_PERSONAGENS = {
-        "Ysma": {
-            hpMax: 90, danoFisico: 15, elementoBase: "Mágico", fraqueza: "Purificação", imunidade: "Fogo",
+        "Groxy": {
+            hpMax: 130, danoFisico: 20, fraqueza: "Purificação", imunidade: "Fogo",
             habilidades: [
-                { nome: "Acerto Perfurante", dano: 15, elemento: "Físico", cdMax: 0, cdAtual: 0 },
-                { nome: "Bola de Fogo", dano: 45, elemento: "Fogo", cdMax: 2, cdAtual: 0 },
-                { nome: "Raio de Gelo", dano: 10, elemento: "Gelo", cdMax: 4, cdAtual: 0 },
-                { nome: "Furacão", dano: 25, elemento: "Vento", cdMax: 4, cdAtual: 0 }
+                { nome: "Investida Rochosa", dano: 20, elemento: "Físico", cdMax: 0, cdAtual: 0, tipo: "dano" },
+                { nome: "Impacto de Rocha", dano: 35, elemento: "Terra", cdMax: 2, cdAtual: 0, tipo: "dano" },
+                { nome: "Grito de Provocação", dano: 15, elemento: "Físico", cdMax: 3, cdAtual: 0, tipo: "dano" },
+                { nome: "Terremoto", dano: 25, elemento: "Terra", cdMax: 4, cdAtual: 0, tipo: "dano" }
             ],
-            limitBreak: { nome: "Explosão de Cristal Prisma", dano: 50, elemento: "Mágico" }
+            limitBreak: { nome: "Cataclismo de Terra", dano: 55, elemento: "Terra", tipo: "dano" }
         },
-        "Campos": {
-            hpMax: 200, danoFisico: 20, elementoBase: "Corrupção", fraqueza: "Purificação", imunidade: "Corrupção",
+        "Night": {
+            hpMax: 85, danoFisico: 25, fraqueza: "Purificação", imunidade: "Sombra",
             habilidades: [
-                { nome: "Garras Vorazes", dano: 20, elemento: "Físico", cdMax: 0, cdAtual: 0 },
-                { nome: "Surto Corrupto", dano: 40, elemento: "Corrupção", cdMax: 3, cdAtual: 0 },
-                { nome: "Simbiose", dano: 0, elemento: "Suporte", cdMax: 4, cdAtual: 0 },
-                { nome: "Laceração", dano: 20, elemento: "Corrupção", cdMax: 3, cdAtual: 0 }
+                { nome: "Corte Sombrio", dano: 25, elemento: "Físico", cdMax: 0, cdAtual: 0, tipo: "dano" },
+                { nome: "Lâmina da Noite", dano: 45, elemento: "Sombra", cdMax: 2, cdAtual: 0, tipo: "dano" },
+                { nome: "Passo nas Sombras", dano: 30, elemento: "Sombra", cdMax: 3, cdAtual: 0, tipo: "dano" },
+                { nome: "Execução Obscura", dano: 50, elemento: "Sombra", cdMax: 4, cdAtual: 0, tipo: "dano" }
             ],
-            limitBreak: { nome: "Banquete Simbiótico", dano: 60, elemento: "Corrupção" }
+            limitBreak: { nome: "Eclipse Devastador", dano: 65, elemento: "Sombra", tipo: "dano" }
         },
-        "InimigoPadrao": {
-            hpMax: 80, danoFisico: 10, fraqueza: "Fogo", imunidade: "Nenhuma",
+        "Doctor": {
+            hpMax: 90, danoFisico: 12, fraqueza: "Sombra", imunidade: "Nenhuma",
             habilidades: [
-                { nome: "Golpe Purificador", dano: 10, elemento: "Purificação", cdMax: 0, cdAtual: 0 }
+                { nome: "Bisturi Certeiro", dano: 15, elemento: "Físico", cdMax: 0, cdAtual: 0, tipo: "dano" },
+                { nome: "Injeção de Cura", cura: 35, elemento: "Suporte", cdMax: 2, cdAtual: 0, tipo: "cura" },
+                { nome: "Raio Purificador", dano: 30, elemento: "Purificação", cdMax: 3, cdAtual: 0, tipo: "dano" },
+                { nome: "Anestesia Geral", dano: 20, elemento: "Purificação", cdMax: 3, cdAtual: 0, tipo: "dano" }
             ],
-            limitBreak: { nome: "Ataque Pesado", dano: 30, elemento: "Físico" }
+            limitBreak: { nome: "Milagre Médico", cura: 60, elemento: "Suporte", tipo: "cura_grupo" }
+        },
+        "Mika": {
+            hpMax: 110, danoFisico: 18, fraqueza: "Sombra", imunidade: "Fogo",
+            habilidades: [
+                { nome: "Chama Mágica", dano: 20, elemento: "Fogo", cdMax: 0, cdAtual: 0, tipo: "dano" }
+            ],
+            limitBreak: { nome: "Inferno Purificador", dano: 40, elemento: "Fogo", tipo: "dano" }
+        },
+        "MinionSombra": {
+            hpMax: 60, danoFisico: 12, fraqueza: "Purificação", imunidade: "Nenhuma",
+            habilidades: [
+                { nome: "Toque Sombrio", dano: 12, elemento: "Sombra", cdMax: 0, cdAtual: 0, tipo: "dano" }
+            ],
+            limitBreak: { nome: "Grave Sombrio", dano: 25, elemento: "Sombra", tipo: "dano" }
         }
     };
 
-    // 2. ESTADO DA BATALHA (Campos colocado na Vanguarda 'p1')
     let unidades = {
-        'p0': criarInstancia("Ysma", "p0"),
-        'p1': criarInstancia("Campos", "p1"),
-        'p2': criarInstancia("Ysma", "p2"),
-        'e0': criarInstancia("InimigoPadrao", "e0"),
-        'e1': criarInstancia("InimigoPadrao", "e1"),
-        'e2': criarInstancia("InimigoPadrao", "e2")
+        'p0': criarInstancia("Doctor", "p0", "Doctor"),
+        'p1': criarInstancia("Groxy", "p1", "Groxy"),
+        'p2': criarInstancia("Night", "p2", "Night"),
+        'e0': criarInstancia("MinionSombra", "e0", "Sombra A"),
+        'e1': criarInstancia("Mika", "e1", "Mika"),
+        'e2': criarInstancia("MinionSombra", "e2", "Sombra B")
     };
 
-    let atacanteAtualId = 'p1'; // Vanguarda do Jogador (Campos)
-    let alvoInimigoId = 'e1';   // Vanguarda Inimiga
+    let atacanteAtualId = 'p1'; 
+    let alvoInimigoId = 'e1';
+    let alvoAliadoId = 'p1';
     let emTurnoInimigo = false;
 
-    function criarInstancia(nomeModelo, id) {
+    function criarInstancia(nomeModelo, id, apelido) {
         let base = BANCO_DE_DADOS_PERSONAGENS[nomeModelo];
         return {
-            id: id, nome: nomeModelo, hpMax: base.hpMax, hpAtual: base.hpMax,
+            id: id, nome: apelido || nomeModelo, hpMax: base.hpMax, hpAtual: base.hpMax,
             danoFisico: base.danoFisico, fraqueza: base.fraqueza, imunidade: base.imunidade,
             limite: 0, habilidades: JSON.parse(JSON.stringify(base.habilidades)),
             limitBreak: JSON.parse(JSON.stringify(base.limitBreak))
         };
     }
 
-    // 3. SELEÇÃO DE ALVO
-    function selecionarAlvoInimigo(id) {
-        if (emTurnoInimigo || unidades[id].hpAtual <= 0) return;
-        alvoInimigoId = id;
+    function clicarUnidade(id) {
+        if (emTurnoInimigo) return;
+        
+        if (id.startsWith('p')) {
+            if (unidades[id].hpAtual > 0) {
+                selecionarAtacante(id);
+                alvoAliadoId = id;
+            }
+        } else if (id.startsWith('e')) {
+            if (unidades[id].hpAtual > 0) {
+                alvoInimigoId = id;
+            }
+        }
         atualizarUI();
     }
 
-    // 4. CÁLCULO DE COMBATE (Imunidade & Fraqueza)
+    function selecionarAtacante(id) {
+        if (emTurnoInimigo || unidades[id].hpAtual <= 0) return;
+        atacanteAtualId = id;
+        
+        let radios = document.getElementsByName('atq-select');
+        radios.forEach(r => { if(r.value === id) r.checked = true; });
+
+        atualizarUI();
+    }
+
     function calcularDano(atacante, defensor, habilidade) {
         if (habilidade.elemento === defensor.imunidade) {
             log(`<b style="color:blue;">IMUNE!</b> ${defensor.nome} não recebeu dano.`);
@@ -193,8 +252,8 @@
         }
         let danoFinal = habilidade.dano;
         if (habilidade.elemento === defensor.fraqueza) {
-            danoFinal += 30; // +30 por Fraqueza
-            log(`<b style="color:red;">FRAQUEZA! (+30 Dano em ${defensor.nome})</b>`);
+            danoFinal += 15;
+            log(`<b style="color:red;">FRAQUEZA! (+15 Dano em ${defensor.nome})</b>`);
         }
         return danoFinal;
     }
@@ -203,51 +262,49 @@
         unidade.limite = Math.min(100, unidade.limite + qtd);
     }
 
-    // 5. ATAQUE DO JOGADOR
     function executarAcaoJogador(indiceHab) {
         if (emTurnoInimigo) return;
 
         let atacante = unidades[atacanteAtualId];
         let defensor = unidades[alvoInimigoId];
+        let aliadoAlvo = unidades[alvoAliadoId];
 
-        if (!defensor || defensor.hpAtual <= 0) {
-            log("Escolha um inimigo vivo como alvo!");
+        if (atacante.hpAtual <= 0) {
+            log("O personagem selecionado está derrotado!");
             return;
         }
 
         let habilidade = (indiceHab === 'limit') ? atacante.limitBreak : atacante.habilidades[indiceHab];
 
-        // Se for o Limite
-        if (indiceHab === 'limit') {
-            log(`🔥 <b>${atacante.nome}</b> usou <b style="color:#b78103;">${habilidade.nome}</b>!`);
+        if (habilidade.tipo === 'cura') {
+            aliadoAlvo.hpAtual = Math.min(aliadoAlvo.hpMax, aliadoAlvo.hpAtual + habilidade.cura);
+            log(`✨ <b>${atacante.nome}</b> usou <b>${habilidade.nome}</b> curando ${habilidade.cura} HP de <b>${aliadoAlvo.nome}</b>!`);
             
-            if (atacante.nome === "Ysma") {
-                // Ataque em área da Ysma
-                ['e0', 'e1', 'e2'].forEach(eId => {
-                    let target = unidades[eId];
-                    if (target.hpAtual > 0) {
-                        let d = calcularDano(atacante, target, habilidade);
-                        target.hpAtual = Math.max(0, target.hpAtual - d);
-                        log(`  -> <b>${target.nome}</b> recebeu ${d} de dano!`);
-                    }
-                });
-            } else if (atacante.nome === "Campos") {
-                // Banquete Simbiótico do Campos (Dano + Cura aos 3 aliados)
-                let dano = calcularDano(atacante, defensor, habilidade);
-                defensor.hpAtual = Math.max(0, defensor.hpAtual - dano);
-                let cura = Math.floor(dano * 0.30);
-                log(`  -> Causou ${dano} de dano em <b>${defensor.nome}</b> e curou a equipe!`);
-                
-                ['p0', 'p1', 'p2'].forEach(pId => {
-                    let aliado = unidades[pId];
-                    if (aliado.hpAtual > 0) {
-                        aliado.hpAtual = Math.min(aliado.hpMax, aliado.hpAtual + cura);
-                    }
-                });
-            }
+            if (indiceHab === 'limit') atacante.limite = 0;
+            else carregarLimite(atacante, 15);
+
+        } else if (habilidade.tipo === 'cura_grupo') {
+            ['p0', 'p1', 'p2'].forEach(pId => {
+                let target = unidades[pId];
+                if (target.hpAtual > 0) {
+                    target.hpAtual = Math.min(target.hpMax, target.hpAtual + habilidade.cura);
+                    log(`✨ <b>${target.nome}</b> recuperou ${habilidade.cura} HP!`);
+                }
+            });
+            atacante.limite = 0;
+
+        } else if (indiceHab === 'limit') {
+            log(`🔥 <b>${atacante.nome}</b> usou <b style="color:#b78103;">${habilidade.nome}</b>!`);
+            ['e0', 'e1', 'e2'].forEach(eId => {
+                let target = unidades[eId];
+                if (target.hpAtual > 0) {
+                    let d = calcularDano(atacante, target, habilidade);
+                    target.hpAtual = Math.max(0, target.hpAtual - d);
+                    log(`  -> <b>${target.nome}</b> recebeu ${d} de dano!`);
+                }
+            });
             atacante.limite = 0;
         } else {
-            // Ataque Normal ou Habilidade direcionada
             let dano = calcularDano(atacante, defensor, habilidade);
             defensor.hpAtual = Math.max(0, defensor.hpAtual - dano);
 
@@ -258,20 +315,19 @@
                 habilidade.cdAtual = habilidade.cdMax + 1;
             }
 
-            log(`<b>${atacante.nome}</b> usou <b>${habilidade.nome}</b> em <b>${defensor.nome}</b> causando ${dano} de dano!`);
+            log(`⚔️ <b>${atacante.nome}</b> usou <b>${habilidade.nome}</b> em <b>${defensor.nome}</b> causando ${dano} de dano!`);
         }
 
         if (verificarVitoria()) return;
         iniciarTurnoInimigo();
     }
 
-    // 6. TURNO DO INIMIGO
     function iniciarTurnoInimigo() {
         emTurnoInimigo = true;
         document.getElementById('status-header').innerText = 'TURNO INIMIGO...';
         document.getElementById('status-header').style.color = 'red';
         
-        // Reduz cooldowns ao passar o turno
+        // Reduz cooldowns do atacante ativo
         unidades[atacanteAtualId].habilidades.forEach(h => {
             if (h.cdAtual > 0) h.cdAtual--;
         });
@@ -283,7 +339,9 @@
             let aliadosVivos = ['p0', 'p1', 'p2'].filter(id => unidades[id].hpAtual > 0);
 
             if (inimigosVivos.length > 0 && aliadosVivos.length > 0) {
-                let atacanteInimigo = unidades[inimigosVivos[0]];
+                // Escolhe um inimigo aleatório para atuar
+                let idInimigo = inimigosVivos[Math.floor(Math.random() * inimigosVivos.length)];
+                let atacanteInimigo = unidades[idInimigo];
                 let alvoAliado = unidades[aliadosVivos[Math.floor(Math.random() * aliadosVivos.length)]];
                 let habInimiga = atacanteInimigo.habilidades[0];
 
@@ -299,9 +357,17 @@
             document.getElementById('status-header').innerText = 'SEU TURNO';
             document.getElementById('status-header').style.color = '#5c4033';
             
+            garantirAtacanteValido();
             garantirAlvoValido();
             atualizarUI();
         }, 1200);
+    }
+
+    function garantirAtacanteValido() {
+        if (unidades[atacanteAtualId].hpAtual <= 0) {
+            let vivo = ['p1', 'p0', 'p2'].find(id => unidades[id].hpAtual > 0);
+            if (vivo) selecionarAtacante(vivo);
+        }
     }
 
     function garantirAlvoValido() {
@@ -309,12 +375,16 @@
             let vivo = ['e1', 'e0', 'e2'].find(id => unidades[id].hpAtual > 0);
             if (vivo) alvoInimigoId = vivo;
         }
+        if (unidades[alvoAliadoId].hpAtual <= 0) {
+            let vivo = ['p1', 'p0', 'p2'].find(id => unidades[id].hpAtual > 0);
+            if (vivo) alvoAliadoId = vivo;
+        }
     }
 
     function verificarVitoria() {
         let todosInimigosMortos = ['e0', 'e1', 'e2'].every(id => unidades[id].hpAtual <= 0);
         if (todosInimigosMortos) {
-            log("<b style='color:green;'>VITÓRIA! O time inimigo foi derrotado.</b>");
+            log("<b style='color:green;'>VITÓRIA! Mika e seus aliados foram derrotados.</b>");
             emTurnoInimigo = true;
             atualizarUI();
             return true;
@@ -339,7 +409,6 @@
         box.scrollTop = box.scrollHeight;
     }
 
-    // 7. INTERFACE VISUAL
     function atualizarUI() {
         for (let id in unidades) {
             let u = unidades[id];
@@ -349,41 +418,4 @@
             document.getElementById(`limit-${id}`).style.width = u.limite + '%';
 
             let card = document.getElementById(`unit-${id}`);
-            if (u.hpAtual <= 0) {
-                card.classList.add('dead');
-            }
-
-            if (id === alvoInimigoId && id.startsWith('e')) {
-                card.classList.add('selected-target');
-            } else {
-                card.classList.remove('selected-target');
-            }
-        }
-
-        // Atualizar Botões de Ataque do Atacante Atual
-        let atq = unidades[atacanteAtualId];
-        atq.habilidades.forEach((h, i) => {
-            let btn = document.getElementById(`btn-atq${i+1}`);
-            if (btn) {
-                let textoCd = h.cdAtual > 0 ? ` (${h.cdAtual}T)` : '';
-                btn.innerText = `${h.nome}${textoCd}`;
-                btn.disabled = (h.cdAtual > 0 || emTurnoInimigo);
-            }
-        });
-
-        let btnLimit = document.getElementById('btn-limit');
-        btnLimit.innerText = `QUEBRA DE LIMITES (${atq.limite}%)`;
-        if (atq.limite >= 100 && !emTurnoInimigo) {
-            btnLimit.disabled = false;
-            btnLimit.classList.add('ready');
-        } else {
-            btnLimit.disabled = true;
-            btnLimit.classList.remove('ready');
-        }
-    }
-
-    atualizarUI();
-</script>
-
-</body>
-</html>
+            card.classList.remove('selected-target', 'active-attacker', 'dead', 'selected-ally-targe
