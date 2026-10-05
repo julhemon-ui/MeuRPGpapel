@@ -538,3 +538,50 @@
     // Chamada inicial ao carregar a página
     atualizarUI();
 </script>
+
+    function atualizarUI() {
+        for (let id in unidades) {
+            let u = unidades[id];
+            let card = document.getElementById(`unit-${id}`);
+            let hpBar = document.getElementById(`hp-${id}`);
+            let limitBar = document.getElementById(`limit-${id}`);
+
+            // Atualiza Nome, HP e Barra de Limite
+            document.getElementById(`name-${id}`).innerText = u.nome + (id.startsWith('e') ? " (Inimigo)" : "");
+            hpBar.style.width = Math.max(0, (u.hpAtual / u.hpMax) * 100) + "%";
+            limitBar.style.width = u.limite + "%";
+
+            // Aplica estado de morto
+            if (u.hpAtual <= 0) card.classList.add('dead');
+            else card.classList.remove('dead');
+
+            // --- AQUI ESTAVA O PROBLEMA ---
+            // Limpa todas as seleções antigas e aplica as novas
+            card.classList.remove('selected-attacker', 'selected-target', 'target-buff-mode');
+
+            if (modoSelecaoSimbiose && id.startsWith('p')) {
+                card.classList.add('target-buff-mode'); // Borda azul para buff
+            } else {
+                if (id === atacanteAtualId) card.classList.add('selected-attacker'); // Borda amarela
+                if (id === alvoInimigoId) card.classList.add('selected-target');     // Borda vermelha
+            }
+        }
+
+        // Atualiza os botões com base no atacante selecionado
+        let at = unidades[atacanteAtualId];
+        if (at && at.hpAtual > 0) {
+            for (let i = 0; i < 4; i++) {
+                let btn = document.getElementById(`btn-atq${i + 1}`);
+                let h = at.habilidades[i];
+                if (h) {
+                    btn.innerText = `${h.nome} ${h.cdAtual > 0 ? `(${h.cdAtual}t)` : ''}`;
+                    btn.disabled = h.cdAtual > 0 || emTurnoInimigo;
+                }
+            }
+            let btnL = document.getElementById('btn-limit');
+            btnL.innerText = `QUEBRA DE LIMITES (${at.limite}%)`;
+            btnL.disabled = at.limite < 100 || emTurnoInimigo;
+            if (at.limite >= 100) btnL.classList.add('ready');
+            else btnL.classList.remove('ready');
+        }
+    }
