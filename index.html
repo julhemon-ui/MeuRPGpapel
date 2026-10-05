@@ -439,3 +439,102 @@
 
     function verificarDerrota() {
         let aliadosMort
+
+    // 7. IA INTELIGENTE DO TIME INIMIGO (ESPELHO)
+    function iniciarTurnoInimigo() {
+        emTurnoInimigo = true;
+        document.getElementById('status-header').innerText = 'TURNO INIMIGO...';
+        document.getElementById('status-header').style.color = 'red';
+        
+        // Reduz cooldowns do jogador
+        unidades[atacanteAtualId].habilidades.forEach(h => {
+            if (h.cdAtual > 0) h.cdAtual--;
+        });
+
+        processarEfeitosStatus();
+        atualizarUI();
+
+        if (verificarVitoria() || verificarDerrota()) return;
+
+        setTimeout(() => {
+            let inimigosVivos = ['e0', 'e1', 'e2'].filter(id => unidades[id].hpAtual > 0);
+            let aliadosVivos = ['p0', 'p1', 'p2'].filter(id => unidades[id].hpAtual > 0);
+
+            if (inimigosVivos.length > 0 && aliadosVivos.length > 0) {
+                // Seleciona um atacante inimigo aleatório
+                let idInimigo = inimigosVivos[Math.floor(Math.random() * inimigosVivos.length)];
+                let atacanteInimigo = unidades[idInimigo];
+
+                // Reduz cooldowns do inimigo que vai agir
+                atacanteInimigo.habilidades.forEach(h => { if(h.cdAtual > 0) h.cdAtual--; });
+
+                if (atacanteInimigo.congelado) {
+                    log(`❄ <b>${atacanteInimigo.nome} (Inimigo)</b> está CONGELADO e perdeu a vez!`);
+                    atacanteInimigo.congelado = false;
+                } else {
+                    let alvoAliadoId = aliadosVivos[Math.floor(Math.random() * aliadosVivos.length)];
+                    let alvoAliado = unidades[alvoAliadoId];
+
+                    // Decisão da IA: Limit Break > Habilidade disponível > Ataque Básico
+                    if (atacanteInimigo.limite >= 100) {
+                        let hab = atacanteInimigo.limitBreak;
+                        if (hab.tipo === 'limit_banquete') {
+                            let dano = calcularDano(atacanteInimigo, alvoAliado, hab);
+                            alvoAliado.hpAtual = Math.max(0, alvoAliado.hpAtual - dano);
+                            atacanteInimigo.limite = 0;
+                            let cura = Math.round(dano * 0.30);
+                            log(`💥 <b>${atacanteInimigo.nome} (Inimigo)</b> usou Banquete Simbiótico causando ${dano} de dano!`);
+                            ['e0', 'e1', 'e2'].forEach(eId => {
+                                if (unidades[eId].hpAtual > 0) unidades[eId].hpAtual = Math.min(unidades[eId].hpMax, unidades[eId].hpAtual + cura);
+                            });
+                        } else if (hab.tipo === 'limit_aoe') {
+                            atacanteInimigo.limite = 0;
+                            log(`💥 <b>${atacanteInimigo.nome} (Inimigo)</b> usou ${hab.nome}!`);
+                            ['p0', 'p1', 'p2'].forEach(pId => {
+                                let al = unidades[pId];
+                                if (al.hpAtual > 0) {
+                                    let dano = calcularDano(atacanteInimigo, al, hab);
+                                    al.hpAtual = Math.max(0, al.hpAtual - dano);
+                                }
+                            });
+                        } else {
+                            let dano = calcularDano(atacanteInimigo, alvoAliado, hab);
+                            alvoAliado.hpAtual = Math.max(0, alvoAliado.hpAtual - dano);
+                            atacanteInimigo.limite = 0;
+                            log(`💥 <b>${atacanteInimigo.nome} (Inimigo)</b> usou ${hab.nome} causando ${dano} de dano!`);
+                        }
+                    } else {
+                        let habsDisponiveis = atacanteInimigo.habilidades.filter(h => h.cdAtual === 0 && h.tipo !== 'buff_aliado');
+                        let habUsada = habsDisponiveis.length > 0 ? habsDisponiveis[Math.floor(Math.random() * habsDisponiveis.length)] : atacanteInimigo.habilidades[0];
+
+                        if (habUsada.tipo === 'buff_proprio') {
+                            atacanteInimigo.hpAtual = Math.min(atacanteInimigo.hpMax, atacanteInimigo.hpAtual + 30);
+                            atacanteInimigo.escudoSimbiose = 1;
+                            carregarLimite(atacanteInimigo, 15);
+                            habUsada.cdAtual = habUsada.cdMax + 1;
+                            log(`🛡️ <b>${atacanteInimigo.nome} (Inimigo)</b> usou Preparo! Curou 30 HP e ativou escudo.`);
+                        } else {
+                            let dano = calcularDano(atacanteInimigo, alvoAliado, habUsada);
+                            alvoAliado.hpAtual = Math.max(0, alvoAliado.hpAtual - dano);
+                            carregarLimite(atacanteInimigo, 25);
+                            carregarLimite(alvoAliado, 15);
+                            if (habUsada.cdMax > 0) habUsada.cdAtual = habUsada.cdMax + 1;
+                            log(`⚔️ <b>${atacanteInimigo.nome} (Inimigo)</b> usou <b>${habUsada.nome}</b> causando ${dano} de dano!`);
+                        }
+                    }
+                }
+                aplicarDanoPosAtaque(atacanteInimigo);
+            }
+
+            emTurnoInimigo = false;
+            document.getElementById('status-header').innerText = 'SEU TURNO';
+            document.getElementById('status-header').style.color = '#5c4033';
+            
+            atualizarUI();
+            verificarDerrota();
+        }, 1000);
+    }
+
+    // Chamada inicial ao carregar a página
+    atualizarUI();
+</script>
