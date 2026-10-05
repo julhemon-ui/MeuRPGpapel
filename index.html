@@ -12,14 +12,14 @@
         .screen {
             width: 100%; max-width: 680px; background: #f4ecd8;
             background-image: linear-gradient(#ccc 0.05em, transparent 0.05em), linear-gradient(90deg, #ccc 0.05em, transparent 0.05em);
-            background-size: 20px 20px; border: 5px solid #5c4033; border-radius: 12px; padding: 14px; display: flex; flex-direction: column; gap: 12px;
+            background-size: 20px 20px; border: 5px solid #5c4033; border-radius: 12px; padding: 14px; flex-direction: column; gap: 12px;
         }
 
         /* TELA DE SELEÇÃO */
         #select-screen { display: flex; }
         .select-header { text-align: center; color: #5c4033; border-bottom: 2px dashed #8b5a2b; padding-bottom: 8px; }
         .select-header h2 { font-size: 18px; }
-        .select-header p { font-size: 12px; margin-top: 4px; }
+        .select-header p { font-size: 12px; margin-top: 4px; color: #d32f2f; font-weight: bold; }
 
         .roster-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 10px; margin-top: 10px; }
         .roster-card {
@@ -36,9 +36,9 @@
         .team-slot-group { width: 48%; }
         .team-slot-group h3 { font-size: 12px; margin-bottom: 6px; text-align: center; }
         .slots-list { display: flex; gap: 4px; justify-content: center; }
-        .slot-box { width: 30%; height: 40px; border: 2px dashed #8b5a2b; border-radius: 4px; display: flex; align-items: center; justify-content: center; font-size: 10px; font-weight: bold; background: #fff; text-align: center; }
+        .slot-box { width: 32%; height: 35px; border: 2px dashed #8b5a2b; border-radius: 4px; display: flex; align-items: center; justify-content: center; font-size: 10px; font-weight: bold; background: #fff; text-align: center; }
 
-        .btn-start { background: #4caf50; color: #fff; border: 2px solid #2e7d32; padding: 10px; font-size: 14px; font-weight: bold; border-radius: 6px; cursor: pointer; text-align: center; margin-top: 5px; }
+        .btn-start { background: #4caf50; color: #fff; border: 2px solid #2e7d32; padding: 12px; font-size: 14px; font-weight: bold; border-radius: 6px; cursor: pointer; text-align: center; margin-top: 5px; }
         .btn-start:disabled { background: #ccc; border-color: #999; cursor: not-allowed; }
 
         /* TELA DE JOGO */
@@ -96,8 +96,8 @@
 <!-- TELA DE SELEÇÃO -->
 <div id="select-screen" class="screen">
     <div class="select-header">
-        <h2>SELEÇÃO DE EQUIPES</h2>
-        <p id="select-instruction">Escolha 3 personagens para o <b>SEU TIME</b></p>
+        <h2>SELEÇÃO DE PERSONAGENS</h2>
+        <p id="select-instruction">Escolha 3 personagens para o SEU TIME</p>
     </div>
 
     <div class="roster-grid" id="roster-container"></div>
@@ -121,7 +121,7 @@
         </div>
     </div>
 
-    <button id="btn-start-game" class="btn-start" disabled onclick="iniciarCombate()">INICIAR BATALHA ⚔️</button>
+    <button id="btn-start-game" class="btn-start" disabled onclick="iniciarCombate()">INICIAR BATALHA ⚔️️</button>
 </div>
 
 <!-- TELA DE JOGO -->
@@ -177,7 +177,7 @@
         </div>
     </div>
 
-    <div id="log-box">> Sistema de Batalha Inicializado. Escolha sua ação!</div>
+    <div id="log-box">> Seleção concluída! Comece a batalha.</div>
 
     <div class="action-grid">
         <button id="btn-atq1" onclick="executarAcaoJogador(0)">Habilidade 1</button>
@@ -194,8 +194,8 @@
             hpMax: 100, danoFisico: 15, elementoBase: "Mágico", fraqueza: "Purificação", imunidade: "Fogo",
             habilidades: [
                 { nome: "Acerto Perfurante", dano: 15, elemento: "Físico", cdMax: 0, cdAtual: 0, tipo: "ataque" },
-                { nome: "Bola de Fogo", dano: 35, elemento: "Fogo", cdMax: 2, cdAtual: 0, tipo: "ataque", efeito: "queimadura", chanceEfeito: 100 },
-                { nome: "Raio de Gelo", dano: 10, elemento: "Gelo", cdMax: 4, cdAtual: 0, tipo: "ataque", efeito: "congelamento", chanceEfeito: 40 },
+                { nome: "Bola de Fogo", dano: 35, elemento: "Fogo", cdMax: 2, cdAtual: 0, tipo: "ataque", efeito: "queimadura" },
+                { nome: "Raio de Gelo", dano: 10, elemento: "Gelo", cdMax: 4, cdAtual: 0, tipo: "ataque", efeito: "congelamento" },
                 { nome: "Furacão", dano: 25, elemento: "Vento", cdMax: 4, cdAtual: 0, tipo: "ataque", efeito: "leve" }
             ],
             limitBreak: { nome: "Explosão Prisma", dano: 50, elemento: "Mágico", tipo: "limit_padrao" }
@@ -216,9 +216,9 @@
                 { nome: "Acerto Perfurante", dano: 20, elemento: "Físico", cdMax: 0, cdAtual: 0, tipo: "ataque" },
                 { nome: "Preparo", dano: 0, elemento: "Físico", cdMax: 2, cdAtual: 0, tipo: "buff_proprio" },
                 { nome: "Ataque Rápido", dano: 30, elemento: "Físico", cdMax: 2, cdAtual: 0, tipo: "ataque" },
-                { nome: "Exílio dos Antigos", dano: 25, elemento: "Biológico", cdMax: 5, cdAtual: 0, tipo: "ataque", efeito: "veneno", chanceEfeito: 100 }
+                { nome: "Exílio dos Antigos", dano: 25, elemento: "Biológico", cdMax: 5, cdAtual: 0, tipo: "ataque", efeito: "veneno" }
             ],
-            limitBreak: { nome: "Força dos Antigos", dano: 50, elemento: "Biológico", tipo: "limit_aoe", efeito: "veneno", chanceEfeito: 100 }
+            limitBreak: { nome: "Força dos Antigos", dano: 50, elemento: "Biológico", tipo: "limit_aoe", efeito: "veneno" }
         },
         "Doctor": {
             hpMax: 110, danoFisico: 10, elementoBase: "Biológico", fraqueza: "Fogo", imunidade: "Nenhuma",
@@ -252,10 +252,9 @@
         }
     };
 
-    // Variaveis de seleção de personagens
     let timeAliadoSelecionado = [];
     let timeInimigoSelecionado = [];
-    let faseSelecao = "aliado"; // "aliado" ou "inimigo"
+    let faseSelecao = "aliado"; 
 
     let unidades = {};
     let atacanteAtualId = 'p1'; 
@@ -294,7 +293,7 @@
 
             if (timeAliadoSelecionado.length === 3) {
                 faseSelecao = "inimigo";
-                document.getElementById('select-instruction').innerHTML = "Agora escolha 3 personagens para o <b>TIME INIMIGO</b>";
+                document.getElementById('select-instruction').innerText = "Agora escolha 3 personagens para o TIME INIMIGO";
             }
         } else if (faseSelecao === "inimigo") {
             if (timeInimigoSelecionado.includes(nome)) {
@@ -309,11 +308,8 @@
 
     function atualizarPainelSlots() {
         for (let i = 0; i < 3; i++) {
-            let slotP = document.getElementById(`slot-p${i}`);
-            let slotE = document.getElementById(`slot-e${i}`);
-
-            slotP.innerText = timeAliadoSelecionado[i] || `${i+1}º`;
-            slotE.innerText = timeInimigoSelecionado[i] || `${i+1}º`;
+            document.getElementById(`slot-p${i}`).innerText = timeAliadoSelecionado[i] || `${i+1}º`;
+            document.getElementById(`slot-e${i}`).innerText = timeInimigoSelecionado[i] || `${i+1}º`;
         }
 
         let btnStart = document.getElementById('btn-start-game');
@@ -679,10 +675,11 @@
         }, 800);
     }
 
-    // Inicializar roster na tela de seleção ao carregar
-    renderizarRoster();
+    // Forçar inicialização da tela de seleção assim que carregar o HTML
+    window.onload = function() {
+        renderizarRoster();
+    };
 </script>
 
 </body>
 </html>
-
