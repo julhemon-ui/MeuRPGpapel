@@ -8,14 +8,12 @@
         * { box-sizing: border-box; margin: 0; padding: 0; user-select: none; }
         body { background: #1a1a1a; font-family: 'Courier New', Courier, monospace; color: #333; display: flex; justify-content: center; align-items: center; min-height: 100vh; padding: 10px; }
         
-        /* TELAS */
         .screen {
             width: 100%; max-width: 680px; background: #f4ecd8;
             background-image: linear-gradient(#ccc 0.05em, transparent 0.05em), linear-gradient(90deg, #ccc 0.05em, transparent 0.05em);
             background-size: 20px 20px; border: 5px solid #5c4033; border-radius: 12px; padding: 14px; flex-direction: column; gap: 12px;
         }
 
-        /* TELA DE SELEÇÃO */
         #select-screen { display: flex; }
         .select-header { text-align: center; color: #5c4033; border-bottom: 2px dashed #8b5a2b; padding-bottom: 8px; }
         .select-header h2 { font-size: 18px; }
@@ -41,7 +39,6 @@
         .btn-start { background: #4caf50; color: #fff; border: 2px solid #2e7d32; padding: 12px; font-size: 14px; font-weight: bold; border-radius: 6px; cursor: pointer; text-align: center; margin-top: 5px; }
         .btn-start:disabled { background: #ccc; border-color: #999; cursor: not-allowed; }
 
-        /* TELA DE JOGO */
         #game-screen { display: none; }
 
         .field { display: flex; justify-content: space-between; background: rgba(0,0,0,0.05); border: 2px dashed #8b5a2b; border-radius: 8px; padding: 10px; height: 230px; position: relative; }
@@ -93,7 +90,6 @@
 </head>
 <body>
 
-<!-- TELA DE SELEÇÃO -->
 <div id="select-screen" class="screen">
     <div class="select-header">
         <h2>SELEÇÃO DE PERSONAGENS</h2>
@@ -121,15 +117,13 @@
         </div>
     </div>
 
-    <button id="btn-start-game" class="btn-start" disabled onclick="iniciarCombate()">INICIAR BATALHA ⚔️️</button>
+    <button id="btn-start-game" class="btn-start" disabled onclick="iniciarCombate()">INICIAR BATALHA ⚔</button>
 </div>
 
-<!-- TELA DE JOGO -->
 <div id="game-screen" class="screen">
     <div id="turn-indicator">SEU TURNO</div>
 
     <div class="field">
-        <!-- Time Aliado -->
         <div class="team-side ally-side">
             <div id="unit-p0" class="unit-card pos-back-top" onclick="cliqueCardAliado('p0')">
                 <div id="name-p0">-</div>
@@ -151,7 +145,6 @@
             </div>
         </div>
 
-        <!-- Time Inimigo -->
         <div class="team-side enemy-side">
             <div id="unit-e0" class="unit-card pos-back-top" onclick="selecionarAlvoInimigo('e0')">
                 <div class="target-cursor">▼ ALVO</div>
@@ -221,34 +214,34 @@
             limitBreak: { nome: "Força dos Antigos", dano: 50, elemento: "Biológico", tipo: "limit_aoe", efeito: "veneno" }
         },
         "Doctor": {
-            hpMax: 110, danoFisico: 10, elementoBase: "Biológico", fraqueza: "Fogo", imunidade: "Nenhuma",
+            hpMax: 200, danoFisico: 20, elementoBase: "Elétrico", fraqueza: "Água", imunidade: "Elétrico",
             habilidades: [
-                { nome: "Bisturi Certeiro", dano: 18, elemento: "Físico", cdMax: 0, cdAtual: 0, tipo: "ataque" },
-                { nome: "Toxina Concentrada", dano: 20, elemento: "Biológico", cdMax: 3, cdAtual: 0, tipo: "ataque", efeito: "veneno" },
-                { nome: "Cálculo Tático", dano: 0, elemento: "Suporte", cdMax: 2, cdAtual: 0, tipo: "buff_proprio" },
-                { nome: "Pulso Anestésico", dano: 15, elemento: "Biológico", cdMax: 4, cdAtual: 0, tipo: "ataque", efeito: "congelamento" }
+                { nome: "Soco Turbinado", dano: 20, elemento: "Físico", cdMax: 0, cdAtual: 0, tipo: "ataque" },
+                { nome: "Bomba Elétrica", dano: 26, elemento: "Elétrico", cdMax: 6, cdAtual: 0, tipo: "ataque", efeito: "paralisia_50" },
+                { nome: "Atualizar", dano: 0, elemento: "Suporte", cdMax: 6, cdAtual: 0, tipo: "buff_doctor" },
+                { nome: "Pulso", dano: 20, elemento: "Elétrico", cdMax: 6, cdAtual: 0, tipo: "ataque", efeito: "paralisia_30" }
             ],
-            limitBreak: { nome: "Operação Crítica", dano: 55, elemento: "Biológico", tipo: "limit_padrao" }
+            limitBreak: { nome: "Protocolo Secreto", dano: 44, elemento: "Elétrico", tipo: "limit_aoe" }
         },
         "Night": {
-            hpMax: 120, danoFisico: 25, elementoBase: "Escuridão", fraqueza: "Luz", imunidade: "Vento",
+            hpMax: 120, danoFisico: 15, elementoBase: "Corrupção", fraqueza: "Purificação", imunidade: "Vento",
             habilidades: [
-                { nome: "Ataque Sombrio", dano: 22, elemento: "Físico", cdMax: 0, cdAtual: 0, tipo: "ataque" },
-                { nome: "Lâmina Sombria", dano: 35, elemento: "Escuridão", cdMax: 2, cdAtual: 0, tipo: "ataque", efeito: "sangramento" },
-                { nome: "Passo nas Sombras", dano: 0, elemento: "Vento", cdMax: 3, cdAtual: 0, tipo: "buff_proprio" },
-                { nome: "Golpe Voador", dano: 30, elemento: "Vento", cdMax: 3, cdAtual: 0, tipo: "ataque" }
+                { nome: "Ataque Sombrio", dano: 15, elemento: "Físico", cdMax: 0, cdAtual: 0, tipo: "ataque" },
+                { nome: "Garras Sombrias", dano: 35, elemento: "Corrupção", cdMax: 2, cdAtual: 0, tipo: "ataque", efeito: "sangramento" },
+                { nome: "Escudo de Penas", dano: 0, elemento: "Vento", cdMax: 3, cdAtual: 0, tipo: "buff_escudo_cura" },
+                { nome: "Rugido Poderoso", dano: 0, elemento: "Vento", cdMax: 3, cdAtual: 0, tipo: "cura_propria_20" }
             ],
-            limitBreak: { nome: "Eclipsar", dano: 65, elemento: "Escuridão", tipo: "limit_padrao" }
+            limitBreak: { nome: "Meteoro das Trevas", dano: 29, elemento: "Corrupção", tipo: "limit_night" }
         },
-        "Mika": {
-            hpMax: 90, danoFisico: 12, elementoBase: "Fogo", fraqueza: "Gelo", imunidade: "Vento",
+        "Groxy": {
+            hpMax: 100, danoFisico: 15, elementoBase: "Vento", fraqueza: "Fogo", imunidade: "Biológico",
             habilidades: [
-                { nome: "Faísca Quick", dano: 15, elemento: "Fogo", cdMax: 0, cdAtual: 0, tipo: "ataque" },
-                { nome: "Onda de Calor", dano: 30, elemento: "Fogo", cdMax: 2, cdAtual: 0, tipo: "ataque", efeito: "queimadura" },
-                { nome: "Vendaval Flamejante", dano: 28, elemento: "Vento", cdMax: 3, cdAtual: 0, tipo: "ataque", efeito: "leve" },
-                { nome: "Capa Protetora", dano: 0, elemento: "Suporte", cdMax: 3, cdAtual: 0, tipo: "buff_proprio" }
+                { nome: "Corte Tornado", dano: 15, elemento: "Vento", cdMax: 0, cdAtual: 0, tipo: "ataque" },
+                { nome: "Lâmina de Fogo", dano: 30, elemento: "Fogo", cdMax: 2, cdAtual: 0, tipo: "ataque", efeito: "queimadura_50" },
+                { nome: "Vendaval Massivo", dano: 28, elemento: "Vento", cdMax: 8, cdAtual: 0, tipo: "ataque_aoe", efeito: "leve_30" },
+                { nome: "Corte Maré Baixa", dano: 23, elemento: "Água", cdMax: 5, cdAtual: 0, tipo: "roubo_vida" }
             ],
-            limitBreak: { nome: "Supernova Mika", dano: 55, elemento: "Fogo", tipo: "limit_aoe", efeito: "queimadura" }
+            limitBreak: { nome: "Dança da Abóbora", dano: 30, elemento: "Vento", tipo: "limit_groxy" }
         }
     };
 
@@ -323,7 +316,8 @@
             danoFisico: base.danoFisico, fraqueza: base.fraqueza, imunidade: base.imunidade,
             limite: 0, habilidades: JSON.parse(JSON.stringify(base.habilidades)),
             limitBreak: JSON.parse(JSON.stringify(base.limitBreak)),
-            escudoSimbiose: 0, escudoDunnie: 0, sangramento: 0, queimadura: 0, veneno: 0, congelado: false, leve: 0
+            escudoSimbiose: 0, escudoDunnie: 0, escudoDoctor: 0, buffAtqDoctor: 0, debuffAtqNight: 0,
+            paralisiaTurnos: 0, paralisiaChance: 0, sangramento: 0, queimadura: 0, veneno: 0, congelado: false, leve: 0
         };
     }
 
@@ -369,6 +363,9 @@
 
         let danoBase = habilidade.dano;
 
+        if (atacante.buffAtqDoctor > 0) danoBase += 10;
+        if (atacante.debuffAtqNight > 0) danoBase = Math.max(0, danoBase - 30);
+
         if (habilidade.elemento === "Vento" && defensor.leve > 0) {
             danoBase += 20;
             log(`💨 <b>BÔNUS LEVE!</b> (+20 Dano em ${defensor.nome})`);
@@ -382,7 +379,12 @@
         if (defensor.escudoDunnie > 0 && danoBase > 0) {
             danoBase = Math.max(0, danoBase - 30);
             defensor.escudoDunnie = 0; 
-            log(`🛡️ <b>Preparo</b> reduziu o dano em 30 em <b>${defensor.nome}</b>!`);
+            log(`🛡️ <b>Preparo/Escudo</b> reduziu o dano em 30 em <b>${defensor.nome}</b>!`);
+        }
+
+        if (defensor.escudoDoctor > 0 && danoBase > 0) {
+            danoBase = Math.max(0, danoBase - 10);
+            log(`🛡️ <b>Atualizar (Escudo)</b> reduziu o dano em 10 em <b>${defensor.nome}</b>!`);
         }
 
         if (defensor.escudoSimbiose > 0 && danoBase > 0) {
@@ -390,7 +392,7 @@
             log(`🛡️ <b>Simbiose</b> reduziu o dano em 20 em <b>${defensor.nome}</b>!`);
         }
 
-        return danoBase;
+        return Math.max(0, danoBase);
     }
 
     function carregarLimite(unidade, qtd) {
@@ -401,6 +403,39 @@
         if (unidade.hpAtual > 0 && unidade.queimadura > 0) {
             unidade.hpAtual = Math.max(0, unidade.hpAtual - 10);
             log(`🔥 <b>${unidade.nome}</b> sofreu 10 de dano por Queimadura!`);
+        }
+    }
+
+    function checarParalisia(unidade) {
+        if (unidade.paralisiaTurnos > 0) {
+            let sorteio = Math.random() * 100;
+            if (sorteio < unidade.paralisiaChance) {
+                log(`⚡ <b>${unidade.nome}</b> ficou PARALISADO e não conseguiu atacar!`);
+                return true;
+            }
+        }
+        return false;
+    }
+
+    function aplicarEfeitoHab(habilidade, defensor) {
+        if (!defensor || defensor.hpAtual <= 0) return;
+
+        if (habilidade.efeito === 'sangramento') defensor.sangramento = 3;
+        else if (habilidade.efeito === 'veneno') defensor.veneno = 6;
+        else if (habilidade.efeito === 'congelamento') defensor.congelado = true;
+        else if (habilidade.efeito === 'queimadura') defensor.queimadura = 2;
+        else if (habilidade.efeito === 'queimadura_50') {
+            if (Math.random() < 0.50) { defensor.queimadura = 2; log(`🔥 <b>${defensor.nome}</b> foi queimado!`); }
+        } else if (habilidade.efeito === 'paralisia_50') {
+            defensor.paralisiaTurnos = 5; defensor.paralisiaChance = 50;
+            log(`⚡ <b>${defensor.nome}</b> foi contaminado por Paralisia (50%)!`);
+        } else if (habilidade.efeito === 'paralisia_30') {
+            if (Math.random() < 0.30) {
+                defensor.paralisiaTurnos = 5; defensor.paralisiaChance = 30;
+                log(`⚡ <b>${defensor.nome}</b> ficou Paralisado (30%)!`);
+            }
+        } else if (habilidade.efeito === 'leve_30') {
+            if (Math.random() < 0.30) { defensor.leve = 2; log(`🍃 <b>${defensor.nome}</b> ficou LEVE!`); }
         }
     }
 
@@ -419,6 +454,11 @@
             return;
         }
 
+        if (checarParalisia(atacante)) {
+            iniciarTurnoInimigo();
+            return;
+        }
+
         let habilidade = (indiceHab === 'limit') ? atacante.limitBreak : atacante.habilidades[indiceHab];
 
         if (habilidade.tipo === 'buff_aliado') {
@@ -428,12 +468,12 @@
             return;
         }
 
-        if (habilidade.tipo === 'buff_proprio') {
+        if (habilidade.tipo === 'buff_proprio' || habilidade.tipo === 'buff_escudo_cura') {
             atacante.hpAtual = Math.min(atacante.hpMax, atacante.hpAtual + 30);
             atacante.escudoDunnie = 1;
             carregarLimite(atacante, 15);
             if (indiceHab !== 'limit') habilidade.cdAtual = habilidade.cdMax;
-            log(`🛡️ <b>${atacante.nome}</b> usou habilidade de defesa/suporte!`);
+            log(`🛡️ <b>${atacante.nome}</b> usou ${habilidade.nome} (+30 HP e Escudo)!`);
             
             aplicarDanoPosAtaque(atacante);
             if (verificarVitoria()) return;
@@ -441,7 +481,30 @@
             return;
         }
 
-        if (!defensor || defensor.hpAtual <= 0) return;
+        if (habilidade.tipo === 'cura_propria_20') {
+            atacante.hpAtual = Math.min(atacante.hpMax, atacante.hpAtual + 20);
+            carregarLimite(atacante, 15);
+            if (indiceHab !== 'limit') habilidade.cdAtual = habilidade.cdMax;
+            log(`🦁 <b>${atacante.nome}</b> usou Rugido Poderoso (+20 HP)!`);
+            
+            aplicarDanoPosAtaque(atacante);
+            if (verificarVitoria()) return;
+            iniciarTurnoInimigo();
+            return;
+        }
+
+        if (habilidade.tipo === 'buff_doctor') {
+            atacante.buffAtqDoctor = 5;
+            atacante.escudoDoctor = 5;
+            carregarLimite(atacante, 15);
+            if (indiceHab !== 'limit') habilidade.cdAtual = habilidade.cdMax;
+            log(`⚡ <b>${atacante.nome}</b> usou Atualizar (+10 ATQ e Escudo de 10 por 5 turnos)!`);
+            
+            aplicarDanoPosAtaque(atacante);
+            if (verificarVitoria()) return;
+            iniciarTurnoInimigo();
+            return;
+        }
 
         if (habilidade.tipo === 'limit_banquete') {
             let dano = calcularDano(atacante, defensor, habilidade);
@@ -452,21 +515,55 @@
             ['p0', 'p1', 'p2'].forEach(pId => {
                 if (unidades[pId].hpAtual > 0) unidades[pId].hpAtual = Math.min(unidades[pId].hpMax, unidades[pId].hpAtual + cura);
             });
-        } else if (habilidade.tipo === 'limit_aoe') {
+        } else if (habilidade.tipo === 'limit_night') {
             atacante.limite = 0;
+            log(`☄️ <b>${atacante.nome}</b> usou Meteoro das Trevas!`);
+            ['e0', 'e1', 'e2'].forEach(eId => {
+                let inimigo = unidades[eId];
+                if (inimigo.hpAtual > 0) {
+                    let dano = calcularDano(atacante, inimigo, habilidade);
+                    inimigo.hpAtual = Math.max(0, inimigo.hpAtual - dano);
+                    inimigo.debuffAtqNight = 1; 
+                }
+            });
+        } else if (habilidade.tipo === 'limit_groxy') {
+            atacante.limite = 0;
+            log(`🎃 <b>${atacante.nome}</b> usou Dança da Abóbora!`);
+            let temGroxyInimigo = ['e0', 'e1', 'e2'].some(eId => unidades[eId].nome === 'Groxy' && unidades[eId].hpAtual > 0);
+            
+            ['e0', 'e1', 'e2'].forEach(eId => {
+                let inimigo = unidades[eId];
+                if (inimigo.hpAtual > 0) {
+                    let dano = calcularDano(atacante, inimigo, habilidade);
+                    inimigo.hpAtual = Math.max(0, inimigo.hpAtual - dano);
+                    inimigo.leve = 2;
+                    if (temGroxyInimigo) inimigo.queimadura = 2;
+                }
+            });
+            if (temGroxyInimigo) log(`🔥 <b>Efeito do Groxy!</b> Todos os inimigos foram queimados!`);
+        } else if (habilidade.tipo === 'limit_aoe' || habilidade.tipo === 'ataque_aoe') {
+            if (indiceHab === 'limit') atacante.limite = 0;
+            else habilidade.cdAtual = habilidade.cdMax;
+
             log(`⚡ <b>${atacante.nome}</b> usou ${habilidade.nome}!`);
             ['e0', 'e1', 'e2'].forEach(eId => {
                 let inimigo = unidades[eId];
                 if (inimigo.hpAtual > 0) {
                     let dano = calcularDano(atacante, inimigo, habilidade);
                     inimigo.hpAtual = Math.max(0, inimigo.hpAtual - dano);
-                    if (habilidade.efeito === 'veneno') inimigo.veneno = 6;
-                    if (habilidade.efeito === 'queimadura') inimigo.queimadura = 3;
+                    aplicarEfeitoHab(habilidade, inimigo);
                 }
             });
         } else {
+            if (!defensor || defensor.hpAtual <= 0) return;
+
             let dano = calcularDano(atacante, defensor, habilidade);
             defensor.hpAtual = Math.max(0, defensor.hpAtual - dano);
+
+            if (habilidade.tipo === 'roubo_vida') {
+                atacante.hpAtual = Math.min(atacante.hpMax, atacante.hpAtual + 30);
+                log(`🌊 <b>${atacante.nome}</b> recuperou +30 de HP com Corte Maré Baixa!`);
+            }
 
             if (indiceHab === 'limit') {
                 atacante.limite = 0;
@@ -477,12 +574,7 @@
             }
 
             log(`<b>${atacante.nome}</b> usou <b>${habilidade.nome}</b> em <b>${defensor.nome}</b> causando ${dano} de dano!`);
-
-            if (habilidade.efeito === 'sangramento') defensor.sangramento = 3;
-            else if (habilidade.efeito === 'veneno') defensor.veneno = 6;
-            else if (habilidade.efeito === 'queimadura') defensor.queimadura = 2;
-            else if (habilidade.efeito === 'congelamento') defensor.congelado = true;
-            else if (habilidade.efeito === 'leve') defensor.leve = 2;
+            aplicarEfeitoHab(habilidade, defensor);
         }
 
         aplicarDanoPosAtaque(atacante);
@@ -512,21 +604,15 @@
             let u = unidades[id];
             if (u.hpAtual <= 0) continue;
 
-            if (u.sangramento > 0) {
-                u.hpAtual = Math.max(0, u.hpAtual - 10);
-                u.sangramento--;
-                log(`🩸 <b>${u.nome}</b> sofreu 10 de dano por Sangramento!`);
-            }
-
-            if (u.veneno > 0) {
-                u.hpAtual = Math.max(0, u.hpAtual - 10);
-                u.veneno--;
-                log(`🧪 <b>${u.nome}</b> sofreu 10 de dano por Veneno!`);
-            }
-
+            if (u.sangramento > 0) { u.hpAtual = Math.max(0, u.hpAtual - 10); u.sangramento--; log(`🩸 <b>${u.nome}</b> sofreu 10 por Sangramento!`); }
+            if (u.veneno > 0) { u.hpAtual = Math.max(0, u.hpAtual - 10); u.veneno--; log(`🧪 <b>${u.nome}</b> sofreu 10 por Veneno!`); }
             if (u.queimadura > 0) u.queimadura--;
             if (u.leve > 0) u.leve--;
             if (u.escudoSimbiose > 0) u.escudoSimbiose--;
+            if (u.buffAtqDoctor > 0) u.buffAtqDoctor--;
+            if (u.escudoDoctor > 0) u.escudoDoctor--;
+            if (u.debuffAtqNight > 0) u.debuffAtqNight--;
+            if (u.paralisiaTurnos > 0) u.paralisiaTurnos--;
         }
     }
 
@@ -569,12 +655,14 @@
             if (statusBadge) {
                 let listaStatus = [];
                 if (u.congelado) listaStatus.push("❄️ CONGELADO");
+                if (u.paralisiaTurnos > 0) listaStatus.push(`⚡ PARALISIA (${u.paralisiaTurnos}t)`);
                 if (u.queimadura > 0) listaStatus.push(`🔥 QUEIMADO (${u.queimadura}t)`);
                 if (u.veneno > 0) listaStatus.push(`🧪 VENENO (${u.veneno}t)`);
                 if (u.sangramento > 0) listaStatus.push(`🩸 SANGRANDO (${u.sangramento}t)`);
                 if (u.leve > 0) listaStatus.push(`🍃 LEVE (${u.leve}t)`);
                 if (u.escudoSimbiose > 0) listaStatus.push(`🛡️ SIMBIOSE (${u.escudoSimbiose}t)`);
-                if (u.escudoDunnie > 0) listaStatus.push(`🛡️ PREPARO`);
+                if (u.escudoDoctor > 0) listaStatus.push(`🛡️ ATUALIZAR (${u.escudoDoctor}t)`);
+                if (u.buffAtqDoctor > 0) listaStatus.push(`⚔️ +10 ATQ (${u.buffAtqDoctor}t)`);
 
                 statusBadge.innerHTML = listaStatus.join("<br>");
             }
@@ -638,6 +726,8 @@
                 if (atacanteInimigo.congelado) {
                     log(`❄ <b>${atacanteInimigo.nome} (Inimigo)</b> está CONGELADO e perdeu a vez!`);
                     atacanteInimigo.congelado = false;
+                } else if (checarParalisia(atacanteInimigo)) {
+                    // Perdeu vez por paralisia
                 } else {
                     let alvoAliadoId = aliadosVivos[Math.floor(Math.random() * aliadosVivos.length)];
                     let alvoAliado = unidades[alvoAliadoId];
@@ -645,22 +735,46 @@
                     let habsDisponiveis = atacanteInimigo.habilidades.filter(h => h.cdAtual === 0 && h.tipo !== 'buff_aliado');
                     let habUsada = habsDisponiveis.length > 0 ? habsDisponiveis[Math.floor(Math.random() * habsDisponiveis.length)] : atacanteInimigo.habilidades[0];
 
-                    if (habUsada.tipo === 'buff_proprio') {
+                    if (habUsada.tipo === 'buff_proprio' || habUsada.tipo === 'buff_escudo_cura') {
                         atacanteInimigo.hpAtual = Math.min(atacanteInimigo.hpMax, atacanteInimigo.hpAtual + 30);
                         atacanteInimigo.escudoDunnie = 1;
                         carregarLimite(atacanteInimigo, 15);
                         habUsada.cdAtual = habUsada.cdMax;
                         log(`🛡️ <b>${atacanteInimigo.nome} (Inimigo)</b> usou habilidade de defesa!`);
+                    } else if (habUsada.tipo === 'cura_propria_20') {
+                        atacanteInimigo.hpAtual = Math.min(atacanteInimigo.hpMax, atacanteInimigo.hpAtual + 20);
+                        carregarLimite(atacanteInimigo, 15);
+                        habUsada.cdAtual = habUsada.cdMax;
+                        log(`🦁 <b>${atacanteInimigo.nome} (Inimigo)</b> usou Rugido Poderoso!`);
+                    } else if (habUsada.tipo === 'buff_doctor') {
+                        atacanteInimigo.buffAtqDoctor = 5;
+                        atacanteInimigo.escudoDoctor = 5;
+                        carregarLimite(atacanteInimigo, 15);
+                        habUsada.cdAtual = habUsada.cdMax;
+                        log(`⚡ <b>${atacanteInimigo.nome} (Inimigo)</b> usou Atualizar!`);
+                    } else if (habUsada.tipo === 'ataque_aoe') {
+                        habUsada.cdAtual = habUsada.cdMax;
+                        log(`⚡ <b>${atacanteInimigo.nome} (Inimigo)</b> usou ${habUsada.nome}!`);
+                        aliadosVivos.forEach(aId => {
+                            let ali = unidades[aId];
+                            let dano = calcularDano(atacanteInimigo, ali, habUsada);
+                            ali.hpAtual = Math.max(0, ali.hpAtual - dano);
+                            aplicarEfeitoHab(habUsada, ali);
+                        });
                     } else {
                         let dano = calcularDano(atacanteInimigo, alvoAliado, habUsada);
                         alvoAliado.hpAtual = Math.max(0, alvoAliado.hpAtual - dano);
+                        
+                        if (habUsada.tipo === 'roubo_vida') {
+                            atacanteInimigo.hpAtual = Math.min(atacanteInimigo.hpMax, atacanteInimigo.hpAtual + 30);
+                            log(`🌊 <b>${atacanteInimigo.nome} (Inimigo)</b> recuperou HP com Corte Maré Baixa!`);
+                        }
+
                         carregarLimite(atacanteInimigo, 25);
                         carregarLimite(alvoAliado, 15);
                         if (habUsada.cdMax > 0) habUsada.cdAtual = habUsada.cdMax;
                         log(`⚔️ <b>${atacanteInimigo.nome} (Inimigo)</b> usou <b>${habUsada.nome}</b> causando ${dano} de dano!`);
-
-                        if (habUsada.efeito === 'veneno') alvoAliado.veneno = 6;
-                        if (habUsada.efeito === 'queimadura') alvoAliado.queimadura = 2;
+                        aplicarEfeitoHab(habUsada, alvoAliado);
                     }
                 }
                 aplicarDanoPosAtaque(atacanteInimigo);
@@ -675,7 +789,6 @@
         }, 800);
     }
 
-    // Forçar inicialização da tela de seleção assim que carregar o HTML
     window.onload = function() {
         renderizarRoster();
     };
