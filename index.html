@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>3v3 Paper RPG - Seleção & Batalha</title>
+    <title>3v3 Paper RPG - Visual Updates</title>
     <style>
         * { box-sizing: border-box; margin: 0; padding: 0; user-select: none; }
         body { background: #1a1a1a; font-family: 'Courier New', Courier, monospace; color: #333; display: flex; justify-content: center; align-items: center; min-height: 100vh; padding: 10px; }
@@ -41,7 +41,7 @@
 
         #game-screen { display: none; }
 
-        .field { display: flex; justify-content: space-between; background: rgba(0,0,0,0.05); border: 2px dashed #8b5a2b; border-radius: 8px; padding: 10px; height: 230px; position: relative; }
+        .field { display: flex; justify-content: space-between; background: rgba(0,0,0,0.05); border: 2px dashed #8b5a2b; border-radius: 8px; padding: 10px; height: 240px; position: relative; }
         .team-side { width: 48%; height: 100%; position: relative; }
         
         .ally-side .pos-back-top { position: absolute; left: 5%; top: 5%; }
@@ -53,13 +53,30 @@
         .enemy-side .pos-back-bottom { position: absolute; right: 5%; bottom: 5%; }
 
         .unit-card {
-            width: 95px; background: #fff8dc; border: 2px solid #5c4033; border-radius: 6px; padding: 5px; text-align: center;
+            width: 100px; background: #fff8dc; border: 2px solid #5c4033; border-radius: 6px; padding: 5px; text-align: center;
             font-size: 10px; cursor: pointer; transition: transform 0.2s, box-shadow 0.2s; position: relative;
         }
         .unit-card.selected-target { border: 3px solid #d32f2f; box-shadow: 0 0 10px #d32f2f; transform: scale(1.08); }
         .unit-card.selected-attacker { border: 3px solid #f1c40f; box-shadow: 0 0 10px #f1c40f; transform: scale(1.08); }
         .unit-card.target-buff-mode { border: 3px solid #2196f3; box-shadow: 0 0 10px #2196f3; transform: scale(1.08); }
-        .unit-card.dead { opacity: 0.3; filter: grayscale(100%); cursor: not-allowed; }
+        .unit-card.dead { opacity: 0.4; filter: grayscale(80%); cursor: not-allowed; }
+
+        /* NOVIDADE 3: Marcador X de morte sobre o card */
+        .dead-overlay {
+            display: none; position: absolute; top: 0; left: 0; width: 100%; height: 100%;
+            background: rgba(0, 0, 0, 0.2); font-size: 32px; font-weight: bold; color: #ff1744;
+            justify-content: center; align-items: center; z-index: 10; pointer-events: none;
+            text-shadow: 0px 0px 4px #000;
+        }
+        .unit-card.dead .dead-overlay { display: flex; }
+
+        /* NOVIDADE 4: Badge de Fraqueza do Inimigo Selecionado */
+        .weakness-dot {
+            display: none; position: absolute; top: -12px; right: -5px; padding: 2px 5px;
+            border-radius: 10px; font-size: 8px; font-weight: bold; color: #fff; border: 1px solid #000;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.4); z-index: 5; white-space: nowrap;
+        }
+        .unit-card.selected-target .weakness-dot { display: block; }
 
         .target-cursor {
             position: absolute; top: -18px; left: 50%; transform: translateX(-50%);
@@ -82,10 +99,37 @@
         #log-box { background: #fff; border: 2px solid #5c4033; height: 85px; padding: 6px; font-size: 11px; overflow-y: auto; border-radius: 4px; }
         
         .action-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 6px; }
-        button { background: #fff8dc; border: 2px solid #5c4033; padding: 8px 4px; font-weight: bold; font-size: 10px; cursor: pointer; border-radius: 4px; }
-        button:disabled { opacity: 0.5; background: #ccc; cursor: not-allowed; }
+        
+        button {
+            border: 2px solid #5c4033; padding: 8px 4px; font-weight: bold; font-size: 10px;
+            cursor: pointer; border-radius: 4px; transition: background-color 0.2s, color 0.2s, transform 0.1s;
+        }
+        button:disabled { opacity: 0.4 !important; background: #ccc !important; color: #666 !important; border-color: #888 !important; cursor: not-allowed; }
+
+        /* NOVIDADE 1: Estilização de Cores dos Botões de Habilidade por Elemento */
+        .elem-Físico { background: #e0e0e0; color: #212121; border-color: #616161; }
+        .elem-Fogo { background: #ffcdd2; color: #b71c1c; border-color: #d32f2f; }
+        .elem-Gelo { background: #e0f7fa; color: #006064; border-color: #00acc1; }
+        .elem-Vento { background: #e8f5e9; color: #1b5e20; border-color: #4caf50; }
+        .elem-Corrupção { background: #f3e5f5; color: #4a148c; border-color: #8e24aa; }
+        .elem-Biológico { background: #f1f8e9; color: #33691e; border-color: #689f38; }
+        .elem-Elétrico { background: #fffde7; color: #f57f17; border-color: #fbc02d; }
+        .elem-Água { background: #e1f5fe; color: #01579b; border-color: #0288d1; }
+        .elem-Mágico { background: #fce4ec; color: #880e4f; border-color: #c2185b; }
+        .elem-Escuridão { background: #424242; color: #ffffff; border-color: #212121; }
+        .elem-Suporte { background: #e0f2f1; color: #004d40; border-color: #00897b; }
+
+        /* NOVIDADE 2: Animação e Pulso da Quebra de Limites quando pronta */
         #btn-limit { grid-column: span 2; background: #ffecb3; border-color: #b78103; color: #8c5b00; }
-        #btn-limit.ready { background: #ff9800; color: #fff; }
+        #btn-limit.ready {
+            background: #ff9800; color: #fff; border-color: #e65100;
+            animation: pulseLimit 1.2s infinite alternate; font-size: 11px; text-shadow: 0 0 2px #000;
+        }
+
+        @keyframes pulseLimit {
+            0% { transform: scale(1); box-shadow: 0 0 4px #ff9800; }
+            100% { transform: scale(1.03); box-shadow: 0 0 12px #ff3d00; background: #ff3d00; }
+        }
     </style>
 </head>
 <body>
@@ -124,20 +168,24 @@
     <div id="turn-indicator">SEU TURNO</div>
 
     <div class="field">
+        <!-- Time Aliado -->
         <div class="team-side ally-side">
             <div id="unit-p0" class="unit-card pos-back-top" onclick="cliqueCardAliado('p0')">
+                <div class="dead-overlay">❌</div>
                 <div id="name-p0">-</div>
                 <div class="bar-bg"><div id="hp-p0" class="fill-hp"></div></div>
                 <div class="bar-bg"><div id="limit-p0" class="fill-limit"></div></div>
                 <div id="status-p0" class="status-badge"></div>
             </div>
             <div id="unit-p1" class="unit-card pos-front" onclick="cliqueCardAliado('p1')">
+                <div class="dead-overlay">❌</div>
                 <div id="name-p1">-</div>
                 <div class="bar-bg"><div id="hp-p1" class="fill-hp"></div></div>
                 <div class="bar-bg"><div id="limit-p1" class="fill-limit"></div></div>
                 <div id="status-p1" class="status-badge"></div>
             </div>
             <div id="unit-p2" class="unit-card pos-back-bottom" onclick="cliqueCardAliado('p2')">
+                <div class="dead-overlay">❌</div>
                 <div id="name-p2">-</div>
                 <div class="bar-bg"><div id="hp-p2" class="fill-hp"></div></div>
                 <div class="bar-bg"><div id="limit-p2" class="fill-limit"></div></div>
@@ -145,23 +193,30 @@
             </div>
         </div>
 
+        <!-- Time Inimigo -->
         <div class="team-side enemy-side">
             <div id="unit-e0" class="unit-card pos-back-top" onclick="selecionarAlvoInimigo('e0')">
+                <div class="dead-overlay">❌</div>
                 <div class="target-cursor">▼ ALVO</div>
+                <div id="weak-e0" class="weakness-dot"></div>
                 <div id="name-e0">-</div>
                 <div class="bar-bg"><div id="hp-e0" class="fill-hp"></div></div>
                 <div class="bar-bg"><div id="limit-e0" class="fill-limit"></div></div>
                 <div id="status-e0" class="status-badge"></div>
             </div>
             <div id="unit-e1" class="unit-card pos-front" onclick="selecionarAlvoInimigo('e1')">
+                <div class="dead-overlay">❌</div>
                 <div class="target-cursor">▼ ALVO</div>
+                <div id="weak-e1" class="weakness-dot"></div>
                 <div id="name-e1">-</div>
                 <div class="bar-bg"><div id="hp-e1" class="fill-hp"></div></div>
                 <div class="bar-bg"><div id="limit-e1" class="fill-limit"></div></div>
                 <div id="status-e1" class="status-badge"></div>
             </div>
             <div id="unit-e2" class="unit-card pos-back-bottom" onclick="selecionarAlvoInimigo('e2')">
+                <div class="dead-overlay">❌</div>
                 <div class="target-cursor">▼ ALVO</div>
+                <div id="weak-e2" class="weakness-dot"></div>
                 <div id="name-e2">-</div>
                 <div class="bar-bg"><div id="hp-e2" class="fill-hp"></div></div>
                 <div class="bar-bg"><div id="limit-e2" class="fill-limit"></div></div>
@@ -182,6 +237,22 @@
 </div>
 
 <script>
+    const COR_ELEMENTOS = {
+        "Físico": "#616161",
+        "Fogo": "#d32f2f",
+        "Gelo": "#00acc1",
+        "Vento": "#4caf50",
+        "Corrupção": "#8e24aa",
+        "Biológico": "#689f38",
+        "Elétrico": "#fbc02d",
+        "Água": "#0288d1",
+        "Mágico": "#c2185b",
+        "Escuridão": "#212121",
+        "Purificação": "#7e57c2",
+        "Luz": "#ffb300",
+        "Suporte": "#00897b"
+    };
+
     const BANCO_DE_DADOS_PERSONAGENS = {
         "Ysma": {
             hpMax: 100, danoFisico: 15, elementoBase: "Mágico", fraqueza: "Purificação", imunidade: "Fogo",
@@ -194,10 +265,10 @@
             limitBreak: { nome: "Explosão Prisma", dano: 50, elemento: "Mágico", tipo: "limit_padrao" }
         },
         "Campos": {
-            hpMax: 200, danoFisico: 20, elementoBase: "Corrupção", fraqueza: "Nenhuma", imunidade: "Nenhuma",
+            hpMax: 200, danoFisico: 20, elementoBase: "Corrupção", fraqueza: "Purificação", imunidade: "Corrupção",
             habilidades: [
                 { nome: "Garras Vorazes", dano: 20, elemento: "Físico", cdMax: 0, cdAtual: 0, tipo: "ataque" },
-                { nome: "Surto Corrupto", dano: 40, elemento: "Corrupção", cdMax: 3, cdAtual: 0, tipo: "ataque" },
+                { nome: "Surto Corrupto", dano: 35, elemento: "Corrupção", cdMax: 4, cdAtual: 0, tipo: "ataque" },
                 { nome: "Simbiose", dano: 0, elemento: "Suporte", cdMax: 4, cdAtual: 0, tipo: "buff_aliado" },
                 { nome: "Laceração", dano: 20, elemento: "Corrupção", cdMax: 3, cdAtual: 0, tipo: "ataque", efeito: "sangramento" }
             ],
@@ -652,6 +723,16 @@
             hpBar.style.width = Math.max(0, (u.hpAtual / u.hpMax) * 100) + "%";
             limitBar.style.width = u.limite + "%";
 
+            // NOVIDADE 4: Preenche a bolinha de fraqueza no canto do card inimigo
+            if (id.startsWith('e')) {
+                let weakDot = document.getElementById(`weak-${id}`);
+                if (weakDot) {
+                    let cor = COR_ELEMENTOS[u.fraqueza] || "#000";
+                    weakDot.style.backgroundColor = cor;
+                    weakDot.innerText = `Fraqueza: ${u.fraqueza}`;
+                }
+            }
+
             if (statusBadge) {
                 let listaStatus = [];
                 if (u.congelado) listaStatus.push("❄️ CONGELADO");
@@ -667,6 +748,7 @@
                 statusBadge.innerHTML = listaStatus.join("<br>");
             }
 
+            // NOVIDADE 3: Se o personagem morre, o X vermelho overlay é exibido pelo CSS
             if (u.hpAtual <= 0) card.classList.add('dead');
             else card.classList.remove('dead');
 
@@ -688,13 +770,22 @@
                 if (h) {
                     btn.innerText = `${h.nome} ${h.cdAtual > 0 ? `(${h.cdAtual}t)` : ''}`;
                     btn.disabled = h.cdAtual > 0 || emTurnoInimigo;
+                    
+                    // NOVIDADE 1: Aplica a classe de cor do elemento do golpe no botão
+                    btn.className = `elem-${h.elemento}`;
                 }
             }
+
+            // NOVIDADE 2: Atualização do botão do Limit Break
             let btnL = document.getElementById('btn-limit');
-            btnL.innerText = `QUEBRA DE LIMITES (${at.limite}%)`;
             btnL.disabled = at.limite < 100 || emTurnoInimigo;
-            if (at.limite >= 100) btnL.classList.add('ready');
-            else btnL.classList.remove('ready');
+            if (at.limite >= 100) {
+                btnL.classList.add('ready');
+                btnL.innerText = `🔥 ${at.limitBreak.nome.toUpperCase()} (PRONTO!) 🔥`;
+            } else {
+                btnL.classList.remove('ready');
+                btnL.innerText = `QUEBRA DE LIMITES (${at.limite}%)`;
+            }
         }
     }
 
@@ -727,7 +818,7 @@
                     log(`❄ <b>${atacanteInimigo.nome} (Inimigo)</b> está CONGELADO e perdeu a vez!`);
                     atacanteInimigo.congelado = false;
                 } else if (checarParalisia(atacanteInimigo)) {
-                    // Perdeu vez por paralisia
+                    // Perdeu a vez por paralisia
                 } else {
                     let alvoAliadoId = aliadosVivos[Math.floor(Math.random() * aliadosVivos.length)];
                     let alvoAliado = unidades[alvoAliadoId];
