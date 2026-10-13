@@ -13,10 +13,31 @@
             background-image: linear-gradient(#ccc 0.05em, transparent 0.05em), linear-gradient(90deg, #ccc 0.05em, transparent 0.05em);
             background-size: 20px 20px; border: 5px solid #5c4033; border-radius: 12px; padding: 16px; flex-direction: column; gap: 14px;
             position: relative;
-            overflow: hidden; /* Garante que o flash da tela não vaze das bordas arredondadas */
+            overflow: hidden;
         }
 
-        /* EFEITO DE FLASH VERMELHO NA TELA INTEIRA (QUEBRA DE LIMITES) */
+        /* OVERLAY DA TELA DE VITÓRIA / DERROTA */
+        #end-screen {
+            display: none; position: absolute; top: 0; left: 0; width: 100%; height: 100%;
+            background: rgba(0, 0, 0, 0.75); z-index: 100; flex-direction: column;
+            justify-content: center; align-items: center; gap: 16px;
+        }
+        .end-box {
+            background: #fff8dc; border: 4px solid #5c4033; border-radius: 12px;
+            padding: 24px; text-align: center; max-width: 400px; width: 85%;
+            box-shadow: 0 8px 16px rgba(0,0,0,0.5);
+        }
+        .end-title-win { font-size: 26px; color: #2e7d32; text-shadow: 1px 1px 0px #000; margin-bottom: 8px; }
+        .end-title-lose { font-size: 26px; color: #c62828; text-shadow: 1px 1px 0px #000; margin-bottom: 8px; }
+        .end-desc { font-size: 13px; color: #5c4033; margin-bottom: 20px; }
+        .btn-restart {
+            background: #ff9800; color: #fff; border: 2px solid #e65100;
+            padding: 12px 20px; font-size: 14px; font-weight: bold; border-radius: 6px;
+            cursor: pointer; transition: transform 0.2s, background-color 0.2s;
+        }
+        .btn-restart:hover { transform: scale(1.05); background: #f57c00; }
+
+        /* FLASH DE QUEBRA DE LIMITES */
         #screen-flash {
             position: absolute; top: 0; left: 0; width: 100%; height: 100%;
             background: rgba(255, 0, 0, 0.5); pointer-events: none; opacity: 0;
@@ -66,14 +87,12 @@
         }
         #audio-control:hover { background: #ffeb3b; }
 
-        /* CAMPO DE BATALHA COM ESPAÇO CENTRAL LIVRE E SEM SOBREPOSIÇÃO */
         .field { 
             display: flex; justify-content: space-between; background: rgba(0,0,0,0.05); 
             border: 2px dashed #8b5a2b; border-radius: 8px; padding: 12px; height: 340px; position: relative; 
         }
         .team-side { width: 48%; height: 100%; position: relative; }
         
-        /* POSIÇÕES DOS CARDS SEM COLISÃO NO MEIO */
         .ally-side .pos-back-top { position: absolute; left: 5%; top: 5%; }
         .ally-side .pos-front { position: absolute; left: 42%; top: 36%; }
         .ally-side .pos-back-bottom { position: absolute; left: 5%; bottom: 5%; }
@@ -91,7 +110,6 @@
         .unit-card.target-buff-mode { border: 3px solid #2196f3; box-shadow: 0 0 10px #2196f3; transform: scale(1.08); }
         .unit-card.dead { opacity: 0.4; filter: grayscale(80%); cursor: not-allowed; }
 
-        /* PULSO AZUL PARA BUFF */
         .unit-card.buff-pulse {
             animation: buffGlow 0.8s ease-in-out;
         }
@@ -101,7 +119,6 @@
             100% { box-shadow: 0 0 0px #2196f3; border-color: #5c4033; }
         }
 
-        /* ANIMAÇÃO DE POPUP FLUTUANTE */
         .floating-pop {
             position: absolute; top: -10px; left: 50%; transform: translateX(-50%);
             font-size: 16px; font-weight: bold; pointer-events: none; z-index: 30;
@@ -217,7 +234,15 @@
 </div>
 
 <div id="game-screen" class="screen">
-    <!-- Overlay do Flash Vermelho para Quebra de Limites -->
+    <!-- Tela de Resultado no Fim da Batalha -->
+    <div id="end-screen">
+        <div class="end-box">
+            <div id="end-title"></div>
+            <div id="end-desc" class="end-desc"></div>
+            <button class="btn-restart" onclick="reiniciarPartida()">JOGAR NOVAMENTE 🔄</button>
+        </div>
+    </div>
+
     <div id="screen-flash"></div>
 
     <button id="audio-control" onclick="alternarAudio()" title="Ligar/Desligar Música">🔊</button>
@@ -330,7 +355,6 @@
         document.getElementById('audio-control').innerText = audioMutado ? '🔇' : '🔊';
     }
 
-    /* EFEITOS VISUAIS E FLUTUANTES */
     function mostrarEfeitoFlutuante(targetId, texto, tipo) {
         let card = document.getElementById(`unit-${targetId}`);
         if (!card) return;
@@ -529,6 +553,7 @@
             'e2': criarInstancia(timeInimigoSelecionado[2], "e2")
         };
 
+        document.getElementById('end-screen').style.display = 'none';
         document.getElementById('select-screen').style.display = 'none';
         document.getElementById('game-screen').style.display = 'flex';
 
@@ -537,6 +562,28 @@
         atualizarUI();
 
         tocarMusicaAleatoria();
+    }
+
+    function reiniciarPartida() {
+        timeAliadoSelecionado = [];
+        timeInimigoSelecionado = [];
+        faseSelecao = "aliado";
+        emTurnoInimigo = false;
+        modoSelecaoSimbiose = false;
+
+        document.getElementById('end-screen').style.display = 'none';
+        document.getElementById('game-screen').style.display = 'none';
+        document.getElementById('select-screen').style.display = 'flex';
+        document.getElementById('select-instruction').innerText = "Escolha 3 personagens para o SEU TIME";
+        document.getElementById('log-box').innerHTML = "> Seleção concluída! Comece a batalha.";
+
+        if (musicaAtual) {
+            musicaAtual.pause();
+            musicaAtual = null;
+        }
+
+        atualizarPainelSlots();
+        renderizarRoster();
     }
 
     function cliqueCardAliado(id) {
@@ -665,7 +712,6 @@
 
         let habilidade = (indiceHab === 'limit') ? atacante.limitBreak : atacante.habilidades[indiceHab];
 
-        // Se for Quebra de Limites, dispara o flash vermelho na tela inteira!
         if (indiceHab === 'limit') {
             dispararFlashLimites();
         }
@@ -863,6 +909,7 @@
         let inimigosMortos = ['e0', 'e1', 'e2'].every(id => unidades[id].hpAtual <= 0);
         if (inimigosMortos) {
             log("🎉 <b>VITÓRIA!</b> Todos os inimigos foram derrotados!");
+            exibirTelaFim(true);
             return true;
         }
         return false;
@@ -872,9 +919,30 @@
         let aliadosMortos = ['p0', 'p1', 'p2'].every(id => unidades[id].hpAtual <= 0);
         if (aliadosMortos) {
             log("💀 <b>DERROTA!</b> Seu time foi derrotado!");
+            exibirTelaFim(false);
             return true;
         }
         return false;
+    }
+
+    function exibirTelaFim(vitoria) {
+        let endScreen = document.getElementById('end-screen');
+        let title = document.getElementById('end-title');
+        let desc = document.getElementById('end-desc');
+
+        if (vitoria) {
+            title.className = 'end-title-win';
+            title.innerText = '🏆 VITÓRIA!';
+            desc.innerText = 'Seu time dominou o campo de batalha e derrotou todos os oponentes!';
+        } else {
+            title.className = 'end-title-lose';
+            title.innerText = '💀 DERROTA!';
+            desc.innerText = 'Seu time não resistiu aos ataques do inimigo. Ajuste sua estratégia e tente novamente!';
+        }
+
+        setTimeout(() => {
+            endScreen.style.display = 'flex';
+        }, 600);
     }
 
     function atualizarUI() {
