@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>3v3 Paper RPG - Dunnie Atualizada</title>
+    <title>3v3 Paper RPG - Roster de 12 Personagens & Caos do Guedes</title>
     <style>
         * { box-sizing: border-box; margin: 0; padding: 0; user-select: none; }
         body { background: #1a1a1a; font-family: 'Courier New', Courier, monospace; color: #333; display: flex; justify-content: center; align-items: center; min-height: 100vh; padding: 10px; }
@@ -74,20 +74,20 @@
         .select-header h2 { font-size: 20px; }
         .select-header p { font-size: 13px; margin-top: 4px; color: #d32f2f; font-weight: bold; }
 
-        .roster-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 10px; margin-top: 10px; }
+        .roster-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 8px; margin-top: 10px; }
         .roster-card {
-            background: #fff8dc; border: 2px solid #5c4033; border-radius: 8px; padding: 8px; text-align: center;
+            background: #fff8dc; border: 2px solid #5c4033; border-radius: 8px; padding: 6px; text-align: center;
             cursor: pointer; transition: transform 0.2s, border-color 0.2s; position: relative;
         }
         .roster-card:hover { transform: translateY(-3px); border-color: #ff9800; }
         .roster-card.selected-ally { border: 3px solid #2196f3; background: #e3f2fd; }
         .roster-card.selected-enemy { border: 3px solid #f44336; background: #ffebee; }
-        .roster-card h4 { font-size: 13px; color: #333; }
-        .roster-card span { font-size: 10px; color: #666; display: block; margin-top: 2px; }
+        .roster-card h4 { font-size: 12px; color: #333; }
+        .roster-card span { font-size: 9px; color: #666; display: block; margin-top: 2px; }
 
         .btn-profile-info {
-            margin-top: 6px; background: #8b5a2b; color: #fff; border: 1px solid #5c4033;
-            border-radius: 4px; font-size: 9px; padding: 3px 6px; cursor: pointer; font-weight: bold;
+            margin-top: 4px; background: #8b5a2b; color: #fff; border: 1px solid #5c4033;
+            border-radius: 4px; font-size: 8px; padding: 2px 4px; cursor: pointer; font-weight: bold;
         }
         .btn-profile-info:hover { background: #5c4033; }
 
@@ -190,13 +190,26 @@
         #turn-indicator { text-align: center; font-weight: bold; font-size: 15px; color: #5c4033; }
         #log-box { background: #fff; border: 2px solid #5c4033; height: 100px; padding: 8px; font-size: 12px; overflow-y: auto; border-radius: 4px; }
         
-        .action-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; }
+        .action-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; position: relative; }
         
         button {
             border: 2px solid #5c4033; padding: 10px 6px; font-weight: bold; font-size: 11px;
             cursor: pointer; border-radius: 4px; transition: background-color 0.2s, color 0.2s, transform 0.1s;
+            position: relative;
         }
         button:disabled { opacity: 0.4 !important; background: #ccc !important; color: #666 !important; border-color: #888 !important; cursor: not-allowed; }
+
+        .coin-tag {
+            position: absolute; top: -8px; right: -4px; background: #ffd700; color: #d32f2f;
+            border: 1px solid #000; border-radius: 10px; font-size: 9px; font-weight: bold; padding: 1px 5px;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.3);
+        }
+
+        #coin-counter-center {
+            display: none; grid-column: span 2; background: #fff8dc; border: 2px solid #ffd700;
+            color: #b78103; font-weight: bold; text-align: center; padding: 4px; font-size: 12px;
+            border-radius: 6px; margin-bottom: -4px;
+        }
 
         .elem-Físico { background: #e0e0e0; color: #212121; border-color: #616161; }
         .elem-Fogo { background: #ffcdd2; color: #b71c1c; border-color: #d32f2f; }
@@ -209,6 +222,8 @@
         .elem-Mágico { background: #fce4ec; color: #880e4f; border-color: #c2185b; }
         .elem-Escuridão { background: #424242; color: #ffffff; border-color: #212121; }
         .elem-Purificação { background: #ede7f6; color: #4a148c; border-color: #7e57c2; }
+        .elem-Terra { background: #d7ccc8; color: #4e342e; border-color: #5d4037; }
+        .elem-Surpresa { background: #fff9c4; color: #f57f17; border-color: #fbc02d; }
         .elem-Suporte { background: #e0f2f1; color: #004d40; border-color: #00897b; }
 
         #btn-limit { grid-column: span 2; background: #ffecb3; border-color: #b78103; color: #8c5b00; }
@@ -234,7 +249,7 @@
 
 <div id="select-screen" class="screen">
     <div class="select-header">
-        <h2>SELEÇÃO DE PERSONAGENS</h2>
+        <h2>SELEÇÃO DE PERSONAGENS (12 DISPONÍVEIS)</h2>
         <p id="select-instruction">Escolha 3 personagens para o SEU TIME</p>
     </div>
 
@@ -335,6 +350,7 @@
     <div id="log-box">> Seleção concluída! Comece a batalha.</div>
 
     <div class="action-grid">
+        <div id="coin-counter-center">🪙 MOEDAS DO GUEDES: <span id="coin-count-val">0</span></div>
         <button id="btn-atq1" onclick="executarAcaoJogador(0)">Habilidade 1</button>
         <button id="btn-atq2" onclick="executarAcaoJogador(1)">Habilidade 2</button>
         <button id="btn-atq3" onclick="executarAcaoJogador(2)">Habilidade 3</button>
@@ -403,7 +419,7 @@
         "Físico": "#616161", "Fogo": "#d32f2f", "Gelo": "#00acc1", "Vento": "#4caf50",
         "Corrupção": "#8e24aa", "Biológico": "#689f38", "Elétrico": "#fbc02d",
         "Água": "#0288d1", "Mágico": "#c2185b", "Escuridão": "#212121",
-        "Purificação": "#7e57c2", "Suporte": "#00897b"
+        "Purificação": "#7e57c2", "Terra": "#5d4037", "Surpresa": "#fbc02d", "Suporte": "#00897b"
     };
 
     const BANCO_DE_DADOS_PERSONAGENS = {
@@ -505,6 +521,39 @@
                 { nome: "Floreio Ramificado", dano: 25, elemento: "Físico", cdMax: 4, cdAtual: 0, tipo: "ataque_floreio_kevin", efeito: "molhado", desc: "Aplica MOLHADO. SE Mika estiver no time, o elemento muda para ÁGUA." }
             ],
             limitBreak: { nome: "Avanço do Herói", dano: 50, elemento: "Físico", tipo: "limit_kevin", desc: "Dano massivo único com Sangramento. SE Mika estiver no time, aplica MOLHADO em vez de sangrar." }
+        },
+        "Mariel": {
+            hpMax: 200, danoFisico: 15, elementoBase: "Purificação", fraqueza: "Vento", imunidade: "Terra",
+            passiva: { nome: "Asas da Noite", desc: "Ao ser acertada por um ataque do elemento Corrupção, ganha +20 de dano bônus no próximo ataque." },
+            habilidades: [
+                { nome: "Infusão", dano: 0, elemento: "Físico", cdMax: 1, cdAtual: 0, tipo: "buff_proprio", desc: "Apoia suas asas no chão e cura o solo, ganhando escudo (-10 de dano) por 1 turno." },
+                { nome: "Lâmina de Luz", dano: 35, elemento: "Purificação", cdMax: 2, cdAtual: 0, tipo: "ataque", efeito: "sangramento", desc: "Corta com purificação e causa sangramento por 3 turnos." },
+                { nome: "Rodeio Divino", dano: 10, elemento: "Purificação", cdMax: 3, cdAtual: 0, tipo: "ataque_buff_grupo", desc: "Voa rodando contra o inimigo, aumentando o dano do grupo em +10 no próximo turno. Vira 'Rodeio Sombrio' (25 de dano) se Campos estiver no time." },
+                { nome: "Impacto Sísmico", dano: 25, elemento: "Terra", cdMax: 3, cdAtual: 0, tipo: "ataque", efeito: "pesado", desc: "Lança o oponente no chão com força e adiciona o estado Pesado por 3 turnos (+20 de dano para ataques de Terra)." }
+            ],
+            limitBreak: { nome: "Meteoro Angelical", dano: 29, elemento: "Purificação", tipo: "limit_mariel", desc: "Atinge todos os inimigos simultaneamente e aplica o estado Pesado em todos eles." }
+        },
+        "Samael": {
+            hpMax: 120, danoFisico: 15, elementoBase: "Purificação", fraqueza: "Terra", imunidade: "Vento",
+            passiva: { nome: "Leve por Natureza", desc: "É imune aos estados de Leve e Pesado." },
+            habilidades: [
+                { nome: "Floreio de Penas", dano: 20, elemento: "Purificação", cdMax: 1, cdAtual: 0, tipo: "ataque", desc: "Ataque rápido de penas." },
+                { nome: "Floreio Ciano", dano: 35, elemento: "Purificação", cdMax: 2, cdAtual: 0, tipo: "ataque", efeito: "floreio_ciano", desc: "Deixa o alvo LEVE. SE Silver estiver no time, aplica Sangramento por 3 turnos no lugar." },
+                { nome: "Estilhaços Divinos", dano: 20, elemento: "Terra", cdMax: 3, cdAtual: 0, tipo: "estilhacos_divinos", desc: "Acerta TODOS em campo (ambos os times), mas reduz em 2t os cooldowns de todos os aliados!" },
+                { nome: "Proteção Antiga", dano: 0, elemento: "Terra", cdMax: 3, cdAtual: 0, tipo: "protecao_antiga", desc: "Recupera +10 HP do grupo e concede Passo Pluma (imunidade a dano do elemento Terra por 3 turnos) a todos os aliados!" }
+            ],
+            limitBreak: { nome: "Floreio Sol e Lua", dano: 40, elemento: "Purificação", tipo: "limit_samael", desc: "Atinge um inimigo e aplica um estado aleatório (Leve, Pesado ou Sangramento)." }
+        },
+        "Guedes": {
+            hpMax: 100, danoFisico: 15, elementoBase: "Surpresa", fraqueza: "Terra", imunidade: "Gelo",
+            passiva: { nome: "Vendedor Estranho", desc: "Substitui o sistema clássico de cooldowns por MOEDAS! Cada ataque gera moedas e bagunça os ataques de Ysma, Night, Silver, Groxy e Mika em ambos os times!" },
+            habilidades: [
+                { nome: "Roubar", dano: 15, elemento: "Vento", cdMax: 0, cdAtual: 0, tipo: "guedes_roubar", custoMoeda: 0, desc: "Ataque furtivo e sacana (+1 Moeda após o ataque)." },
+                { nome: "Piada Estranha", dano: 1, elemento: "Mágico", cdMax: 0, cdAtual: 0, tipo: "guedes_piada", custoMoeda: 2, desc: "Aplica Leve ou Pesado ao alvo, e ganha o estado Muito Doce (gera +1 moeda ao atacar por 2t)." },
+                { nome: "Lâmina de Vento", dano: 20, elemento: "Vento", cdMax: 0, cdAtual: 0, tipo: "guedes_lamina", custoMoeda: 3, desc: "Acerta todo o time inimigo e gera +2 Moedas para cada inimigo eliminado neste ataque!" },
+                { nome: "Choque de Loucura", dano: 27, elemento: "Terra", cdMax: 0, cdAtual: 0, tipo: "guedes_choque", custoMoeda: 3, desc: "Destrói tudo pela frente com dano de Terra e aplica Muito Doce para todo o time aliado!" }
+            ],
+            limitBreak: { nome: "Faça Chover Ouro", dano: 20, elemento: "Vento", tipo: "limit_guedes", desc: "Atinge o inimigo, sorteia Leve/Pesado, aplica Muito Doce a TODOS e gera +4 Moedas!" }
         }
     };
 
@@ -513,6 +562,8 @@
     let faseSelecao = "aliado"; 
 
     let unidades = {};
+    let moedasGuedesTimePlayer = 0;
+    let moedasGuedesTimeEnemy = 0;
     let atacanteAtualId = 'p1'; 
     let alvoInimigoId = 'e1';   
     let emTurnoInimigo = false;
@@ -538,10 +589,11 @@
         `;
 
         p.habilidades.forEach((h, idx) => {
+            let infoRecarga = (nomeChar === 'Guedes') ? `<b>Custo:</b> ${h.custoMoeda} Moedas` : `<b>Recarga:</b> ${h.cdMax} turnos`;
             html += `
                 <div class="profile-hab-item">
                     <h5>${idx + 1}. ${h.nome} (${h.elemento})</h5>
-                    <b>Dano:</b> ${h.dano} | <b>Recarga:</b> ${h.cdMax} turnos<br>
+                    <b>Dano:</b> ${h.dano} | ${infoRecarga}<br>
                     <span>${h.desc || 'Sem descrição adicional.'}</span>
                 </div>
             `;
@@ -627,14 +679,19 @@
             danoFisico: base.danoFisico, fraqueza: base.fraqueza, imunidade: base.imunidade,
             limite: 0, habilidades: JSON.parse(JSON.stringify(base.habilidades)),
             limitBreak: JSON.parse(JSON.stringify(base.limitBreak)),
-            escudoSimbiose: 0, escudoDunnie: 0, escudoDoctor: 0, escudoKevin: 0, escudoMika: 0,
+            escudoSimbiose: 0, escudoDunnie: 0, escudoDoctor: 0, escudoKevin: 0, escudoMika: 0, escudoMariel: 0, escudoGroxyGold: 0,
             buffAtqDoctor: 0, buffAtqYsma: 0, buffAtqNightSinergia: 0, debuffAtqNight: 0, bloqueioCuraTurnos: 0, buffAtqDoctorSobrecarga: 0,
-            paralisiaTurnos: 0, paralisiaChance: 0, sangramento: 0, queimadura: 0, veneno: 0, congelado: false, leve: 0, molhado: 0
+            buffMarielGrupo: 0, buffMarielCorrupcao: 0, passoPlumaTurnos: 0, muitoDoceTurnos: 0,
+            paralisiaTurnos: 0, paralisiaChance: 0, sangramento: 0, queimadura: 0, veneno: 0, congelado: false, leve: 0, pesado: 0, molhado: 0
         };
     }
 
     function timeTemPersonagem(timePrefix, nomeChar) {
         return ['0', '1', '2'].some(slot => unidades[timePrefix + slot] && unidades[timePrefix + slot].nome === nomeChar && unidades[timePrefix + slot].hpAtual > 0);
+    }
+
+    function algumTimeTemPersonagem(nomeChar) {
+        return timeTemPersonagem('p', nomeChar) || timeTemPersonagem('e', nomeChar);
     }
 
     function iniciarCombate() {
@@ -646,6 +703,28 @@
             'e1': criarInstancia(timeInimigoSelecionado[1], "e1"),
             'e2': criarInstancia(timeInimigoSelecionado[2], "e2")
         };
+
+        moedasGuedesTimePlayer = 0;
+        moedasGuedesTimeEnemy = 0;
+
+        // APLICAÇÃO DO CAOS DO GUEDES (SUBSTITUIÇÃO DE HABILIDADES)
+        if (algumTimeTemPersonagem('Guedes')) {
+            log(`🤪 <b>O GUEDES ESTÁ EM CAMPO!</b> O caos tomou conta e várias habilidades foram bagunçadas!`);
+            for (let id in unidades) {
+                let u = unidades[id];
+                if (u.nome === 'Ysma') {
+                    u.habilidades[1] = { nome: "Bola de Água", dano: 20, elemento: "Água", cdMax: 3, cdAtual: 0, tipo: "ataque", desc: "Guedes bagunçou esse ataque... Hora de improvisar!" };
+                } else if (u.nome === 'Night') {
+                    u.habilidades[3] = { nome: "Ataque da Colheita", dano: 10, elemento: "Biológico", cdMax: 3, cdAtual: 0, tipo: "ataque_colheita", desc: "Cura 20 HP do próprio usuário e causa dano no alvo." };
+                } else if (u.nome === 'Silver') {
+                    u.habilidades[2] = { nome: "All Black", dano: 32, elemento: "Corrupção", cdMax: 6, cdAtual: 0, tipo: "ataque", desc: "Guedes bagunçou esse ataque... Hora de improvisar!" };
+                } else if (u.nome === 'Groxy') {
+                    u.habilidades[1] = { nome: "Hiper Dourado", dano: 0, elemento: "Mágico", cdMax: 3, cdAtual: 0, tipo: "buff_groxy_gold", desc: "Escudo de -20 de dano por 2 turnos e o estado Muito Doce." };
+                } else if (u.nome === 'Mika') {
+                    u.habilidades[1] = { nome: "Flor Solar", dano: 20, elemento: "Fogo", cdMax: 6, cdAtual: 0, tipo: "ataque", efeito: "queimadura_50", desc: "50% de chance de queimar o alvo." };
+                }
+            }
+        }
 
         document.getElementById('end-screen').style.display = 'none';
         document.getElementById('select-screen').style.display = 'none';
@@ -705,11 +784,29 @@
             return 0;
         }
 
+        // PASSO PLUMA (Imunidade a Terra)
+        if (elem === 'Terra' && defensor.passoPlumaTurnos > 0) {
+            log(`🪶 <b>PASSO PLUMA!</b> ${defensor.nome} esquivou do dano de Terra!`);
+            mostrarEfeitoFlutuante(defensor.id, "PASSO PLUMA!", "info");
+            return 0;
+        }
+
         let danoBase = habilidade.dano;
 
         if (atacante.nome === 'Ysma' && elem !== 'Físico' && defensor.hpAtual < 50 && danoBase > 0) {
             danoBase += 15;
             log(`✨ <b>Magia Hexy (Ysma):</b> +15 de dano mágico em alvo com vida baixa!`);
+        }
+
+        if (atacante.buffMarielGrupo > 0) {
+            danoBase += 10;
+            log(`🕊️ <b>Rodeio Divino (Mariel):</b> +10 de dano bônus no ataque!`);
+        }
+
+        if (atacante.buffMarielCorrupcao > 0) {
+            danoBase += 20;
+            atacante.buffMarielCorrupcao = 0;
+            log(`🦅 <b>Asas da Noite (Mariel):</b> +20 de dano bônus liberado!`);
         }
 
         if (atacante.buffAtqYsma > 0) {
@@ -746,6 +843,11 @@
         if (elem === "Vento" && defensor.leve > 0) {
             danoBase += 20;
             log(`💨 <b>BÔNUS LEVE!</b> (+20 Dano em ${defensor.nome})`);
+        }
+
+        if (elem === "Terra" && defensor.pesado > 0) {
+            danoBase += 20;
+            log(`🪨 <b>BÔNUS PESADO + TERRA!</b> (+20 Dano em ${defensor.nome})`);
         }
 
         if (elem === "Gelo" && defensor.molhado > 0) {
@@ -791,6 +893,8 @@
         if (defensor.escudoSimbiose > 0) reducaoTotal += 20;
         if (defensor.escudoKevin > 0) reducaoTotal += 20;
         if (defensor.escudoMika > 0) reducaoTotal += 30;
+        if (defensor.escudoMariel > 0) reducaoTotal += 10;
+        if (defensor.escudoGroxyGold > 0) reducaoTotal += 20;
 
         if (reducaoTotal > 0 && danoBase > 0) {
             danoBase = Math.max(0, danoBase - reducaoTotal);
@@ -805,6 +909,12 @@
         if (defensor.nome === 'Doctor' && elem === 'Elétrico') {
             defensor.buffAtqDoctorSobrecarga = 1;
             log(`⚡ <b>Sobrecarga de Redes (Doctor):</b> Sofreu dano Elétrico e energizou o próximo ataque!`);
+        }
+
+        // PASSIVA MARIEL (Asas da Noite)
+        if (defensor.nome === 'Mariel' && elem === 'Corrupção') {
+            defensor.buffMarielCorrupcao = 1;
+            log(`🦅 <b>Asas da Noite (Mariel):</b> Sofreu dano de Corrupção e ganhou +20 de dano para o próximo turno!`);
         }
 
         return Math.max(0, danoBase);
@@ -833,8 +943,15 @@
     function aplicarDanoPosAtaque(unidade) {
         if (unidade.hpAtual > 0 && unidade.queimadura > 0) {
             unidade.hpAtual = Math.max(0, unidade.hpAtual - 10);
-            log(`🔥 <b>${unidade.nome}</b> sofreu 10 de dano por Queimadura!`);
+            log(`🔥 <b>${unidade.nome}</b> sofreu 10 por Queimadura!`);
             mostrarEfeitoFlutuante(unidade.id, "-10 🔥", "dano");
+        }
+
+        // GERADOR DE MOEDAS MUITO DOCE
+        if (unidade.muitoDoceTurnos > 0 && unidade.nome === 'Guedes') {
+            if (unidade.id.startsWith('p')) moedasGuedesTimePlayer++;
+            else moedasGuedesTimeEnemy++;
+            log(`🍬 <b>Muito Doce (Guedes):</b> Gerou +1 Moeda extra ao agir!`);
         }
     }
 
@@ -857,7 +974,38 @@
             defensor.queimadura = timeTemPersonagem(timePrefixAttacker, 'Campos') ? 9 : 2;
             log(`🔥 <b>Bola de Fogo:</b> ${defensor.nome} foi queimado por ${defensor.queimadura} turnos!`);
         }
+        else if (habilidade.efeito === 'queimadura_50') {
+            if (Math.random() < 0.50) {
+                defensor.queimadura = 2;
+                log(`🔥 <b>${defensor.nome}</b> foi incendiado!`);
+            }
+        }
         else if (habilidade.efeito === 'sangramento') defensor.sangramento = 3;
+        else if (habilidade.efeito === 'pesado') {
+            if (defensor.nome === 'Samael') {
+                log(`🪶 <b>Leve por Natureza (Samael):</b> Imune ao estado Pesado!`);
+            } else {
+                defensor.pesado = 3;
+                log(`🪨 <b>${defensor.nome}</b> recebeu o estado PESADO por 3 turnos!`);
+            }
+        }
+        else if (habilidade.efeito === 'leve') {
+            if (defensor.nome === 'Samael') {
+                log(`🪶 <b>Leve por Natureza (Samael):</b> Imune ao estado Leve!`);
+            } else {
+                defensor.leve = 3;
+                log(`🍃 <b>${defensor.nome}</b> recebeu o estado LEVE por 3 turnos!`);
+            }
+        }
+        else if (habilidade.efeito === 'floreio_ciano') {
+            if (timeTemPersonagem(timePrefixAttacker, 'Silver')) {
+                defensor.sangramento = 3;
+                log(`⚔️ <b>Sinergia Floreio Ciano (Samael + Silver):</b> ${defensor.nome} recebeu Sangramento por 3 turnos!`);
+            } else {
+                if (defensor.nome === 'Samael') log(`🪶 <b>Leve por Natureza:</b> Imune ao estado Leve!`);
+                else { defensor.leve = 3; log(`🍃 <b>${defensor.nome}</b> recebeu o estado LEVE!`); }
+            }
+        }
         else if (habilidade.efeito === 'veneno') {
             let duracaoVeneno = 6;
             if (habilidade.nome === 'Força dos Antigos' && timeTemPersonagem(timePrefixAttacker, 'Groxy')) {
@@ -928,6 +1076,15 @@
 
         let habilidade = (indiceHab === 'limit') ? atacante.limitBreak : atacante.habilidades[indiceHab];
 
+        // CHECAGEM DE MOEDAS DO GUEDES
+        if (atacante.nome === 'Guedes' && indiceHab !== 'limit') {
+            if (moedasGuedesTimePlayer < habilidade.custoMoeda) {
+                log(`🪙 <b>Moedas Insuficientes!</b> Guedes precisa de ${habilidade.custoMoeda} moedas para usá-la.`);
+                return;
+            }
+            moedasGuedesTimePlayer -= habilidade.custoMoeda;
+        }
+
         if (indiceHab === 'limit') {
             dispararFlashLimites();
         }
@@ -940,7 +1097,131 @@
             return;
         }
 
-        if (habilidade.tipo === 'limit_mika') {
+        if (habilidade.tipo === 'guedes_roubar') {
+            let dano = calcularDano(atacante, defensor, habilidade);
+            defensor.hpAtual = Math.max(0, defensor.hpAtual - dano);
+            mostrarEfeitoFlutuante(defensor.id, `-${dano}`, "dano");
+            moedasGuedesTimePlayer++;
+            log(`🪙 <b>Roubar:</b> Guedes causou ${dano} de dano e ganhou +1 Moeda! (Total: ${moedasGuedesTimePlayer})`);
+        }
+        else if (habilidade.tipo === 'guedes_piada') {
+            let dano = calcularDano(atacante, defensor, habilidade);
+            defensor.hpAtual = Math.max(0, defensor.hpAtual - dano);
+            mostrarEfeitoFlutuante(defensor.id, `-${dano}`, "dano");
+            
+            if (Math.random() < 0.5) {
+                defensor.leve = 3; log(`🍃 <b>Piada Estranha:</b> ${defensor.nome} ficou LEVE!`);
+            } else {
+                defensor.pesado = 3; log(`🪨 <b>Piada Estranha:</b> ${defensor.nome} ficou PESADO!`);
+            }
+            atacante.muitoDoceTurnos = 2;
+            log(`🍬 <b>Guedes</b> ganhou o estado Muito Doce por 2 turnos!`);
+        }
+        else if (habilidade.tipo === 'guedes_lamina') {
+            log(`🍃 <b>Guedes</b> usou Lâmina de Vento!`);
+            ['e0', 'e1', 'e2'].forEach(eId => {
+                let inimigo = unidades[eId];
+                if (inimigo.hpAtual > 0) {
+                    let dano = calcularDano(atacante, inimigo, habilidade);
+                    inimigo.hpAtual = Math.max(0, inimigo.hpAtual - dano);
+                    mostrarEfeitoFlutuante(eId, `-${dano}`, "dano");
+                    if (inimigo.hpAtual <= 0) {
+                        moedasGuedesTimePlayer += 2;
+                        log(`🪙 <b>Eliminação!</b> Guedes gerou +2 Moedas ao derrotar ${inimigo.nome}!`);
+                    }
+                }
+            });
+        }
+        else if (habilidade.tipo === 'guedes_choque') {
+            let dano = calcularDano(atacante, defensor, habilidade);
+            defensor.hpAtual = Math.max(0, defensor.hpAtual - dano);
+            mostrarEfeitoFlutuante(defensor.id, `-${dano}`, "dano");
+            ['p0', 'p1', 'p2'].forEach(pId => {
+                if (unidades[pId].hpAtual > 0) unidades[pId].muitoDoceTurnos = 2;
+            });
+            log(`🍬 <b>Choque de Loucura:</b> Todo o time aliado ganhou o estado Muito Doce!`);
+        }
+        else if (habilidade.tipo === 'limit_guedes') {
+            atacante.limite = 0;
+            let dano = calcularDano(atacante, defensor, habilidade);
+            defensor.hpAtual = Math.max(0, defensor.hpAtual - dano);
+            mostrarEfeitoFlutuante(defensor.id, `-${dano}`, "dano");
+            if (Math.random() < 0.5) defensor.leve = 3; else defensor.pesado = 3;
+            ['p0', 'p1', 'p2', 'e0', 'e1', 'e2'].forEach(uId => {
+                if (unidades[uId] && unidades[uId].hpAtual > 0) unidades[uId].muitoDoceTurnos = 2;
+            });
+            moedasGuedesTimePlayer += 4;
+            log(`🪙✨ <b>Faça Chover Ouro:</b> Guedes causou ${dano} de dano, deixou todos Muito Doce e ganhou +4 Moedas!`);
+        }
+        else if (habilidade.tipo === 'buff_groxy_gold') {
+            atacante.escudoGroxyGold = 2;
+            atacante.muitoDoceTurnos = 2;
+            habilidade.cdAtual = habilidade.cdMax;
+            log(`✨ <b>Groxy</b> usou Hiper Dourado! Ganhou Escudo (-20) e ficou Muito Doce por 2 turnos!`);
+        }
+        else if (habilidade.tipo === 'ataque_colheita') {
+            let dano = calcularDano(atacante, defensor, habilidade);
+            defensor.hpAtual = Math.max(0, defensor.hpAtual - dano);
+            aplicarCura(atacante, 20, atacante);
+            habilidade.cdAtual = habilidade.cdMax;
+            log(`🌾 <b>Night</b> usou Ataque da Colheita, causou ${dano} de dano e curou +20 HP!`);
+        }
+        else if (habilidade.tipo === 'estilhacos_divinos') {
+            habilidade.cdAtual = habilidade.cdMax;
+            log(`🪨 <b>Samael</b> usou Estilhaços Divinos! Pedras voam para todo o lado!`);
+            ['p0', 'p1', 'p2', 'e0', 'e1', 'e2'].forEach(uId => {
+                let target = unidades[uId];
+                if (target && target.hpAtual > 0) {
+                    let dano = calcularDano(atacante, target, habilidade);
+                    target.hpAtual = Math.max(0, target.hpAtual - dano);
+                    mostrarEfeitoFlutuante(uId, `-${dano}`, "dano");
+                }
+            });
+            ['p0', 'p1', 'p2'].forEach(pId => {
+                let ali = unidades[pId];
+                if (ali.hpAtual > 0) {
+                    ali.habilidades.forEach(h => { if (h.cdAtual > 0) h.cdAtual = Math.max(0, h.cdAtual - 2); });
+                }
+            });
+            log(`⏳ <b>Estilhaços Divinos:</b> Reduziu 2 turnos de cooldown de todos os aliados!`);
+        }
+        else if (habilidade.tipo === 'protecao_antiga') {
+            habilidade.cdAtual = habilidade.cdMax;
+            ['p0', 'p1', 'p2'].forEach(pId => {
+                let ali = unidades[pId];
+                if (ali.hpAtual > 0) {
+                    aplicarCura(ali, 10, atacante);
+                    ali.passoPlumaTurnos = 3;
+                }
+            });
+            log(`🪶 <b>Samael</b> usou Proteção Antiga! Curou +10 HP do grupo e concedeu PASSO PLUMA (Imunidade a Terra) por 3 turnos!`);
+        }
+        else if (habilidade.tipo === 'limit_mariel') {
+            atacante.limite = 0;
+            log(`🕊️ <b>Mariel</b> usou Meteoro Angelical!`);
+            ['e0', 'e1', 'e2'].forEach(eId => {
+                let inimigo = unidades[eId];
+                if (inimigo.hpAtual > 0) {
+                    let dano = calcularDano(atacante, inimigo, habilidade);
+                    inimigo.hpAtual = Math.max(0, inimigo.hpAtual - dano);
+                    inimigo.pesado = 3;
+                    mostrarEfeitoFlutuante(eId, `-${dano}`, "dano");
+                }
+            });
+            log(`🪨 Todos os inimigos receberam o estado PESADO!`);
+        }
+        else if (habilidade.tipo === 'limit_samael') {
+            atacante.limite = 0;
+            let dano = calcularDano(atacante, defensor, habilidade);
+            defensor.hpAtual = Math.max(0, defensor.hpAtual - dano);
+            mostrarEfeitoFlutuante(defensor.id, `-${dano}`, "dano");
+            let rand = Math.random();
+            if (rand < 0.33) defensor.leve = 3;
+            else if (rand < 0.66) defensor.pesado = 3;
+            else defensor.sangramento = 3;
+            log(`⚔️ <b>Samael</b> usou Floreio Sol e Lua causing ${dano} de dano!`);
+        }
+        else if (habilidade.tipo === 'limit_mika') {
             atacante.limite = 0;
             let temKevin = timeTemPersonagem('p', 'Kevin');
             log(`🌟 <b>Mika</b> usou Armadura Cósmica!`);
@@ -952,86 +1233,44 @@
                     else ali.escudoMika = 1;
                 }
             });
-            aplicarDanoPosAtaque(atacante);
-            if (verificarVitoria()) return;
-            iniciarTurnoInimigo();
-            return;
         }
-
-        if (habilidade.tipo === 'buff_proprio' || habilidade.tipo === 'buff_escudo_cura') {
-            aplicarCura(atacante, 30, atacante);
-            atacante.escudoDunnie = 1;
-
-            // PREPARO CORROMPIDO (SINERGIA DUNNIE + CAMPOS)
-            if (atacante.nome === 'Dunnie' && timeTemPersonagem(prefixo, 'Campos')) {
-                let camposId = ['0', '1', '2'].map(s => prefixo + s).find(id => unidades[id] && unidades[id].nome === 'Campos');
-                if (camposId) {
-                    aplicarCura(unidades[camposId], 30, atacante);
-                    unidades[camposId].escudoDunnie = 1;
-                    log(`🛡️ <b>Preparo Corrompido (Dunnie + Campos):</b> Campos recebeu +30 HP e Escudo também!`);
+        else if (habilidade.tipo === 'buff_proprio' || habilidade.tipo === 'buff_escudo_cura') {
+            if (atacante.nome === 'Mariel') {
+                atacante.escudoMariel = 1;
+                log(`🛡️ <b>Mariel</b> usou Infusão e ganhou escudo (-10 dano)!`);
+            } else {
+                aplicarCura(atacante, 30, atacante);
+                atacante.escudoDunnie = 1;
+                if (atacante.nome === 'Dunnie' && timeTemPersonagem(prefixo, 'Campos')) {
+                    let camposId = ['0', '1', '2'].map(s => prefixo + s).find(id => unidades[id] && unidades[id].nome === 'Campos');
+                    if (camposId) {
+                        aplicarCura(unidades[camposId], 30, atacante);
+                        unidades[camposId].escudoDunnie = 1;
+                        log(`🛡️ <b>Preparo Corrompido:</b> Campos recebeu +30 HP e Escudo!`);
+                    }
                 }
             }
-
-            let ganhoLimit = 15;
-            // PASSIVA DUNNIE: Paciência dos Antigos
-            if (atacante.nome === 'Dunnie') {
-                ganhoLimit = timeTemPersonagem(prefixo, 'Night') ? 40 : 20;
-                log(`🛡️ <b>Paciência dos Antigos (Dunnie):</b> +${ganhoLimit}% de Quebra de Limites gerado!`);
-            }
-            carregarLimite(atacante, ganhoLimit);
-
             if (indiceHab !== 'limit') habilidade.cdAtual = habilidade.cdMax;
-            log(`🛡️ <b>${atacante.nome}</b> usou ${habilidade.nome} (+30 HP e Escudo)!`);
-            
-            aplicarDanoPosAtaque(atacante);
-            if (verificarVitoria()) return;
-            iniciarTurnoInimigo();
-            return;
         }
-
-        if (habilidade.tipo === 'cura_propria_20') {
+        else if (habilidade.tipo === 'cura_propria_20') {
             aplicarCura(atacante, 20, atacante);
             carregarLimite(atacante, 15);
             if (indiceHab !== 'limit') habilidade.cdAtual = habilidade.cdMax;
-            
             ['p0', 'p1', 'p2'].forEach(pId => {
                 if (pId !== atacanteAtualId && unidades[pId].hpAtual > 0) {
-                    unidades[pId].habilidades.forEach(h => {
-                        if (h.cdAtual > 0) h.cdAtual--;
-                    });
+                    unidades[pId].habilidades.forEach(h => { if (h.cdAtual > 0) h.cdAtual--; });
                 }
             });
-            log(`🦁 <b>${atacante.nome}</b> usou Rugido Poderoso (+20 HP e -1t de cooldown para os aliados)!`);
-
-            if (timeTemPersonagem(prefixo, 'Silver')) {
-                let silverId = ['0', '1', '2'].map(s => prefixo + s).find(id => unidades[id] && unidades[id].nome === 'Silver');
-                if (silverId) {
-                    unidades[silverId].habilidades[2].cdAtual = 0;
-                    log(`⚡ <b>Sinergia Rugido Poderoso (Night + Silver):</b> O cooldown de Off White foi ZERADO!`);
-                }
-            }
-            
-            aplicarDanoPosAtaque(atacante);
-            if (verificarVitoria()) return;
-            iniciarTurnoInimigo();
-            return;
+            log(`🦁 <b>${atacante.nome}</b> usou Rugido Poderoso!`);
         }
-
-        if (habilidade.tipo === 'buff_doctor') {
+        else if (habilidade.tipo === 'buff_doctor') {
             atacante.buffAtqDoctor = 5;
             atacante.escudoDoctor = 5;
             carregarLimite(atacante, 15);
             if (indiceHab !== 'limit') habilidade.cdAtual = habilidade.cdMax;
-            log(`⚡ <b>${atacante.nome}</b> usou Atualizar (+10 ATQ e Escudo por 5 turnos)!`);
-            dispararBuffPulse(atacante.id);
-            
-            aplicarDanoPosAtaque(atacante);
-            if (verificarVitoria()) return;
-            iniciarTurnoInimigo();
-            return;
+            log(`⚡ <b>${atacante.nome}</b> usou Atualizar!`);
         }
-
-        if (habilidade.tipo === 'limit_silver') {
+        else if (habilidade.tipo === 'limit_silver') {
             atacante.limite = 0;
             log(`⚔️ <b>Silver</b> usou Lâmina Divina!`);
             ['e0', 'e1', 'e2'].forEach(eId => {
@@ -1043,33 +1282,23 @@
                     mostrarEfeitoFlutuante(eId, `-${dano}`, "dano");
                 }
             });
-            log(`🍃 Todos os inimigos receberam o efeito LEVE!`);
         } else if (habilidade.tipo === 'limit_kevin') {
             atacante.limite = 0;
             let temMika = timeTemPersonagem('p', 'Mika');
             let dano = calcularDano(atacante, defensor, habilidade);
             defensor.hpAtual = Math.max(0, defensor.hpAtual - dano);
             mostrarEfeitoFlutuante(defensor.id, `-${dano}`, "dano");
-            if (temMika) {
-                defensor.molhado = 3;
-                log(`⚔️ <b>Kevin</b> usou Avanço do Herói (${dano} dano) e aplicou MOLHADO!`);
-            } else {
-                defensor.sangramento = 3;
-                log(`⚔️ <b>Kevin</b> usou Avanço do Herói (${dano} dano) e aplicou SANGRAMENTO!`);
-            }
+            if (temMika) defensor.molhado = 3; else defensor.sangramento = 3;
         } else if (habilidade.tipo === 'limit_banquete') {
             let dano = calcularDano(atacante, defensor, habilidade);
             defensor.hpAtual = Math.max(0, defensor.hpAtual - dano);
-            mostrarEfeitoFlutuante(defensor.id, `-${dano}`, "dano");
             atacante.limite = 0;
             let cura = Math.round(dano * 0.30);
-            log(`🔥 <b>${atacante.nome}</b> usou Banquete Simbiótico causando ${dano} de dano!`);
             ['p0', 'p1', 'p2'].forEach(pId => {
                 if (unidades[pId].hpAtual > 0) aplicarCura(unidades[pId], cura, atacante);
             });
         } else if (habilidade.tipo === 'limit_night') {
             atacante.limite = 0;
-            log(`☄️ <b>${atacante.nome}</b> usou Meteoro das Trevas!`);
             ['e0', 'e1', 'e2'].forEach(eId => {
                 let inimigo = unidades[eId];
                 if (inimigo.hpAtual > 0) {
@@ -1081,7 +1310,6 @@
             });
         } else if (habilidade.tipo === 'limit_groxy') {
             atacante.limite = 0;
-            log(`🎃 <b>${atacante.nome}</b> usou Dança da Abóbora!`);
             let temGroxyInimigo = ['e0', 'e1', 'e2'].some(eId => unidades[eId].nome === 'Groxy' && unidades[eId].hpAtual > 0);
             ['e0', 'e1', 'e2'].forEach(eId => {
                 let inimigo = unidades[eId];
@@ -1128,20 +1356,28 @@
             defensor.hpAtual = Math.max(0, defensor.hpAtual - dano);
             mostrarEfeitoFlutuante(defensor.id, `-${dano}`, "dano");
 
-            // ROUBO DE VIDA DUNNIE + SILVER
+            if (habilidade.tipo === 'ataque_buff_grupo') {
+                if (timeTemPersonagem(prefixo, 'Campos')) {
+                    dano = calcularDano(atacante, defensor, { dano: 25, elemento: "Purificação" });
+                    log(`🖤 <b>Rodeio Sombrio (Mariel + Campos):</b> Causou 25 de dano!`);
+                } else {
+                    ['p0', 'p1', 'p2'].forEach(pId => {
+                        if (unidades[pId].hpAtual > 0) unidades[pId].buffMarielGrupo = 1;
+                    });
+                    log(`🕊️ <b>Rodeio Divino:</b> Grupo ganhou +10 de dano para o próximo ataque!`);
+                }
+            }
+
             if (atacante.nome === 'Dunnie' && habilidade.nome === 'Ataque Rápido' && timeTemPersonagem(prefixo, 'Silver')) {
                 aplicarCura(atacante, 20, atacante);
-                log(`✨ <b>Ataque Purificador (Dunnie + Silver):</b> Roubou 20 de vida de ${defensor.nome}!`);
             }
 
             if (atacante.nome === 'Campos' && elemEfetivo === 'Corrupção' && dano > 0) {
                 aplicarCura(atacante, 10, atacante);
-                log(`🩸 <b>Vampirismo Simbiótico (Campos):</b> Recuperou +10 HP!`);
             }
 
             if (habilidade.tipo === 'roubo_vida') {
                 aplicarCura(atacante, 30, atacante);
-                log(`🌊 <b>${atacante.nome}</b> recuperou +30 de HP com Corte Maré Baixa!`);
             }
 
             if (indiceHab === 'limit') {
@@ -1152,12 +1388,7 @@
                 if (habilidade.cdMax > 0) habilidade.cdAtual = habilidade.cdMax;
             }
 
-            let nomeAtaqueExibido = habilidade.nome;
-            if (atacante.nome === 'Dunnie' && habilidade.nome === 'Ataque Rápido' && timeTemPersonagem(prefixo, 'Silver')) {
-                nomeAtaqueExibido = "Ataque Purificador";
-            }
-
-            log(`<b>${atacante.nome}</b> usou <b>${nomeAtaqueExibido}</b> (${elemEfetivo}) em <b>${defensor.nome}</b> causando ${dano} de dano!`);
+            log(`<b>${atacante.nome}</b> usou <b>${habilidade.nome}</b> (${elemEfetivo}) em <b>${defensor.nome}</b> causando ${dano} de dano!`);
             aplicarEfeitoHab(habilidade, defensor, prefixo);
         }
 
@@ -1173,10 +1404,7 @@
 
         if (habilidade.tipo === 'buff_aliado') {
             aliadoTarget.escudoSimbiose = 2;
-            if (aliadoTarget.nome === 'Ysma') {
-                aliadoTarget.buffAtqYsma = 1;
-                log(`🔥 <b>Sinergia Simbiose (Campos + Ysma):</b> Ysma ganhou +20 de ATQ para o próximo ataque!`);
-            }
+            if (aliadoTarget.nome === 'Ysma') aliadoTarget.buffAtqYsma = 1;
             log(`🛡 <b>${atacante.nome}</b> aplicou Simbiose em <b>${aliadoTarget.nome}</b>!`);
         } else if (habilidade.tipo === 'buff_aliado_cura_mika') {
             let qtdCura = (aliadoTarget.nome === 'Kevin') ? 50 : 30;
@@ -1187,7 +1415,7 @@
             aliadoTarget.escudoKevin = 2;
             dispararBuffPulse(aliadoTarget.id);
             mostrarEfeitoFlutuante(aliadoTarget.id, `ESCUDO -${qtdEscudo}`, "info");
-            log(`🛡️ <b>Kevin</b> deu Escudo da Estrela para <b>${aliadoTarget.nome}</b> (-${qtdEscudo} Dano por 2 turnos)!`);
+            log(`🛡️ <b>Kevin</b> deu Escudo da Estrela para <b>${aliadoTarget.nome}</b>!`);
         }
 
         habilidade.cdAtual = habilidade.cdMax;
@@ -1209,11 +1437,17 @@
             if (u.veneno > 0) { u.hpAtual = Math.max(0, u.hpAtual - 10); u.veneno--; log(`🧪 <b>${u.nome}</b> sofreu 10 por Veneno!`); mostrarEfeitoFlutuante(u.id, "-10 🧪", "dano"); }
             if (u.queimadura > 0) u.queimadura--;
             if (u.leve > 0) u.leve--;
+            if (u.pesado > 0) u.pesado--;
             if (u.molhado > 0) u.molhado--;
+            if (u.passoPlumaTurnos > 0) u.passoPlumaTurnos--;
+            if (u.muitoDoceTurnos > 0) u.muitoDoceTurnos--;
             if (u.escudoSimbiose > 0) u.escudoSimbiose--;
             if (u.escudoKevin > 0) u.escudoKevin--;
             if (u.escudoMika > 0) u.escudoMika--;
+            if (u.escudoMariel > 0) u.escudoMariel--;
+            if (u.escudoGroxyGold > 0) u.escudoGroxyGold--;
             if (u.buffAtqDoctor > 0) u.buffAtqDoctor--;
+            if (u.buffMarielGrupo > 0) u.buffMarielGrupo--;
             if (u.buffAtqYsma > 0) u.buffAtqYsma--;
             if (u.buffAtqNightSinergia > 0) u.buffAtqNightSinergia--;
             if (u.escudoDoctor > 0) u.escudoDoctor--;
@@ -1268,6 +1502,18 @@
     }
 
     function atualizarUI() {
+        // ATUALIZA PAINEL CENTRAL DE MOEDAS DO GUEDES
+        let coinCounterBox = document.getElementById('coin-counter-center');
+        let coinValSpan = document.getElementById('coin-count-val');
+        let atacante = unidades[atacanteAtualId];
+
+        if (atacante && atacante.nome === 'Guedes' && atacante.hpAtual > 0) {
+            coinCounterBox.style.display = 'block';
+            coinValSpan.innerText = atacante.id.startsWith('p') ? moedasGuedesTimePlayer : moedasGuedesTimeEnemy;
+        } else {
+            coinCounterBox.style.display = 'none';
+        }
+
         for (let id in unidades) {
             let u = unidades[id];
             let card = document.getElementById(`unit-${id}`);
@@ -1296,9 +1542,12 @@
                 if (u.veneno > 0) listaStatus.push(`🧪 VENENO (${u.veneno}t)`);
                 if (u.sangramento > 0) listaStatus.push(`🩸 SANGRANDO (${u.sangramento}t)`);
                 if (u.leve > 0) listaStatus.push(`🍃 LEVE (${u.leve}t)`);
+                if (u.pesado > 0) listaStatus.push(`🪨 PESADO (${u.pesado}t)`);
                 if (u.molhado > 0) listaStatus.push(`🌊 MOLHADO (${u.molhado}t)`);
+                if (u.passoPlumaTurnos > 0) listaStatus.push(`🪶 PASSO PLUMA (${u.passoPlumaTurnos}t)`);
+                if (u.muitoDoceTurnos > 0) listaStatus.push(`🍬 MUITO DOCE (${u.muitoDoceTurnos}t)`);
                 if (u.bloqueioCuraTurnos > 0) listaStatus.push(`🚫 SEM CURA (${u.bloqueioCuraTurnos}t)`);
-                if (u.escudoSimbiose > 0 || u.escudoKevin > 0 || u.escudoMika > 0 || u.escudoDoctor > 0 || u.escudoDunnie > 0) listaStatus.push(`🛡️ ESCUDO ATIVO`);
+                if (u.escudoSimbiose > 0 || u.escudoKevin > 0 || u.escudoMika > 0 || u.escudoDoctor > 0 || u.escudoDunnie > 0 || u.escudoMariel > 0 || u.escudoGroxyGold > 0) listaStatus.push(`🛡️ ESCUDO ATIVO`);
 
                 statusBadge.innerHTML = listaStatus.join("<br>");
             }
@@ -1325,24 +1574,22 @@
                     let elemExibido = h.elemento;
                     let nomeExibido = h.nome;
 
-                    if ((h.tipo === 'ataque_kevin_mika' || h.tipo === 'ataque_floreio_kevin') && timeTemPersonagem('p', 'Mika')) {
-                        elemExibido = "Água";
-                    }
-                    if (at.nome === 'Groxy' && h.nome === 'Vendaval Massivo' && timeTemPersonagem('p', 'Doctor')) {
-                        elemExibido = "Elétrico";
-                    }
-                    if (at.nome === 'Silver' && h.nome === 'Off White' && timeTemPersonagem('p', 'Night')) {
-                        elemExibido = "Corrupção";
-                    }
-                    if (at.nome === 'Dunnie' && h.nome === 'Ataque Rápido' && timeTemPersonagem('p', 'Silver')) {
-                        nomeExibido = "Ataque Purificador";
-                    }
-                    if (at.nome === 'Dunnie' && h.nome === 'Preparo' && timeTemPersonagem('p', 'Campos')) {
-                        nomeExibido = "Preparo Corrompido";
+                    if ((h.tipo === 'ataque_kevin_mika' || h.tipo === 'ataque_floreio_kevin') && timeTemPersonagem('p', 'Mika')) elemExibido = "Água";
+                    if (at.nome === 'Groxy' && h.nome === 'Vendaval Massivo' && timeTemPersonagem('p', 'Doctor')) elemExibido = "Elétrico";
+                    if (at.nome === 'Silver' && h.nome === 'Off White' && timeTemPersonagem('p', 'Night')) elemExibido = "Corrupção";
+                    if (at.nome === 'Dunnie' && h.nome === 'Ataque Rápido' && timeTemPersonagem('p', 'Silver')) nomeExibido = "Ataque Purificador";
+                    if (at.nome === 'Dunnie' && h.nome === 'Preparo' && timeTemPersonagem('p', 'Campos')) nomeExibido = "Preparo Corrompido";
+                    if (at.nome === 'Mariel' && h.nome === 'Rodeio Divino' && timeTemPersonagem('p', 'Campos')) nomeExibido = "Rodeio Sombrio";
+
+                    let tagMoeda = '';
+                    if (at.nome === 'Guedes') {
+                        tagMoeda = `<span class="coin-tag">🪙 ${h.custoMoeda}</span>`;
+                        btn.disabled = moedasGuedesTimePlayer < h.custoMoeda || emTurnoInimigo;
+                    } else {
+                        btn.disabled = h.cdAtual > 0 || emTurnoInimigo;
                     }
 
-                    btn.innerText = `${nomeExibido} ${h.cdAtual > 0 ? `(${h.cdAtual}t)` : ''}`;
-                    btn.disabled = h.cdAtual > 0 || emTurnoInimigo;
+                    btn.innerHTML = `${nomeExibido} ${h.cdAtual > 0 ? `(${h.cdAtual}t)` : ''} ${tagMoeda}`;
                     btn.className = `elem-${elemExibido}`;
                 }
             }
@@ -1394,59 +1641,57 @@
                     let alvoAliadoId = aliadosVivos[Math.floor(Math.random() * aliadosVivos.length)];
                     let alvoAliado = unidades[alvoAliadoId];
 
-                    let habsDisponiveis = atacanteInimigo.habilidades.filter(h => h.cdAtual === 0 && !h.tipo.startsWith('buff_aliado'));
+                    let habsDisponiveis = atacanteInimigo.habilidades.filter(h => {
+                        if (atacanteInimigo.nome === 'Guedes') return moedasGuedesTimeEnemy >= h.custoMoeda;
+                        return h.cdAtual === 0 && !h.tipo.startsWith('buff_aliado');
+                    });
+
                     let habUsada = habsDisponiveis.length > 0 ? habsDisponiveis[Math.floor(Math.random() * habsDisponiveis.length)] : atacanteInimigo.habilidades[0];
 
-                    if (habUsada.tipo === 'buff_proprio' || habUsada.tipo === 'buff_escudo_cura') {
-                        aplicarCura(atacanteInimigo, 30, atacanteInimigo);
-                        atacanteInimigo.escudoDunnie = 1;
+                    if (atacanteInimigo.nome === 'Guedes') {
+                        moedasGuedesTimeEnemy -= habUsada.custoMoeda;
+                    }
 
-                        if (atacanteInimigo.nome === 'Dunnie' && timeTemPersonagem('e', 'Campos')) {
-                            let camposId = ['0', '1', '2'].map(s => 'e' + s).find(id => unidades[id] && unidades[id].nome === 'Campos');
-                            if (camposId) {
-                                aplicarCura(unidades[camposId], 30, atacanteInimigo);
-                                unidades[camposId].escudoDunnie = 1;
-                            }
+                    if (habUsada.tipo === 'guedes_roubar') {
+                        let dano = calcularDano(atacanteInimigo, alvoAliado, habUsada);
+                        alvoAliado.hpAtual = Math.max(0, alvoAliado.hpAtual - dano);
+                        moedasGuedesTimeEnemy++;
+                        log(`🪙 <b>Roubar (Inimigo):</b> Guedes causou ${dano} de dano e ganhou +1 Moeda!`);
+                    }
+                    else if (habUsada.tipo === 'buff_proprio' || habUsada.tipo === 'buff_escudo_cura') {
+                        if (atacanteInimigo.nome === 'Mariel') {
+                            atacanteInimigo.escudoMariel = 1;
+                        } else {
+                            aplicarCura(atacanteInimigo, 30, atacanteInimigo);
+                            atacanteInimigo.escudoDunnie = 1;
                         }
-
-                        let ganhoLimit = 15;
-                        if (atacanteInimigo.nome === 'Dunnie') {
-                            ganhoLimit = timeTemPersonagem('e', 'Night') ? 40 : 20;
-                        }
-                        carregarLimite(atacanteInimigo, ganhoLimit);
-
-                        habUsada.cdAtual = habUsada.cdMax;
-                        log(`🛡️ <b>${atacanteInimigo.nome} (Inimigo)</b> usou habilidade de defesa!`);
-                    } else if (habUsada.tipo === 'cura_propria_20') {
-                        aplicarCura(atacanteInimigo, 20, atacanteInimigo);
                         carregarLimite(atacanteInimigo, 15);
                         habUsada.cdAtual = habUsada.cdMax;
-
-                        ['e0', 'e1', 'e2'].forEach(eId => {
-                            if (eId !== atacanteInimigo.id && unidades[eId].hpAtual > 0) {
-                                unidades[eId].habilidades.forEach(h => { if (h.cdAtual > 0) h.cdAtual--; });
+                        log(`🛡️ <b>${atacanteInimigo.nome} (Inimigo)</b> usou habilidade defensiva!`);
+                    } else if (habUsada.tipo === 'estilhacos_divinos') {
+                        habUsada.cdAtual = habUsada.cdMax;
+                        ['p0', 'p1', 'p2', 'e0', 'e1', 'e2'].forEach(uId => {
+                            let target = unidades[uId];
+                            if (target && target.hpAtual > 0) {
+                                let dano = calcularDano(atacanteInimigo, target, habUsada);
+                                target.hpAtual = Math.max(0, target.hpAtual - dano);
+                                mostrarEfeitoFlutuante(uId, `-${dano}`, "dano");
                             }
                         });
-
-                        if (timeTemPersonagem('e', 'Silver')) {
-                            let silverId = ['0', '1', '2'].map(s => 'e' + s).find(id => unidades[id] && unidades[id].nome === 'Silver');
-                            if (silverId) unidades[silverId].habilidades[2].cdAtual = 0;
-                        }
-
-                        log(`🦁 <b>${atacanteInimigo.nome} (Inimigo)</b> usou Rugido Poderoso!`);
-                    } else if (habUsada.tipo === 'buff_doctor') {
-                        atacanteInimigo.buffAtqDoctor = 5;
-                        atacanteInimigo.escudoDoctor = 5;
-                        carregarLimite(atacanteInimigo, 15);
+                        log(`🪨 <b>Samael (Inimigo)</b> usou Estilhaços Divinos acertando todos!`);
+                    } else if (habUsada.tipo === 'protecao_antiga') {
                         habUsada.cdAtual = habUsada.cdMax;
-                        log(`⚡ <b>${atacanteInimigo.nome} (Inimigo)</b> usou Atualizar!`);
+                        ['e0', 'e1', 'e2'].forEach(eId => {
+                            if (unidades[eId].hpAtual > 0) {
+                                aplicarCura(unidades[eId], 10, atacanteInimigo);
+                                unidades[eId].passoPlumaTurnos = 3;
+                            }
+                        });
+                        log(`🪶 <b>Samael (Inimigo)</b> ativou Proteção Antiga e Passo Pluma!`);
                     } else if (habUsada.tipo === 'ataque_aoe') {
                         habUsada.cdAtual = habUsada.cdMax;
-
                         let elemEfetivo = habUsada.elemento;
-                        if (atacanteInimigo.nome === 'Groxy' && timeTemPersonagem('e', 'Doctor')) {
-                            elemEfetivo = "Elétrico";
-                        }
+                        if (atacanteInimigo.nome === 'Groxy' && timeTemPersonagem('e', 'Doctor')) elemEfetivo = "Elétrico";
 
                         log(`⚡ <b>${atacanteInimigo.nome} (Inimigo)</b> usou ${habUsada.nome} (${elemEfetivo})!`);
                         aliadosVivos.forEach(aId => {
@@ -1458,40 +1703,21 @@
                         });
                     } else {
                         let elemEfetivo = habUsada.elemento;
-                        if ((habUsada.tipo === 'ataque_kevin_mika' || habUsada.tipo === 'ataque_floreio_kevin') && timeTemPersonagem('e', 'Mika')) {
-                            elemEfetivo = "Água";
-                        }
-                        if (atacanteInimigo.nome === 'Silver' && habUsada.nome === 'Off White' && timeTemPersonagem('e', 'Night')) {
-                            elemEfetivo = "Corrupção";
-                        }
+                        if ((habUsada.tipo === 'ataque_kevin_mika' || habUsada.tipo === 'ataque_floreio_kevin') && timeTemPersonagem('e', 'Mika')) elemEfetivo = "Água";
+                        if (atacanteInimigo.nome === 'Silver' && habUsada.nome === 'Off White' && timeTemPersonagem('e', 'Night')) elemEfetivo = "Corrupção";
 
                         let dano = calcularDano(atacanteInimigo, alvoAliado, habUsada, elemEfetivo);
                         alvoAliado.hpAtual = Math.max(0, alvoAliado.hpAtual - dano);
                         mostrarEfeitoFlutuante(alvoAliado.id, `-${dano}`, "dano");
 
-                        if (atacanteInimigo.nome === 'Dunnie' && habUsada.nome === 'Ataque Rápido' && timeTemPersonagem('e', 'Silver')) {
-                            aplicarCura(atacanteInimigo, 20, atacanteInimigo);
-                        }
-
-                        if (atacanteInimigo.nome === 'Campos' && elemEfetivo === 'Corrupção' && dano > 0) {
-                            aplicarCura(atacanteInimigo, 10, atacanteInimigo);
-                        }
-
-                        if (habUsada.tipo === 'roubo_vida') {
-                            aplicarCura(atacanteInimigo, 30, atacanteInimigo);
-                            log(`🌊 <b>${atacanteInimigo.nome} (Inimigo)</b> recuperou HP com Corte Maré Baixa!`);
-                        }
+                        if (atacanteInimigo.nome === 'Campos' && elemEfetivo === 'Corrupção' && dano > 0) aplicarCura(atacanteInimigo, 10, atacanteInimigo);
+                        if (habUsada.tipo === 'roubo_vida') aplicarCura(atacanteInimigo, 30, atacanteInimigo);
 
                         carregarLimite(atacanteInimigo, 25);
                         carregarLimite(alvoAliado, 15);
                         if (habUsada.cdMax > 0) habUsada.cdAtual = habUsada.cdMax;
 
-                        let nomeAtaqueExibido = habUsada.nome;
-                        if (atacanteInimigo.nome === 'Dunnie' && habUsada.nome === 'Ataque Rápido' && timeTemPersonagem('e', 'Silver')) {
-                            nomeAtaqueExibido = "Ataque Purificador";
-                        }
-
-                        log(`⚔️ <b>${atacanteInimigo.nome} (Inimigo)</b> usou <b>${nomeAtaqueExibido}</b> (${elemEfetivo}) causando ${dano} de dano!`);
+                        log(`⚔️ <b>${atacanteInimigo.nome} (Inimigo)</b> usou <b>${habUsada.nome}</b> (${elemEfetivo}) causando ${dano} de dano!`);
                         aplicarEfeitoHab(habUsada, alvoAliado, 'e');
                     }
                 }
