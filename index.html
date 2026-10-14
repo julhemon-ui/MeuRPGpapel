@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>3v3 Paper RPG - Roster de 12 Personagens & Caos do Guedes</title>
+    <title>3v3 Paper RPG - Balanceamento & Counters</title>
     <style>
         * { box-sizing: border-box; margin: 0; padding: 0; user-select: none; }
         body { background: #1a1a1a; font-family: 'Courier New', Courier, monospace; color: #333; display: flex; justify-content: center; align-items: center; min-height: 100vh; padding: 10px; }
@@ -436,7 +436,7 @@
         },
         "Campos": {
             hpMax: 200, danoFisico: 20, elementoBase: "Corrupção", fraqueza: "Purificação", imunidade: "Corrupção",
-            passiva: { nome: "Vampirismo Simbiótico", desc: "Sempre que causa dano de Corrupção, recupera 10 de HP." },
+            passiva: { nome: "Vampirismo Simbiótico & Estabilidade", desc: "Sempre que causa dano de Corrupção, recupera 10 HP. Além disso, se entrar em campo, DESABILITA o caos de habilidades gerado pelo Guedes!" },
             habilidades: [
                 { nome: "Garras Vorazes", dano: 20, elemento: "Físico", cdMax: 0, cdAtual: 0, tipo: "ataque", desc: "Golpe físico direto." },
                 { nome: "Surto Corrupto", dano: 35, elemento: "Corrupção", cdMax: 4, cdAtual: 0, tipo: "ataque", desc: "Dano de Corrupção alto (ativa a passiva)." },
@@ -495,36 +495,36 @@
             habilidades: [
                 { nome: "Estocada Branca", dano: 20, elemento: "Purificação", cdMax: 0, cdAtual: 0, tipo: "ataque", desc: "Ataque básico sagrado." },
                 { nome: "Floreio Congelante", dano: 35, elemento: "Gelo", cdMax: 3, cdAtual: 0, tipo: "ataque", efeito: "congelamento", desc: "Congela o oponente, impedindo que ataque no próximo turno." },
-                { nome: "Off White", dano: 30, elemento: "Purificação", cdMax: 4, cdAtual: 0, tipo: "ataque", efeito: "bloqueio_cura", desc: "Bloqueia cura do oponente por 3t. Se Night estiver no time, dá +20 de ATQ por 3t para Night e ganha elemento Corrupção." },
+                { nome: "Off White", dano: 30, elemento: "Purificação", cdMax: 4, cdAtual: 0, tipo: "ataque", efeito: "bloqueio_cura", desc: "CORTA BUFFS do alvo e bloqueia cura por 3t. Se Night estiver no time, dá +20 de ATQ por 3t para Night e vira Corrupção." },
                 { nome: "Julgamento", dano: 25, elemento: "Purificação", cdMax: 8, cdAtual: 0, tipo: "ataque", efeito: "julgamento_hp", desc: "Causa 25 de dano. Se Silver estiver com vida cheia, causa 40 de dano." }
             ],
             limitBreak: { nome: "Lâmina Divina", dano: 45, elemento: "Purificação", tipo: "limit_silver", desc: "Causa dano em todos os oponentes e aplica o estado LEVE a eles." }
         },
         "Mika": {
-            hpMax: 100, danoFisico: 15, elementoBase: "Água", fraqueza: "Corrupção", imunidade: "Fogo",
+            hpMax: 120, danoFisico: 15, elementoBase: "Água", fraqueza: "Corrupção", imunidade: "Fogo",
             passiva: { nome: "Estrela Cadente", desc: "Ao curar qualquer aliado, aumenta a taxa de Quebra de Limites desse aliado em +15%." },
             habilidades: [
                 { nome: "Disparo de Estrela", dano: 15, elemento: "Água", cdMax: 0, cdAtual: 0, tipo: "ataque", desc: "Disparo mágico aquático." },
-                { nome: "Raio Estelar", dano: 35, elemento: "Água", cdMax: 3, cdAtual: 0, tipo: "ataque", efeito: "paralisia_kevin", desc: "SE Kevin estiver no time, este ataque também deixa o oponente paralisado." },
-                { nome: "Poeira Estelar", dano: 0, elemento: "Suporte", cdMax: 4, cdAtual: 0, tipo: "buff_aliado_cura_mika", desc: "Cura +30 HP de um aliado. SE for o Kevin, cura +50 HP." },
+                { nome: "Raio Estelar", dano: 35, elemento: "Água", cdMax: 3, cdAtual: 0, tipo: "ataque", efeito: "paralisia_kevin", desc: "SE Kevin estiver no time (e Mariel NÃO estiver em campo), deixa o oponente paralisado." },
+                { nome: "Poeira Estelar", dano: 0, elemento: "Suporte", cdMax: 4, cdAtual: 0, tipo: "buff_aliado_cura_mika", desc: "Cura +30 HP de um aliado (Cura +50 se for Kevin e Mariel NÃO estiver em campo)." },
                 { nome: "Bolhas de Lavanda", dano: 25, elemento: "Água", cdMax: 4, cdAtual: 0, tipo: "ataque", efeito: "molhado", desc: "Aplica o estado MOLHADO (prepara o alvo para receber dano bônus de Gelo ou Água)." }
             ],
-            limitBreak: { nome: "Armadura Cósmica", dano: 0, elemento: "Água", tipo: "limit_mika", desc: "Cura +30 HP de todos. Dá escudo de -30 dano por 1t (Kevin ganha -70 por 2t)." }
+            limitBreak: { nome: "Armadura Cósmica", dano: 0, elemento: "Água", tipo: "limit_mika", desc: "Cura +30 HP de todos. Dá escudo de -30 dano por 1t (Kevin ganha -70 por 2t se Mariel não estiver em campo)." }
         },
         "Kevin": {
             hpMax: 100, danoFisico: 15, elementoBase: "Físico", fraqueza: "Gelo", imunidade: "Água",
-            passiva: { nome: "Lealdade Protetora", desc: "Enquanto Mika estiver no time com menos de 50% de HP, Kevin recebe +20% de resistência a todo tipo de dano." },
+            passiva: { nome: "Lealdade Protetora", desc: "Enquanto Mika estiver no time com menos de 50% HP (e Mariel NÃO estiver em campo), Kevin ganha +20% de resistência." },
             habilidades: [
                 { nome: "Investida", dano: 15, elemento: "Físico", cdMax: 0, cdAtual: 0, tipo: "ataque", desc: "Avanço físico básico." },
-                { nome: "Avançada Uivante", dano: 20, elemento: "Físico", cdMax: 3, cdAtual: 0, tipo: "ataque_kevin_mika", desc: "SE Mika estiver no time, o elemento do ataque muda para ÁGUA." },
-                { nome: "Escudo da Estrela", dano: 0, elemento: "Suporte", cdMax: 4, cdAtual: 0, tipo: "buff_aliado_escudo_kevin", desc: "Concede escudo de -20 de dano a um aliado. SE for para Mika, o escudo é de -30." },
-                { nome: "Floreio Ramificado", dano: 25, elemento: "Físico", cdMax: 4, cdAtual: 0, tipo: "ataque_floreio_kevin", efeito: "molhado", desc: "Aplica MOLHADO. SE Mika estiver no time, o elemento muda para ÁGUA." }
+                { nome: "Avançada Uivante", dano: 20, elemento: "Físico", cdMax: 3, cdAtual: 0, tipo: "ataque_kevin_mika", desc: "SE Mika estiver no time (e Mariel ausente), o elemento do ataque muda para ÁGUA." },
+                { nome: "Escudo da Estrela", dano: 0, elemento: "Suporte", cdMax: 4, cdAtual: 0, tipo: "buff_aliado_escudo_kevin", desc: "Concede escudo de -20 dano a um aliado (-30 se for para Mika e Mariel ausente)." },
+                { nome: "Floreio Ramificado", dano: 25, elemento: "Físico", cdMax: 4, cdAtual: 0, tipo: "ataque_floreio_kevin", efeito: "molhado", desc: "Aplica MOLHADO. SE Mika estiver no time (e Mariel ausente), muda para ÁGUA." }
             ],
-            limitBreak: { nome: "Avanço do Herói", dano: 50, elemento: "Físico", tipo: "limit_kevin", desc: "Dano massivo único com Sangramento. SE Mika estiver no time, aplica MOLHADO em vez de sangrar." }
+            limitBreak: { nome: "Avanço do Herói", dano: 50, elemento: "Físico", tipo: "limit_kevin", desc: "Dano massivo único com Sangramento. SE Mika estiver no time (e Mariel ausente), aplica MOLHADO em vez de sangrar." }
         },
         "Mariel": {
             hpMax: 200, danoFisico: 15, elementoBase: "Purificação", fraqueza: "Vento", imunidade: "Terra",
-            passiva: { nome: "Asas da Noite", desc: "Ao ser acertada por um ataque do elemento Corrupção, ganha +20 de dano bônus no próximo ataque." },
+            passiva: { nome: "Asas da Noite & Anulação de Sinergia", desc: "Ao ser acertada por Corrupção, ganha +20 de dano no próximo turno. Além disso, DESABILITA todas as sinergias entre Kevin e Mika no combate!" },
             habilidades: [
                 { nome: "Infusão", dano: 0, elemento: "Físico", cdMax: 1, cdAtual: 0, tipo: "buff_proprio", desc: "Apoia suas asas no chão e cura o solo, ganhando escudo (-10 de dano) por 1 turno." },
                 { nome: "Lâmina de Luz", dano: 35, elemento: "Purificação", cdMax: 2, cdAtual: 0, tipo: "ataque", efeito: "sangramento", desc: "Corta com purificação e causa sangramento por 3 turnos." },
@@ -546,9 +546,9 @@
         },
         "Guedes": {
             hpMax: 100, danoFisico: 15, elementoBase: "Surpresa", fraqueza: "Terra", imunidade: "Gelo",
-            passiva: { nome: "Vendedor Estranho", desc: "Substitui o sistema clássico de cooldowns por MOEDAS! Cada ataque gera moedas e bagunça os ataques de Ysma, Night, Silver, Groxy e Mika em ambos os times!" },
+            passiva: { nome: "Vendedor Estranho", desc: "Substitui o sistema clássico de cooldowns por MOEDAS! Cada ataque gera moedas e bagunça os ataques de Ysma, Night, Silver, Groxy e Mika em ambos os times (a menos que Campos esteja em campo)." },
             habilidades: [
-                { nome: "Roubar", dano: 15, elemento: "Vento", cdMax: 0, cdAtual: 0, tipo: "guedes_roubar", custoMoeda: 0, desc: "Ataque furtivo e sacana (+1 Moeda após o ataque)." },
+                { nome: "Roubar", dano: 15, elemento: "Vento", cdMax: 0, cdAtual: 0, tipo: "guedes_roubar", custoMoeda: 0, desc: "Ataque furtivo e sacana (+2 Moedas após o ataque)." },
                 { nome: "Piada Estranha", dano: 1, elemento: "Mágico", cdMax: 0, cdAtual: 0, tipo: "guedes_piada", custoMoeda: 2, desc: "Aplica Leve ou Pesado ao alvo, e ganha o estado Muito Doce (gera +1 moeda ao atacar por 2t)." },
                 { nome: "Lâmina de Vento", dano: 20, elemento: "Vento", cdMax: 0, cdAtual: 0, tipo: "guedes_lamina", custoMoeda: 3, desc: "Acerta todo o time inimigo e gera +2 Moedas para cada inimigo eliminado neste ataque!" },
                 { nome: "Choque de Loucura", dano: 27, elemento: "Terra", cdMax: 0, cdAtual: 0, tipo: "guedes_choque", custoMoeda: 3, desc: "Destrói tudo pela frente com dano de Terra e aplica Muito Doce para todo o time aliado!" }
@@ -694,6 +694,22 @@
         return timeTemPersonagem('p', nomeChar) || timeTemPersonagem('e', nomeChar);
     }
 
+    function limparBuffsUnidade(unidade) {
+        let escudosRemovidos = unidade.escudoSimbiose + unidade.escudoDunnie + unidade.escudoDoctor + unidade.escudoKevin + unidade.escudoMika + unidade.escudoMariel + unidade.escudoGroxyGold;
+        let buffsAtqRemovidos = unidade.buffAtqDoctor + unidade.buffAtqYsma + unidade.buffAtqNightSinergia + unidade.buffMarielGrupo + unidade.buffMarielCorrupcao + unidade.buffAtqDoctorSobrecarga;
+        
+        unidade.escudoSimbiose = 0; unidade.escudoDunnie = 0; unidade.escudoDoctor = 0;
+        unidade.escudoKevin = 0; unidade.escudoMika = 0; unidade.escudoMariel = 0; unidade.escudoGroxyGold = 0;
+        unidade.buffAtqDoctor = 0; unidade.buffAtqYsma = 0; unidade.buffAtqNightSinergia = 0;
+        unidade.buffMarielGrupo = 0; unidade.buffMarielCorrupcao = 0; unidade.buffAtqDoctorSobrecarga = 0;
+        unidade.passoPlumaTurnos = 0; unidade.muitoDoceTurnos = 0;
+
+        if (escudosRemovidos > 0 || buffsAtqRemovidos > 0) {
+            log(`✨ <b>OFF WHITE / ALL BLACK (Silver):</b> Todos os buffs e escudos de <b>${unidade.nome}</b> foram CORTADOS!`);
+            mostrarEfeitoFlutuante(unidade.id, "BUFFS CORTADOS!", "info");
+        }
+    }
+
     function iniciarCombate() {
         unidades = {
             'p0': criarInstancia(timeAliadoSelecionado[0], "p0"),
@@ -707,23 +723,31 @@
         moedasGuedesTimePlayer = 0;
         moedasGuedesTimeEnemy = 0;
 
-        // APLICAÇÃO DO CAOS DO GUEDES (SUBSTITUIÇÃO DE HABILIDADES)
+        // APLICAÇÃO DO CAOS DO GUEDES (COM CHECAGEM DO CAMPOS PARA DESABILITAR)
         if (algumTimeTemPersonagem('Guedes')) {
-            log(`🤪 <b>O GUEDES ESTÁ EM CAMPO!</b> O caos tomou conta e várias habilidades foram bagunçadas!`);
-            for (let id in unidades) {
-                let u = unidades[id];
-                if (u.nome === 'Ysma') {
-                    u.habilidades[1] = { nome: "Bola de Água", dano: 20, elemento: "Água", cdMax: 3, cdAtual: 0, tipo: "ataque", desc: "Guedes bagunçou esse ataque... Hora de improvisar!" };
-                } else if (u.nome === 'Night') {
-                    u.habilidades[3] = { nome: "Ataque da Colheita", dano: 10, elemento: "Biológico", cdMax: 3, cdAtual: 0, tipo: "ataque_colheita", desc: "Cura 20 HP do próprio usuário e causa dano no alvo." };
-                } else if (u.nome === 'Silver') {
-                    u.habilidades[2] = { nome: "All Black", dano: 32, elemento: "Corrupção", cdMax: 6, cdAtual: 0, tipo: "ataque", desc: "Guedes bagunçou esse ataque... Hora de improvisar!" };
-                } else if (u.nome === 'Groxy') {
-                    u.habilidades[1] = { nome: "Hiper Dourado", dano: 0, elemento: "Mágico", cdMax: 3, cdAtual: 0, tipo: "buff_groxy_gold", desc: "Escudo de -20 de dano por 2 turnos e o estado Muito Doce." };
-                } else if (u.nome === 'Mika') {
-                    u.habilidades[1] = { nome: "Flor Solar", dano: 20, elemento: "Fogo", cdMax: 6, cdAtual: 0, tipo: "ataque", efeito: "queimadura_50", desc: "50% de chance de queimar o alvo." };
+            if (algumTimeTemPersonagem('Campos')) {
+                log(`🖤 <b>Estabilidade Simbiótica (Campos):</b> O Campos entrou em campo e DESABILITOU o caos que o Guedes geraria nas habilidades!`);
+            } else {
+                log(`🤪 <b>O GUEDES ESTÁ EM CAMPO!</b> O caos tomou conta e várias habilidades foram bagunçadas!`);
+                for (let id in unidades) {
+                    let u = unidades[id];
+                    if (u.nome === 'Ysma') {
+                        u.habilidades[1] = { nome: "Bola de Água", dano: 20, elemento: "Água", cdMax: 3, cdAtual: 0, tipo: "ataque", desc: "Guedes bagunçou esse ataque... Hora de improvisar!" };
+                    } else if (u.nome === 'Night') {
+                        u.habilidades[3] = { nome: "Ataque da Colheita", dano: 10, elemento: "Biológico", cdMax: 3, cdAtual: 0, tipo: "ataque_colheita", desc: "Cura 20 HP do próprio usuário e causa dano no alvo." };
+                    } else if (u.nome === 'Silver') {
+                        u.habilidades[2] = { nome: "All Black", dano: 32, elemento: "Corrupção", cdMax: 6, cdAtual: 0, tipo: "ataque", efeito: "bloqueio_cura", desc: "Corta buffs do oponente, bloqueia cura e causa dano de Corrupção." };
+                    } else if (u.nome === 'Groxy') {
+                        u.habilidades[1] = { nome: "Hiper Dourado", dano: 0, elemento: "Mágico", cdMax: 3, cdAtual: 0, tipo: "buff_groxy_gold", desc: "Escudo de -20 de dano por 2 turnos e o estado Muito Doce." };
+                    } else if (u.nome === 'Mika') {
+                        u.habilidades[1] = { nome: "Flor Solar", dano: 20, elemento: "Fogo", cdMax: 6, cdAtual: 0, tipo: "ataque", efeito: "queimadura_50", desc: "50% de chance de queimar o alvo." };
+                    }
                 }
             }
+        }
+
+        if (algumTimeTemPersonagem('Mariel')) {
+            log(`🕊️ <b>Aura Celestial (Mariel):</b> A presença de Mariel desabilitou todas as sinergias entre Kevin e Mika!`);
         }
 
         document.getElementById('end-screen').style.display = 'none';
@@ -784,7 +808,6 @@
             return 0;
         }
 
-        // PASSO PLUMA (Imunidade a Terra)
         if (elem === 'Terra' && defensor.passoPlumaTurnos > 0) {
             log(`🪶 <b>PASSO PLUMA!</b> ${defensor.nome} esquivou do dano de Terra!`);
             mostrarEfeitoFlutuante(defensor.id, "PASSO PLUMA!", "info");
@@ -874,7 +897,8 @@
         }
 
         let prefixoDefensor = defensor.id.substring(0, 1);
-        if (defensor.nome === 'Kevin' && timeTemPersonagem(prefixoDefensor, 'Mika')) {
+        // MARIEL ANULA LEALDADE PROTETORA DE KEVIN
+        if (defensor.nome === 'Kevin' && timeTemPersonagem(prefixoDefensor, 'Mika') && !algumTimeTemPersonagem('Mariel')) {
             let mikaId = ['0', '1', '2'].map(s => prefixoDefensor + s).find(id => unidades[id] && unidades[id].nome === 'Mika');
             if (mikaId && (unidades[mikaId].hpAtual / unidades[mikaId].hpMax) < 0.50) {
                 danoBase = Math.round(danoBase * 0.80);
@@ -911,7 +935,6 @@
             log(`⚡ <b>Sobrecarga de Redes (Doctor):</b> Sofreu dano Elétrico e energizou o próximo ataque!`);
         }
 
-        // PASSIVA MARIEL (Asas da Noite)
         if (defensor.nome === 'Mariel' && elem === 'Corrupção') {
             defensor.buffMarielCorrupcao = 1;
             log(`🦅 <b>Asas da Noite (Mariel):</b> Sofreu dano de Corrupção e ganhou +20 de dano para o próximo turno!`);
@@ -947,7 +970,6 @@
             mostrarEfeitoFlutuante(unidade.id, "-10 🔥", "dano");
         }
 
-        // GERADOR DE MOEDAS MUITO DOCE
         if (unidade.muitoDoceTurnos > 0 && unidade.nome === 'Guedes') {
             if (unidade.id.startsWith('p')) moedasGuedesTimePlayer++;
             else moedasGuedesTimeEnemy++;
@@ -1022,6 +1044,8 @@
             defensor.bloqueioCuraTurnos = 3;
             log(`🚫 <b>${defensor.nome}</b> teve a cura bloqueada por 3 turnos!`);
 
+            limparBuffsUnidade(defensor); // OFF WHITE / ALL BLACK CORTA BUFFS
+
             if (timeTemPersonagem(timePrefixAttacker, 'Night')) {
                 let nightId = ['0', '1', '2'].map(s => timePrefixAttacker + s).find(id => unidades[id] && unidades[id].nome === 'Night');
                 if (nightId) {
@@ -1043,7 +1067,8 @@
             }
         }
         else if (habilidade.efeito === 'paralisia_kevin') {
-            if (timeTemPersonagem(timePrefixAttacker, 'Kevin')) {
+            // MARIEL DESABILITA SINERGIA MIKA + KEVIN
+            if (timeTemPersonagem(timePrefixAttacker, 'Kevin') && !algumTimeTemPersonagem('Mariel')) {
                 defensor.paralisiaTurnos = 2; defensor.paralisiaChance = 100;
                 log(`⚡ <b>Sinergia Mika + Kevin!</b> ${defensor.nome} ficou Paralisado!`);
             }
@@ -1076,7 +1101,6 @@
 
         let habilidade = (indiceHab === 'limit') ? atacante.limitBreak : atacante.habilidades[indiceHab];
 
-        // CHECAGEM DE MOEDAS DO GUEDES
         if (atacante.nome === 'Guedes' && indiceHab !== 'limit') {
             if (moedasGuedesTimePlayer < habilidade.custoMoeda) {
                 log(`🪙 <b>Moedas Insuficientes!</b> Guedes precisa de ${habilidade.custoMoeda} moedas para usá-la.`);
@@ -1101,8 +1125,8 @@
             let dano = calcularDano(atacante, defensor, habilidade);
             defensor.hpAtual = Math.max(0, defensor.hpAtual - dano);
             mostrarEfeitoFlutuante(defensor.id, `-${dano}`, "dano");
-            moedasGuedesTimePlayer++;
-            log(`🪙 <b>Roubar:</b> Guedes causou ${dano} de dano e ganhou +1 Moeda! (Total: ${moedasGuedesTimePlayer})`);
+            moedasGuedesTimePlayer += 2; // ROUBAR AGORA GERA +2 MOEDAS
+            log(`🪙 <b>Roubar:</b> Guedes causou ${dano} de dano e ganhou +2 Moedas! (Total: ${moedasGuedesTimePlayer})`);
         }
         else if (habilidade.tipo === 'guedes_piada') {
             let dano = calcularDano(atacante, defensor, habilidade);
@@ -1219,11 +1243,11 @@
             if (rand < 0.33) defensor.leve = 3;
             else if (rand < 0.66) defensor.pesado = 3;
             else defensor.sangramento = 3;
-            log(`⚔️ <b>Samael</b> usou Floreio Sol e Lua causing ${dano} de dano!`);
+            log(`⚔️ <b>Samael</b> usou Floreio Sol e Lua causando ${dano} de dano!`);
         }
         else if (habilidade.tipo === 'limit_mika') {
             atacante.limite = 0;
-            let temKevin = timeTemPersonagem('p', 'Kevin');
+            let temKevin = timeTemPersonagem('p', 'Kevin') && !algumTimeTemPersonagem('Mariel');
             log(`🌟 <b>Mika</b> usou Armadura Cósmica!`);
             ['p0', 'p1', 'p2'].forEach(pId => {
                 let ali = unidades[pId];
@@ -1284,7 +1308,7 @@
             });
         } else if (habilidade.tipo === 'limit_kevin') {
             atacante.limite = 0;
-            let temMika = timeTemPersonagem('p', 'Mika');
+            let temMika = timeTemPersonagem('p', 'Mika') && !algumTimeTemPersonagem('Mariel');
             let dano = calcularDano(atacante, defensor, habilidade);
             defensor.hpAtual = Math.max(0, defensor.hpAtual - dano);
             mostrarEfeitoFlutuante(defensor.id, `-${dano}`, "dano");
@@ -1344,7 +1368,8 @@
             if (!defensor || defensor.hpAtual <= 0) return;
 
             let elemEfetivo = habilidade.elemento;
-            if ((habilidade.tipo === 'ataque_kevin_mika' || habilidade.tipo === 'ataque_floreio_kevin') && timeTemPersonagem(prefixo, 'Mika')) {
+            // MARIEL ANULA MIKA + KEVIN
+            if ((habilidade.tipo === 'ataque_kevin_mika' || habilidade.tipo === 'ataque_floreio_kevin') && timeTemPersonagem(prefixo, 'Mika') && !algumTimeTemPersonagem('Mariel')) {
                 elemEfetivo = "Água";
             }
 
@@ -1407,11 +1432,13 @@
             if (aliadoTarget.nome === 'Ysma') aliadoTarget.buffAtqYsma = 1;
             log(`🛡 <b>${atacante.nome}</b> aplicou Simbiose em <b>${aliadoTarget.nome}</b>!`);
         } else if (habilidade.tipo === 'buff_aliado_cura_mika') {
-            let qtdCura = (aliadoTarget.nome === 'Kevin') ? 50 : 30;
+            let temMariel = algumTimeTemPersonagem('Mariel');
+            let qtdCura = (aliadoTarget.nome === 'Kevin' && !temMariel) ? 50 : 30;
             aplicarCura(aliadoTarget, qtdCura, atacante);
             log(`✨ <b>Mika</b> usou Poeira Estelar em <b>${aliadoTarget.nome}</b> (+${qtdCura} HP)!`);
         } else if (habilidade.tipo === 'buff_aliado_escudo_kevin') {
-            let qtdEscudo = (aliadoTarget.nome === 'Mika') ? 30 : 20;
+            let temMariel = algumTimeTemPersonagem('Mariel');
+            let qtdEscudo = (aliadoTarget.nome === 'Mika' && !temMariel) ? 30 : 20;
             aliadoTarget.escudoKevin = 2;
             dispararBuffPulse(aliadoTarget.id);
             mostrarEfeitoFlutuante(aliadoTarget.id, `ESCUDO -${qtdEscudo}`, "info");
@@ -1502,7 +1529,6 @@
     }
 
     function atualizarUI() {
-        // ATUALIZA PAINEL CENTRAL DE MOEDAS DO GUEDES
         let coinCounterBox = document.getElementById('coin-counter-center');
         let coinValSpan = document.getElementById('coin-count-val');
         let atacante = unidades[atacanteAtualId];
@@ -1574,7 +1600,7 @@
                     let elemExibido = h.elemento;
                     let nomeExibido = h.nome;
 
-                    if ((h.tipo === 'ataque_kevin_mika' || h.tipo === 'ataque_floreio_kevin') && timeTemPersonagem('p', 'Mika')) elemExibido = "Água";
+                    if ((h.tipo === 'ataque_kevin_mika' || h.tipo === 'ataque_floreio_kevin') && timeTemPersonagem('p', 'Mika') && !algumTimeTemPersonagem('Mariel')) elemExibido = "Água";
                     if (at.nome === 'Groxy' && h.nome === 'Vendaval Massivo' && timeTemPersonagem('p', 'Doctor')) elemExibido = "Elétrico";
                     if (at.nome === 'Silver' && h.nome === 'Off White' && timeTemPersonagem('p', 'Night')) elemExibido = "Corrupção";
                     if (at.nome === 'Dunnie' && h.nome === 'Ataque Rápido' && timeTemPersonagem('p', 'Silver')) nomeExibido = "Ataque Purificador";
@@ -1655,8 +1681,8 @@
                     if (habUsada.tipo === 'guedes_roubar') {
                         let dano = calcularDano(atacanteInimigo, alvoAliado, habUsada);
                         alvoAliado.hpAtual = Math.max(0, alvoAliado.hpAtual - dano);
-                        moedasGuedesTimeEnemy++;
-                        log(`🪙 <b>Roubar (Inimigo):</b> Guedes causou ${dano} de dano e ganhou +1 Moeda!`);
+                        moedasGuedesTimeEnemy += 2; // ROUBAR INIMIGO GERA +2
+                        log(`🪙 <b>Roubar (Inimigo):</b> Guedes causou ${dano} de dano e ganhou +2 Moedas!`);
                     }
                     else if (habUsada.tipo === 'buff_proprio' || habUsada.tipo === 'buff_escudo_cura') {
                         if (atacanteInimigo.nome === 'Mariel') {
@@ -1703,7 +1729,7 @@
                         });
                     } else {
                         let elemEfetivo = habUsada.elemento;
-                        if ((habUsada.tipo === 'ataque_kevin_mika' || habUsada.tipo === 'ataque_floreio_kevin') && timeTemPersonagem('e', 'Mika')) elemEfetivo = "Água";
+                        if ((habUsada.tipo === 'ataque_kevin_mika' || habUsada.tipo === 'ataque_floreio_kevin') && timeTemPersonagem('e', 'Mika') && !algumTimeTemPersonagem('Mariel')) elemEfetivo = "Água";
                         if (atacanteInimigo.nome === 'Silver' && habUsada.nome === 'Off White' && timeTemPersonagem('e', 'Night')) elemEfetivo = "Corrupção";
 
                         let dano = calcularDano(atacanteInimigo, alvoAliado, habUsada, elemEfetivo);
