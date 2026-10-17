@@ -755,6 +755,10 @@
             danoFisico: base.danoFisico, fraqueza: base.fraqueza, imunidade: base.imunidade,
             limite: 0, habilidades: JSON.parse(JSON.stringify(base.habilidades)),
             limitBreak: base.limitBreak ? JSON.parse(JSON.stringify(base.limitBreak)) : null,
+            temDespertar: base.temDespertar || false,
+            temTransformacao: base.temTransformacao || false,
+            temPreparoReceita: base.temPreparoReceita || false,
+            formaMonstro: base.formaMonstro ? JSON.parse(JSON.stringify(base.formaMonstro)) : null,
             escudoSimbiose: 0, escudoDunnie: 0, escudoDoctor: 0, escudoKevin: 0, escudoMika: 0, escudoMariel: 0, escudoGroxyGold: 0, escudoAnna: 0,
             buffAtqDoctor: 0, buffAtqYsma: 0, buffAtqNightSinergia: 0, debuffAtqNight: 0, bloqueioCuraTurnos: 0, buffAtqDoctorSobrecarga: 0,
             buffMarielGrupo: 0, buffMarielCorrupcao: 0, passoPlumaTurnos: 0, muitoDoceTurnos: 0, bencaoTurnos: 0,
@@ -1522,7 +1526,6 @@
                     let alvoAliadoId = aliadosVivos[Math.floor(Math.random() * aliadosVivos.length)];
                     let alvoAliado = unidades[alvoAliadoId];
 
-                    // Filtragem segura de habilidades para a IA
                     let habsValidas = atacanteInimigo.habilidades.filter(h => {
                         if (atacanteInimigo.nome === 'Guedes') {
                             return moedasGuedesTimeEnemy >= (h.custoMoeda || 0);
@@ -1543,7 +1546,6 @@
                         mostrarEfeitoFlutuante(atacanteInimigo.id, "+🪙 2", "coin");
                         log(`🪙 <b>Roubar (Inimigo):</b> Guedes causou ${dano} de dano e ganhou +2 Moedas!`);
                     } else if (habUsada.tipo && habUsada.tipo.startsWith('buff_aliado')) {
-                        // Se for de suporte, aplica no próprio parceiro de time
                         let parceiroId = inimigosVivos[Math.floor(Math.random() * inimigosVivos.length)];
                         if (habUsada.cdMax > 0) habUsada.cdAtual = habUsada.cdMax;
                         log(`🛡️ <b>${atacanteInimigo.nome} (Inimigo)</b> usou <b>${habUsada.nome}</b> de Suporte em <b>${unidades[parceiroId].nome}</b>!`);
@@ -1580,4 +1582,3 @@
 
 </body>
 </html>
-
