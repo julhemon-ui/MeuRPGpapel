@@ -112,8 +112,15 @@
 
         .field { 
             display: flex; justify-content: space-between; background: rgba(0,0,0,0.05); 
-            border: 2px dashed #8b5a2b; border-radius: 8px; padding: 12px; height: 340px; position: relative; 
+            border: 2px dashed #8b5a2b; border-radius: 8px; padding: 12px; height: 340px; position: relative;
+            background-size: cover; background-position: center; transition: background-image 0.5s ease-in-out;
         }
+
+        /* ESTILOS DOS CENÁRIOS DESENHADOS */
+        .bg-cenario-1 { background-image: url('cenario1.jpg') !important; }
+        .bg-cenario-2 { background-image: url('cenario2.jpg') !important; }
+        .bg-cenario-3 { background-image: url('cenario3.jpg') !important; }
+
         .team-side { width: 48%; height: 100%; position: relative; }
         
         .ally-side .pos-back-top { position: absolute; left: 5%; top: 5%; }
@@ -125,8 +132,8 @@
         .enemy-side .pos-back-bottom { position: absolute; right: 5%; bottom: 5%; }
 
         .unit-card {
-            width: 105px; background: #fff8dc; border: 2px solid #5c4033; border-radius: 6px; padding: 6px; text-align: center;
-            font-size: 11px; cursor: pointer; transition: transform 0.2s, box-shadow 0.2s; position: relative;
+            width: 105px; background: rgba(255, 248, 220, 0.92); border: 2px solid #5c4033; border-radius: 6px; padding: 6px; text-align: center;
+            font-size: 11px; cursor: pointer; transition: transform 0.2s, box-shadow 0.2s; position: relative; backdrop-filter: blur(2px);
         }
         .unit-card.selected-target { border: 3px solid #d32f2f; box-shadow: 0 0 10px #d32f2f; transform: scale(1.08); }
         .unit-card.selected-attacker { border: 3px solid #f1c40f; box-shadow: 0 0 10px #f1c40f; transform: scale(1.08); }
@@ -318,7 +325,7 @@
     <button id="audio-control" onclick="alternarAudio()" title="Ligar/Desligar Música">🔊</button>
     <div id="turn-indicator">SEU TURNO</div>
 
-    <div class="field">
+    <div id="field-area" class="field">
         <div class="team-side ally-side">
             <div id="unit-p0" class="unit-card pos-back-top" onclick="cliqueCardAliado('p0')">
                 <div class="dead-overlay">❌</div>
@@ -412,6 +419,15 @@
         audioMutado = !audioMutado;
         if (musicaAtual) musicaAtual.muted = audioMutado;
         document.getElementById('audio-control').innerText = audioMutado ? '🔇' : '🔊';
+    }
+
+    function aplicarCenarioAleatorio() {
+        let campo = document.getElementById('field-area');
+        campo.classList.remove('bg-cenario-1', 'bg-cenario-2', 'bg-cenario-3');
+        
+        let num = Math.floor(Math.random() * 3) + 1;
+        campo.classList.add(`bg-cenario-${num}`);
+        log(`🎨 <b>Cenário sorteado:</b> Cenário ${num} carregado no campo de batalha!`);
     }
 
     function mostrarEfeitoFlutuante(targetId, texto, tipo) {
@@ -833,6 +849,8 @@
         document.getElementById('end-screen').style.display = 'none';
         document.getElementById('select-screen').style.display = 'none';
         document.getElementById('game-screen').style.display = 'flex';
+
+        aplicarCenarioAleatorio();
 
         atacanteAtualId = 'p1';
         alvoInimigoId = 'e1';
