@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>3v3 Paper RPG - 18 Personagens & Invocações</title>
+    <title>3v3 Paper RPG - 18 Personagens & Invocações Fixas</title>
     <style>
         * { box-sizing: border-box; margin: 0; padding: 0; user-select: none; }
         body { background: #1a1a1a; font-family: 'Courier New', Courier, monospace; color: #333; display: flex; justify-content: center; align-items: center; min-height: 100vh; padding: 10px; }
@@ -69,12 +69,12 @@
             100% { opacity: 0; }
         }
 
-        #select-screen { display: flex; }
-        .select-header { text-align: center; color: #5c4033; border-bottom: 2px dashed #8b5a2b; padding-bottom: 8px; }
+        #select-screen { display: flex; align-items: center; }
+        .select-header { text-align: center; color: #5c4033; border-bottom: 2px dashed #8b5a2b; padding-bottom: 8px; width: 100%; }
         .select-header h2 { font-size: 18px; }
         .select-header p { font-size: 12px; margin-top: 4px; color: #d32f2f; font-weight: bold; }
 
-        .roster-grid { display: grid; grid-template-columns: repeat(6, 1fr); gap: 6px; margin-top: 8px; }
+        .roster-grid { display: grid; grid-template-columns: repeat(6, 1fr); gap: 6px; margin-top: 8px; width: 100%; }
         .roster-card {
             background: #fff8dc; border: 2px solid #5c4033; border-radius: 8px; padding: 5px; text-align: center;
             cursor: pointer; transition: transform 0.2s, border-color 0.2s; position: relative;
@@ -91,13 +91,13 @@
         }
         .btn-profile-info:hover { background: #5c4033; }
 
-        .slots-container { display: flex; justify-content: space-between; gap: 10px; margin-top: 10px; background: rgba(0,0,0,0.05); padding: 10px; border-radius: 8px; }
+        .slots-container { display: flex; justify-content: space-between; gap: 10px; margin-top: 10px; background: rgba(0,0,0,0.05); padding: 10px; border-radius: 8px; width: 100%; }
         .team-slot-group { width: 48%; }
         .team-slot-group h3 { font-size: 12px; margin-bottom: 4px; text-align: center; }
         .slots-list { display: flex; gap: 6px; justify-content: center; }
         .slot-box { width: 32%; height: 36px; border: 2px dashed #8b5a2b; border-radius: 4px; display: flex; align-items: center; justify-content: center; font-size: 10px; font-weight: bold; background: #fff; text-align: center; }
 
-        .btn-start { background: #4caf50; color: #fff; border: 2px solid #2e7d32; padding: 10px; font-size: 14px; font-weight: bold; border-radius: 6px; cursor: pointer; text-align: center; margin-top: 4px; }
+        .btn-start { background: #4caf50; color: #fff; border: 2px solid #2e7d32; padding: 10px; font-size: 14px; font-weight: bold; border-radius: 6px; cursor: pointer; text-align: center; margin-top: 4px; width: 100%; }
         .btn-start:disabled { background: #ccc; border-color: #999; cursor: not-allowed; }
 
         #game-screen { display: none; }
@@ -110,7 +110,6 @@
         }
         #audio-control:hover { background: #ffeb3b; }
 
-        /* REMOÇÃO DA BORDA E AJUSTE DO CAMPO DE BATALHA */
         .field { 
             display: flex; justify-content: space-between; 
             border: none; border-radius: 8px; padding: 12px; height: 340px; position: relative;
@@ -127,13 +126,21 @@
 
         .team-side { width: 48%; height: 100%; position: relative; }
         
+        /* POSICIONAMENTO FIXO DOS PERSONAGENS E INVOCAÇÕES */
         .ally-side .pos-back-top { position: absolute; left: 12%; top: 18%; }
         .ally-side .pos-front { position: absolute; left: 40%; top: 42%; }
         .ally-side .pos-back-bottom { position: absolute; left: 12%; top: 66%; }
+        
+        /* LOCAIS FIXOS DAS INVOCAÇÕES */
+        .ally-side .pos-invocacao-flor { position: absolute; left: 2%; top: 42%; } /* Atrás do personagem do meio */
+        .ally-side .pos-invocacao-barreira { position: absolute; left: 55%; top: 18%; } /* Na frente do primeiro personagem */
 
         .enemy-side .pos-back-top { position: absolute; right: 12%; top: 18%; }
         .enemy-side .pos-front { position: absolute; right: 40%; top: 42%; }
         .enemy-side .pos-back-bottom { position: absolute; right: 12%; top: 66%; }
+        
+        .enemy-side .pos-invocacao-flor { position: absolute; right: 2%; top: 42%; }
+        .enemy-side .pos-invocacao-barreira { position: absolute; right: 55%; top: 18%; }
 
         .unit-card {
             width: 105px; background: rgba(255, 248, 220, 0.92); border: 2px solid #5c4033; border-radius: 6px; padding: 6px; text-align: center;
@@ -144,16 +151,10 @@
         .unit-card.target-buff-mode { border: 3px solid #2196f3; box-shadow: 0 0 10px #2196f3; transform: scale(1.08); }
         .unit-card.dead { opacity: 0.4; filter: grayscale(80%); cursor: not-allowed; }
 
-        .unit-card.summon-card {
-            background: rgba(232, 245, 233, 0.95); border: 2px dashed #2e7d32;
-        }
-        .unit-card.barrier-card {
-            background: rgba(239, 235, 233, 0.95); border: 2px dashed #5d4037;
-        }
+        .unit-card.summon-card { background: rgba(232, 245, 233, 0.95); border: 2px dashed #2e7d32; width: 95px; }
+        .unit-card.barrier-card { background: rgba(239, 235, 233, 0.95); border: 2px dashed #5d4037; width: 95px; }
 
-        .unit-card.berserk-mode {
-            border: 3px solid #ff1744; animation: berserkPulse 0.6s infinite alternate;
-        }
+        .unit-card.berserk-mode { border: 3px solid #ff1744; animation: berserkPulse 0.6s infinite alternate; }
         @keyframes berserkPulse {
             0% { box-shadow: 0 0 5px #ff1744; }
             100% { box-shadow: 0 0 18px #ff1744, inset 0 0 8px #d50000; }
@@ -356,6 +357,19 @@
                 <div id="marcas-p2" class="marcas-leandro"></div>
                 <div id="status-p2" class="status-badge"></div>
             </div>
+            <!-- LOCAIS FIXOS DE INVOCAÇÃO ALIADA -->
+            <div id="unit-pFlor" class="unit-card pos-invocacao-flor" style="display:none;" onclick="cliqueCardAliado('pFlor')">
+                <div class="dead-overlay">❌</div>
+                <div id="name-pFlor">Flor de Cura</div>
+                <div class="bar-bg"><div id="hp-pFlor" class="fill-hp"></div></div>
+                <div id="status-pFlor" class="status-badge"></div>
+            </div>
+            <div id="unit-pBarreira" class="unit-card pos-invocacao-barreira" style="display:none;" onclick="cliqueCardAliado('pBarreira')">
+                <div class="dead-overlay">❌</div>
+                <div id="name-pBarreira">Barreira</div>
+                <div class="bar-bg"><div id="hp-pBarreira" class="fill-hp"></div></div>
+                <div id="status-pBarreira" class="status-badge"></div>
+            </div>
         </div>
 
         <div class="team-side enemy-side">
@@ -389,6 +403,21 @@
                 <div id="marcas-e2" class="marcas-leandro"></div>
                 <div id="status-e2" class="status-badge"></div>
             </div>
+            <!-- LOCAIS FIXOS DE INVOCAÇÃO INIMIGA -->
+            <div id="unit-eFlor" class="unit-card pos-invocacao-flor" style="display:none;" onclick="selecionarAlvoInimigo('eFlor')">
+                <div class="dead-overlay">❌</div>
+                <div class="target-cursor">▼ ALVO</div>
+                <div id="name-eFlor">Flor de Cura</div>
+                <div class="bar-bg"><div id="hp-eFlor" class="fill-hp"></div></div>
+                <div id="status-eFlor" class="status-badge"></div>
+            </div>
+            <div id="unit-eBarreira" class="unit-card pos-invocacao-barreira" style="display:none;" onclick="selecionarAlvoInimigo('eBarreira')">
+                <div class="dead-overlay">❌</div>
+                <div class="target-cursor">▼ ALVO</div>
+                <div id="name-eBarreira">Barreira</div>
+                <div class="bar-bg"><div id="hp-eBarreira" class="fill-hp"></div></div>
+                <div id="status-eBarreira" class="status-badge"></div>
+            </div>
         </div>
     </div>
 
@@ -398,7 +427,7 @@
         <div id="coin-counter-center">🪙 MOEDAS DO GUEDES: <span id="coin-count-val">0</span></div>
         <button id="btn-atq1" onclick="executarAcaoJogador(0)">Habilidade 1</button>
         <button id="btn-atq2" onclick="executarAcaoJogador(1)">Habilidade 2</button>
-        <button id="btn-atq3" onclick="executarAcaoJogador(3)">Habilidade 3</button>
+        <button id="btn-atq3" onclick="executarAcaoJogador(2)">Habilidade 3</button>
         <button id="btn-atq4" onclick="executarAcaoJogador(3)">Habilidade 4</button>
         <button id="btn-limit" disabled onclick="executarAcaoJogador('limit')">QUEBRA DE LIMITES (0%)</button>
     </div>
@@ -665,7 +694,7 @@
                 { nome: "Floreio Mágico", dano: 10, elemento: "Mágico", cdMax: 0, cdAtual: 0, tipo: "ataque", efeito: "bloqueio_cura", desc: "Ataque mágico que bloqueia a cura recebida pelo alvo." },
                 { nome: "Remendo Mágico", dano: 0, elemento: "Mágico", cdMax: 5, cdAtual: 0, tipo: "cura_grupo_puro", desc: "Restaura +30 HP do grupo (somente para aliados sem buffs ou debuffs)." },
                 { nome: "Bibity BOOM", dano: 30, elemento: "Mágico", cdMax: 3, cdAtual: 0, tipo: "ataque", efeito: "leve", desc: "Explosão mágica que deixa o alvo LEVE." },
-                { nome: "Florescer da Mana", dano: 0, elemento: "Biológico", cdMax: 11, cdAtual: 0, tipo: "sumonar_flor", desc: "Invoca uma Flor de Cura atacável com 40 HP que cura +20 HP do grupo sempre que alguém for atacado!" }
+                { nome: "Florescer da Mana", dano: 0, elemento: "Biológico", cdMax: 11, cdAtual: 0, tipo: "sumonar_flor", desc: "Invoca uma Flor de Cura no local próprio (atrás do personagem do meio) com 40 HP que cura +20 HP do grupo!" }
             ],
             marcasMagicas: 3
         },
@@ -687,7 +716,7 @@
                 { nome: "Impulso Cristalino", dano: 10, elemento: "Terra", cdMax: 0, cdAtual: 0, tipo: "ataque", desc: "Ataque físico de cristal de Terra." },
                 { nome: "Cristalização", dano: 0, elemento: "Terra", cdMax: 2, cdAtual: 0, tipo: "buff_aliado_karin", desc: "Concede um escudo de -30 de dano por 1 turno a um aliado." },
                 { nome: "Espada de Cristal", dano: 22, elemento: "Terra", cdMax: 3, cdAtual: 0, tipo: "ataque", efeito: "pesado", desc: "Causa dano e deixa o oponente com o estado PESADO." },
-                { nome: "Barreira de Cristal", dano: 0, elemento: "Terra", cdMax: 11, cdAtual: 0, tipo: "invocar_barreira", desc: "Invoca uma Barreira atacável com 80 de HP e fraca ao elemento Água que protege o time." }
+                { nome: "Barreira de Cristal", dano: 0, elemento: "Terra", cdMax: 11, cdAtual: 0, tipo: "invocar_barreira", desc: "Invoca uma Barreira atacável no local próprio (na frente do 1º personagem) com 80 HP que protege o time." }
             ],
             temKarinBarras: true,
             karinDef: 0, karinAtq: 0
@@ -1155,16 +1184,14 @@
             }
         }
 
-        ['0', '1', '2'].forEach(s => {
-            let u = unidades[prefixoDefensor + s];
-            if (u && u.ehFlorSumonada && u.hpAtual > 0 && danoBase > 0) {
-                ['0', '1', '2'].forEach(sl => {
-                    let ali = unidades[prefixoDefensor + sl];
-                    if (ali && ali.hpAtual > 0) aplicarCura(ali, 20, u);
-                });
-                log(`🌸 <b>Flor de Cura (Mana):</b> Curou +20 HP de todo o grupo após ataque sofrido!`);
-            }
-        });
+        let florId = prefixoDefensor + 'Flor';
+        if (unidades[florId] && unidades[florId].hpAtual > 0 && danoBase > 0) {
+            ['0', '1', '2'].forEach(sl => {
+                let ali = unidades[prefixoDefensor + sl];
+                if (ali && ali.hpAtual > 0) aplicarCura(ali, 20, unidades[florId]);
+            });
+            log(`🌸 <b>Flor de Cura (Mana):</b> Curou +20 HP de todo o grupo após ataque sofrido!`);
+        }
 
         return Math.max(0, danoBase);
     }
@@ -1303,6 +1330,11 @@
 
         let habilidade = (indiceHab === 'limit') ? atacante.limitBreak : atacante.habilidades[indiceHab];
 
+        if (indiceHab === 'limit') {
+            if (atacante.limite < 100) return;
+            atacante.limite = 0; // Reseta a barra após uso
+        }
+
         if (atacante.nome === 'Guedes' && indiceHab !== 'limit') {
             if (moedasGuedesTimePlayer < habilidade.custoMoeda) {
                 log(`🪙 <b>Moedas Insuficientes!</b>`);
@@ -1323,32 +1355,32 @@
 
         if (habilidade.tipo === 'sumonar_flor') {
             habilidade.cdAtual = habilidade.cdMax;
-            let slotMorto = ['p0', 'p1', 'p2'].find(id => unidades[id] && unidades[id].hpAtual <= 0);
-            if (slotMorto) {
-                unidades[slotMorto] = {
-                    id: slotMorto, nome: "Flor de Cura", hpMax: 40, hpAtual: 40, danoFisico: 0,
+            let florId = prefixo + 'Flor';
+            if (unidades[florId] && unidades[florId].hpAtual > 0) {
+                log(`🌸 <b>Florescer da Mana:</b> Já existe uma Flor de Cura ativa no campo!`);
+            } else {
+                unidades[florId] = {
+                    id: florId, nome: "Flor de Cura", hpMax: 40, hpAtual: 40, danoFisico: 0,
                     fraqueza: "Fogo", imunidade: "Biológico", limite: 0, habilidades: [], limitBreak: null,
                     escudoSimbiose: 0, escudoDunnie: 0, escudoDoctor: 0, escudoKevin: 0, escudoMika: 0, escudoMariel: 0, escudoGroxyGold: 0, escudoAnna: 0, escudoKarin: 0,
                     paralisiaTurnos: 0, sangramento: 0, queimadura: 0, veneno: 0, congelado: false, ehFlorSumonada: true, marcasMagicas: null
                 };
-                log(`🌸 <b>Florescer da Mana:</b> Leandro sumonou uma Flor de Cura no campo!`);
-            } else {
-                log(`🌸 <b>Florescer da Mana:</b> Não há slots livres para invocar a Flor de Cura!`);
+                log(`🌸 <b>Florescer da Mana:</b> Leandro sumonou a Flor de Cura atrás do personagem do meio!`);
             }
         }
         else if (habilidade.tipo === 'invocar_barreira') {
             habilidade.cdAtual = habilidade.cdMax;
-            let slotMorto = ['p0', 'p1', 'p2'].find(id => unidades[id] && unidades[id].hpAtual <= 0);
-            if (slotMorto) {
-                unidades[slotMorto] = {
-                    id: slotMorto, nome: "Barreira de Cristal", hpMax: 80, hpAtual: 80, danoFisico: 0,
+            let barreiraId = prefixo + 'Barreira';
+            if (unidades[barreiraId] && unidades[barreiraId].hpAtual > 0) {
+                log(`🛡️ <b>Barreira de Cristal:</b> Já existe uma Barreira ativa no campo!`);
+            } else {
+                unidades[barreiraId] = {
+                    id: barreiraId, nome: "Barreira de Cristal", hpMax: 80, hpAtual: 80, danoFisico: 0,
                     fraqueza: "Água", imunidade: "Terra", limite: 0, habilidades: [], limitBreak: null,
                     escudoSimbiose: 0, escudoDunnie: 0, escudoDoctor: 0, escudoKevin: 0, escudoMika: 0, escudoMariel: 0, escudoGroxyGold: 0, escudoAnna: 0, escudoKarin: 0,
                     paralisiaTurnos: 0, sangramento: 0, queimadura: 0, veneno: 0, congelado: false, ehBarreiraSumonada: true, marcasMagicas: null
                 };
-                log(`🛡️ <b>Barreira de Cristal:</b> Karin invocouse uma Barreira Protetora com 80 HP!`);
-            } else {
-                log(`🛡️ <b>Barreira de Cristal:</b> Sem espaço em campo para invocar a Barreira!`);
+                log(`🛡️ <b>Barreira de Cristal:</b> Karin invocouse a Barreira na frente do primeiro personagem!`);
             }
         }
         else if (habilidade.tipo === 'invocar_morcego') {
@@ -1557,45 +1589,70 @@
             coinCounterBox.style.display = 'none';
         }
 
+        // Atualizar visibilidade das invocações fixas
+        ['p', 'e'].forEach(prefix => {
+            let florId = prefix + 'Flor';
+            let barreiraId = prefix + 'Barreira';
+            let cardFlor = document.getElementById(`unit-${florId}`);
+            let cardBarreira = document.getElementById(`unit-${barreiraId}`);
+
+            if (unidades[florId] && unidades[florId].hpAtual > 0) {
+                cardFlor.style.display = 'block';
+                document.getElementById(`hp-${florId}`).style.width = (unidades[florId].hpAtual / unidades[florId].hpMax) * 100 + "%";
+            } else {
+                cardFlor.style.display = 'none';
+            }
+
+            if (unidades[barreiraId] && unidades[barreiraId].hpAtual > 0) {
+                cardBarreira.style.display = 'block';
+                document.getElementById(`hp-${barreiraId}`).style.width = (unidades[barreiraId].hpAtual / unidades[barreiraId].hpMax) * 100 + "%";
+            } else {
+                cardBarreira.style.display = 'none';
+            }
+        });
+
         for (let id in unidades) {
             let u = unidades[id];
             let card = document.getElementById(`unit-${id}`);
+            if (!card) continue;
             let hpBar = document.getElementById(`hp-${id}`);
             let limitBar = document.getElementById(`limit-${id}`);
             let marcasBox = document.getElementById(`marcas-${id}`);
             let statusBadge = document.getElementById(`status-${id}`);
 
-            if (u.ehFlorSumonada) card.className = "unit-card pos-back-bottom summon-card";
-            else if (u.ehBarreiraSumonada) card.className = "unit-card pos-back-bottom barrier-card";
+            if (u.ehFlorSumonada) card.className = "unit-card pos-invocacao-flor summon-card";
+            else if (u.ehBarreiraSumonada) card.className = "unit-card pos-invocacao-barreira barrier-card";
 
-            document.getElementById(`name-${id}`).innerText = (u.ehMonstroAnna ? "Monstro Corvo" : u.nome) + (id.startsWith('e') ? " (Inimigo)" : "");
-            hpBar.style.width = Math.max(0, (u.hpAtual / u.hpMax) * 100) + "%";
+            document.getElementById(`name-${id}`).innerText = (u.ehMonstroAnna ? "Monstro Corvo" : u.nome) + (id.startsWith('e') && !u.ehFlorSumonada && !u.ehBarreiraSumonada ? " (Inimigo)" : "");
+            if (hpBar) hpBar.style.width = Math.max(0, (u.hpAtual / u.hpMax) * 100) + "%";
 
-            if (u.marcasMagicas !== null) {
-                limitBar.style.display = 'none';
-                let marcasHtml = '';
-                for (let m = 0; m < u.marcasMagicas; m++) marcasHtml += '💎';
-                marcasBox.innerHTML = marcasHtml;
-            } else if (u.temKarinBarras) {
-                limitBar.style.display = 'block';
-                limitBar.style.width = u.karinDef + "%";
-                limitBar.className = "fill-limit bar-karin-def";
-                marcasBox.innerHTML = '';
-            } else {
-                limitBar.style.display = 'block';
-                limitBar.style.width = u.limite + "%";
-                marcasBox.innerHTML = '';
+            if (limitBar) {
+                if (u.marcasMagicas !== null) {
+                    limitBar.style.display = 'none';
+                    let marcasHtml = '';
+                    for (let m = 0; m < u.marcasMagicas; m++) marcasHtml += '💎';
+                    if (marcasBox) marcasBox.innerHTML = marcasHtml;
+                } else if (u.temKarinBarras) {
+                    limitBar.style.display = 'block';
+                    limitBar.style.width = u.karinDef + "%";
+                    limitBar.className = "fill-limit bar-karin-def";
+                    if (marcasBox) marcasBox.innerHTML = '';
+                } else {
+                    limitBar.style.display = 'block';
+                    limitBar.style.width = u.limite + "%";
+                    if (marcasBox) marcasBox.innerHTML = '';
 
-                limitBar.className = "fill-limit";
-                if (u.temDespertar) limitBar.classList.add("bar-rhayane");
-                if (u.temTransformacao) limitBar.classList.add("bar-anna");
-                if (u.temPreparoReceita) limitBar.classList.add("bar-sarah");
+                    limitBar.className = "fill-limit";
+                    if (u.temDespertar) limitBar.classList.add("bar-rhayane");
+                    if (u.temTransformacao) limitBar.classList.add("bar-anna");
+                    if (u.temPreparoReceita) limitBar.classList.add("bar-sarah");
+                }
             }
 
             if (u.emBerserk) card.classList.add('berserk-mode'); else card.classList.remove('berserk-mode');
             if (u.ehMonstroAnna) card.classList.add('crow-transformed'); else card.classList.remove('crow-transformed');
 
-            if (id.startsWith('e')) {
+            if (id.startsWith('e') && !u.ehFlorSumonada && !u.ehBarreiraSumonada) {
                 let weakDot = document.getElementById(`weak-${id}`);
                 if (weakDot) {
                     let cor = COR_ELEMENTOS[u.fraqueza] || "#000";
@@ -1645,6 +1702,7 @@
                 let btn = document.getElementById(`btn-atq${i + 1}`);
                 let h = at.habilidades[i];
                 if (h) {
+                    btn.style.display = 'block';
                     let elemExibido = h.elemento;
                     let nomeExibido = h.nome;
 
@@ -1667,22 +1725,10 @@
             }
 
             let btnL = document.getElementById('btn-limit');
-            if (at.marcasMagicas !== null) {
-                btnL.disabled = true;
-                btnL.innerText = `✨ MARCAS MÁGICAS (${at.marcasMagicas}/3 Cargas)`;
-            } else if (at.temKarinBarras) {
-                btnL.disabled = true;
-                btnL.innerText = `🛡️ BARRAS DE PALADINA (DEF: ${at.karinDef}% | ATQ: ${at.karinAtq}%)`;
-            } else if (at.temDespertar) {
-                btnL.disabled = true;
-                btnL.innerText = at.emBerserk ? "🔥 MODO BERSERK ATIVO! 🔥" : "DESPERTAR (ENCHE AO SOFRER/DAR DANO)";
-            } else if (at.temTransformacao) {
-                btnL.disabled = true;
-                btnL.innerText = at.ehMonstroAnna ? `🐦‍⬛ MONSTRO CORVO (${at.turnosTransformacaoAnna}T)` : "BARRA DE TRANSFORMAÇÃO";
-            } else if (at.temPreparoReceita) {
-                btnL.disabled = true;
-                btnL.innerText = "BARRA DE PREPARO DE RECEITA";
+            if (at.marcasMagicas !== null || at.temKarinBarras || at.temDespertar || at.temTransformacao || at.temPreparoReceita) {
+                btnL.style.display = 'none'; // Personagens com mecânicas especiais não usam botão padrão
             } else if (at.limitBreak) {
+                btnL.style.display = 'block';
                 btnL.disabled = at.limite < 100 || emTurnoInimigo;
                 if (at.limite >= 100) {
                     btnL.classList.add('ready');
@@ -1691,6 +1737,8 @@
                     btnL.classList.remove('ready');
                     btnL.innerText = `QUEBRA DE LIMITES (${at.limite}%)`;
                 }
+            } else {
+                btnL.style.display = 'none';
             }
         }
     }
@@ -1713,8 +1761,8 @@
         if (verificarVitoria() || verificarDerrota()) return;
 
         setTimeout(() => {
-            let inimigosVivos = ['e0', 'e1', 'e2'].filter(id => unidades[id] && unidades[id].hpAtual > 0);
-            let aliadosVivos = ['p0', 'p1', 'p2'].filter(id => unidades[id] && unidades[id].hpAtual > 0);
+            let inimigosVivos = ['e0', 'e1', 'e2', 'eFlor', 'eBarreira'].filter(id => unidades[id] && unidades[id].hpAtual > 0 && !unidades[id].ehFlorSumonada && !unidades[id].ehBarreiraSumonada);
+            let aliadosVivos = ['p0', 'p1', 'p2', 'pFlor', 'pBarreira'].filter(id => unidades[id] && unidades[id].hpAtual > 0);
 
             if (inimigosVivos.length > 0 && aliadosVivos.length > 0) {
                 let idInimigo = inimigosVivos[Math.floor(Math.random() * inimigosVivos.length)];
