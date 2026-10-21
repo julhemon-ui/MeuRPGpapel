@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>3v3 Paper RPG - 18 Personagens & Invocações Fixas</title>
+    <title>3v3 Paper RPG - 18 Personagens & Invocações</title>
     <style>
         * { box-sizing: border-box; margin: 0; padding: 0; user-select: none; }
         body { background: #1a1a1a; font-family: 'Courier New', Courier, monospace; color: #333; display: flex; justify-content: center; align-items: center; min-height: 100vh; padding: 10px; }
@@ -69,7 +69,6 @@
             100% { opacity: 0; }
         }
 
-        /* TELA DE SELEÇÃO AJUSTADA E CENTRALIZADA */
         #select-screen { 
             display: flex; 
             flex-direction: column; 
@@ -81,7 +80,6 @@
         .select-header h2 { font-size: 18px; }
         .select-header p { font-size: 12px; margin-top: 4px; color: #d32f2f; font-weight: bold; }
 
-        /* GRID FLUIDO E RESPONSIVO DE PERSONAGENS */
         .roster-grid { 
             display: grid; 
             grid-template-columns: repeat(auto-fit, minmax(120px, 1fr)); 
@@ -179,6 +177,12 @@
             content: '🐦‍⬛'; position: absolute; top: -12px; left: -8px; font-size: 18px; animation: crowFloat 1s infinite alternate;
         }
         @keyframes crowFloat { from { transform: translateY(0); } to { transform: translateY(-6px); } }
+
+        /* EFEITO DO MORCEGO FLUTUANTE NA NIW */
+        .unit-card.bat-invoked::after {
+            content: '🦇'; position: absolute; top: -16px; right: -8px; font-size: 20px; animation: batFloat 0.8s infinite alternate;
+        }
+        @keyframes batFloat { from { transform: translateY(0); } to { transform: translateY(-5px); } }
 
         .unit-card.buff-pulse { animation: buffGlow 0.8s ease-in-out; }
         @keyframes buffGlow {
@@ -572,7 +576,7 @@
             passiva: { nome: "Sombra Evasiva", desc: "Ao ficar abaixo de 30% de HP, ganha 50% de chance de esquivar de cada ataque recebido." },
             habilidades: [
                 { nome: "Ataque Sombrio", dano: 15, elemento: "Físico", cdMax: 0, cdAtual: 0, tipo: "ataque", desc: "Ataque físico rápido." },
-                { nome: "Gavras Sombrias", dano: 35, elemento: "Corrupção", cdMax: 2, cdAtual: 0, tipo: "ataque", efeito: "sangramento", desc: "Corta com corrupção e causa sangramento." },
+                { nome: "Garras Sombrias", dano: 35, elemento: "Corrupção", cdMax: 2, cdAtual: 0, tipo: "ataque", efeito: "sangramento", desc: "Corta com corrupção e causa sangramento." },
                 { nome: "Escudo de Penas", dano: 0, elemento: "Vento", cdMax: 3, cdAtual: 0, tipo: "buff_escudo_cura", desc: "Ganha +30 de HP e escudo defensivo." },
                 { nome: "Rugido Poderoso", dano: 0, elemento: "Vento", cdMax: 3, cdAtual: 0, tipo: "cura_propria_20", desc: "Recupera +20 HP e reduz 1t do cooldown de aliados." }
             ],
@@ -716,7 +720,7 @@
             passiva: { nome: "Contos Distorcidos", desc: "Cura 20 HP próprio ao ser afetada por um estado/debuff (aumenta para 30 HP se Anna estiver no time)." },
             habilidades: [
                 { nome: "Garras Esqueléticas", dano: 10, elemento: "Corrupção", cdMax: 0, cdAtual: 0, tipo: "ataque", efeito: "obsessao", desc: "Aplica o estado OBSESSÃO no alvo por 2t (+20 de dano dos ataques da Niw)." },
-                { nome: "Morcego Sombrio", dano: 0, elemento: "Corrupção", cdMax: 11, cdAtual: 0, tipo: "invocar_morcego", desc: "Invoca um Morcego Sombrio que no próximo turno voa e explode causando 30 de dano de Corrupção." },
+                { nome: "Morcego Sombrio", dano: 0, elemento: "Corrupção", cdMax: 11, cdAtual: 0, tipo: "invocar_morcego", desc: "Invoca um Morcego Sombrio (🦇) flutuante que se lança e explode causando 30 de dano de Corrupção no próximo ataque da Niw." },
                 { nome: "Pulso Sombrio", dano: 25, elemento: "Corrupção", cdMax: 3, cdAtual: 0, tipo: "ataque", desc: "Pulso de energia sombria que distorce o espaço." },
                 { nome: "Energizar", dano: 0, elemento: "Físico", cdMax: 1, cdAtual: 0, tipo: "buff_proprio_niw", desc: "Cura 25 HP próprio e faz o próximo ataque aplicar OBSESSÃO." }
             ],
@@ -1399,7 +1403,7 @@
         else if (habilidade.tipo === 'invocar_morcego') {
             habilidade.cdAtual = habilidade.cdMax;
             atacante.temMorcegoInvocado = true;
-            log(`🦇 <b>Morcego Sombrio:</b> Niw preparou um Morcego Sombrio! Ele atacará no próximo turno.`);
+            log(`🦇 <b>Morcego Sombrio:</b> Niw preparou um Morcego Sombrio! Ele voará e explodirá no seu próximo ataque.`);
         }
         else if (habilidade.tipo === 'buff_proprio_niw') {
             habilidade.cdAtual = habilidade.cdMax;
@@ -1449,7 +1453,8 @@
             aplicarEfeitoHab(habilidade, defensor, prefixo);
         }
 
-        if (atacante.temMorcegoInvocado) {
+        // DISPARAR O MORCEGO SOMBRIO APÓS O PRÓXIMO ATAQUE DA NIW
+        if (atacante.temMorcegoInvocado && habilidade.tipo !== 'invocar_morcego') {
             atacante.temMorcegoInvocado = false;
             let alvoMorcego = unidades[alvoInimigoId];
             if (alvoMorcego && alvoMorcego.hpAtual > 0) {
@@ -1663,6 +1668,7 @@
 
             if (u.emBerserk) card.classList.add('berserk-mode'); else card.classList.remove('berserk-mode');
             if (u.ehMonstroAnna) card.classList.add('crow-transformed'); else card.classList.remove('crow-transformed');
+            if (u.temMorcegoInvocado) card.classList.add('bat-invoked'); else card.classList.remove('bat-invoked');
 
             if (id.startsWith('e') && !u.ehFlorSumonada && !u.ehBarreiraSumonada) {
                 let weakDot = document.getElementById(`weak-${id}`);
