@@ -178,11 +178,11 @@
         }
         @keyframes crowFloat { from { transform: translateY(0); } to { transform: translateY(-6px); } }
 
-        /* EFEITO DO MORCEGO FLUTUANTE NA NIW */
-        .unit-card.bat-invoked::after {
-            content: '🦇'; position: absolute; top: -16px; right: -8px; font-size: 20px; animation: batFloat 0.8s infinite alternate;
+        /* MORCEGO FLUTUANTE DA NIW */
+        .unit-card.bat-invoked::before {
+            content: '🦇'; position: absolute; top: -18px; right: -6px; font-size: 22px; z-index: 20; animation: batFloat 0.7s infinite alternate ease-in-out;
         }
-        @keyframes batFloat { from { transform: translateY(0); } to { transform: translateY(-5px); } }
+        @keyframes batFloat { from { transform: translateY(0px) scale(1); } to { transform: translateY(-7px) scale(1.15); } }
 
         .unit-card.buff-pulse { animation: buffGlow 0.8s ease-in-out; }
         @keyframes buffGlow {
@@ -720,7 +720,7 @@
             passiva: { nome: "Contos Distorcidos", desc: "Cura 20 HP próprio ao ser afetada por um estado/debuff (aumenta para 30 HP se Anna estiver no time)." },
             habilidades: [
                 { nome: "Garras Esqueléticas", dano: 10, elemento: "Corrupção", cdMax: 0, cdAtual: 0, tipo: "ataque", efeito: "obsessao", desc: "Aplica o estado OBSESSÃO no alvo por 2t (+20 de dano dos ataques da Niw)." },
-                { nome: "Morcego Sombrio", dano: 0, elemento: "Corrupção", cdMax: 11, cdAtual: 0, tipo: "invocar_morcego", desc: "Invoca um Morcego Sombrio (🦇) flutuante que se lança e explode causando 30 de dano de Corrupção no próximo ataque da Niw." },
+                { nome: "Morcego Sombrio", dano: 0, elemento: "Corrupção", cdMax: 11, cdAtual: 0, tipo: "invocar_morcego", desc: "Invoca um Morcego Sombrio (🦇) que fica flutuando perto da Niw. No seu PRÓXIMO ataque, ele se lança e explode causando +30 de dano de Corrupção." },
                 { nome: "Pulso Sombrio", dano: 25, elemento: "Corrupção", cdMax: 3, cdAtual: 0, tipo: "ataque", desc: "Pulso de energia sombria que distorce o espaço." },
                 { nome: "Energizar", dano: 0, elemento: "Físico", cdMax: 1, cdAtual: 0, tipo: "buff_proprio_niw", desc: "Cura 25 HP próprio e faz o próximo ataque aplicar OBSESSÃO." }
             ],
@@ -1370,6 +1370,21 @@
             return;
         }
 
+        // --- INVOCAR MORCEGO SOMBRIO DA NIW ---
+        if (habilidade.tipo === 'invocar_morcego') {
+            habilidade.cdAtual = habilidade.cdMax;
+            atacante.temMorcegoInvocado = true;
+            mostrarEfeitoFlutuante(atacante.id, "🦇 PREPARADO!", "info");
+            log(`🦇 <b>Morcego Sombrio:</b> Niw invocou o Morcego Sombrio! Ele está flutuando perto dela e vai se lançar no próximo ataque.`);
+            
+            aplicarDanoPosAtaque(atacante);
+            atualizarUI();
+            if (verificarVitoria()) return;
+            iniciarTurnoInimigo();
+            return; // Encerra a ação do jogador aqui para NÃO executar ataque no mesmo turno
+        }
+
+        // LÓGICA DE INVOCAR OUTRAS UNIDADES / BUFFS
         if (habilidade.tipo === 'sumonar_flor') {
             habilidade.cdAtual = habilidade.cdMax;
             let florId = prefixo + 'Flor';
@@ -1399,11 +1414,6 @@
                 };
                 log(`🛡️ <b>Barreira de Cristal:</b> Karin invocouse a Barreira na frente do primeiro personagem!`);
             }
-        }
-        else if (habilidade.tipo === 'invocar_morcego') {
-            habilidade.cdAtual = habilidade.cdMax;
-            atacante.temMorcegoInvocado = true;
-            log(`🦇 <b>Morcego Sombrio:</b> Niw preparou um Morcego Sombrio! Ele voará e explodirá no seu próximo ataque.`);
         }
         else if (habilidade.tipo === 'buff_proprio_niw') {
             habilidade.cdAtual = habilidade.cdMax;
@@ -1451,17 +1461,17 @@
 
             log(`<b>${atacante.nome}</b> usou <b>${habilidade.nome}</b> (${elemEfetivo}) em <b>${defensor.nome}</b> causando ${dano} de dano!`);
             aplicarEfeitoHab(habilidade, defensor, prefixo);
-        }
 
-        // DISPARAR O MORCEGO SOMBRIO APÓS O PRÓXIMO ATAQUE DA NIW
-        if (atacante.temMorcegoInvocado && habilidade.tipo !== 'invocar_morcego') {
-            atacante.temMorcegoInvocado = false;
-            let alvoMorcego = unidades[alvoInimigoId];
-            if (alvoMorcego && alvoMorcego.hpAtual > 0) {
-                let danoM = calcularDano(atacante, alvoMorcego, { dano: 30, elemento: "Corrupção" });
-                alvoMorcego.hpAtual = Math.max(0, alvoMorcego.hpAtual - danoM);
-                log(`🦇💥 <b>Morcego Sombrio Explodiu!</b> Causou ${danoM} de dano de Corrupção em ${alvoMorcego.nome}!`);
-                mostrarEfeitoFlutuante(alvoMorcego.id, `-${danoM} 🦇`, "dano");
+            // SE A NIW ATCOU E TINHA MORCEGO PREPARADO, ELE SE LANÇA E EXPLODE AGORA
+            if (atacante.temMorcegoInvocado) {
+                atacante.temMorcegoInvocado = false;
+                let alvoMorcego = unidades[alvoInimigoId];
+                if (alvoMorcego && alvoMorcego.hpAtual > 0) {
+                    let danoM = calcularDano(atacante, alvoMorcego, { dano: 30, elemento: "Corrupção" });
+                    alvoMorcego.hpAtual = Math.max(0, alvoMorcego.hpAtual - danoM);
+                    log(`🦇💥 <b>Morcego Sombrio Explodiu!</b> O morcego voou e causou ${danoM} de dano de Corrupção em ${alvoMorcego.nome}!`);
+                    mostrarEfeitoFlutuante(alvoMorcego.id, `-${danoM} 🦇`, "dano");
+                }
             }
         }
 
