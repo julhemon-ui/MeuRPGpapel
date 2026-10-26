@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>3v3 Paper RPG - Balanceado & Atualizado</title>
+    <title>3v3 Paper RPG - 21 Personagens & Mecânicas</title>
     <style>
         * { box-sizing: border-box; margin: 0; padding: 0; user-select: none; }
         body { background: #1a1a1a; font-family: 'Courier New', Courier, monospace; color: #333; display: flex; justify-content: center; align-items: center; min-height: 100vh; padding: 10px; }
@@ -178,7 +178,6 @@
         }
         @keyframes crowFloat { from { transform: translateY(0); } to { transform: translateY(-6px); } }
 
-        /* MORCEGO FLUTUANTE DA NIW */
         .unit-card.bat-invoked::before {
             content: '🦇'; position: absolute; top: -18px; right: -6px; font-size: 22px; z-index: 20; animation: batFloat 0.7s infinite alternate ease-in-out;
         }
@@ -311,7 +310,7 @@
 
 <div id="select-screen" class="screen">
     <div class="select-header">
-        <h2>SELEÇÃO DE PERSONAGENS (18 DISPONÍVEIS)</h2>
+        <h2>SELEÇÃO DE PERSONAGENS (21 DISPONÍVEIS)</h2>
         <p id="select-instruction">Escolha 3 personagens para o SEU TIME</p>
     </div>
 
@@ -579,7 +578,7 @@
             passiva: { nome: "Sombra Evasiva", desc: "Ao ficar abaixo de 30% de HP, ganha 50% de chance de esquivar de cada ataque recebido." },
             habilidades: [
                 { nome: "Ataque Sombrio", dano: 15, elemento: "Físico", cdMax: 0, cdAtual: 0, tipo: "ataque", desc: "Ataque físico rápido." },
-                { nome: "Gavras Sombrias", dano: 35, elemento: "Corrupção", cdMax: 2, cdAtual: 0, tipo: "ataque", efeito: "sangramento", desc: "Corta com corrupção e causa sangramento." },
+                { nome: "Garras Sombrias", dano: 35, elemento: "Corrupção", cdMax: 2, cdAtual: 0, tipo: "ataque", efeito: "sangramento", desc: "Corta com corrupção e causa sangramento." },
                 { nome: "Escudo de Penas", dano: 0, elemento: "Vento", cdMax: 3, cdAtual: 0, tipo: "buff_escudo_cura", desc: "Ganha +30 de HP e escudo defensivo." },
                 { nome: "Rugido Poderoso", dano: 0, elemento: "Vento", cdMax: 3, cdAtual: 0, tipo: "cura_propria_20", desc: "Recupera +20 HP e reduz 1t do cooldown de aliados." }
             ],
@@ -598,12 +597,12 @@
         },
         "Silver": {
             hpMax: 130, danoFisico: 20, elementoBase: "Purificação", fraqueza: "Gelo", imunidade: "Purificação",
-            passiva: { nome: "Aura da Purificação", desc: "Ignora escudos se HP estiver 100% (ou <50% se Niw no time). Ganha +20 ATQ e Escudo ao ser curada!" },
+            passiva: { nome: "Aura da Purificação", desc: "Ignora escudos se HP 100% (ou <50% se Niw no time). Ganha +20 ATQ e Escudo ao ser curada!" },
             habilidades: [
                 { nome: "Estocada Branca", dano: 20, elemento: "Purificação", cdMax: 0, cdAtual: 0, tipo: "ataque", desc: "Ataque básico sagrado." },
                 { nome: "Floreio Congelante", dano: 35, elemento: "Gelo", cdMax: 3, cdAtual: 0, tipo: "ataque", efeito: "congelamento", desc: "Congela o oponente por 1 turno." },
                 { nome: "Off White", dano: 30, elemento: "Purificação", cdMax: 4, cdAtual: 0, tipo: "ataque", efeito: "bloqueio_cura", desc: "CORTA BUFFS do alvo e bloqueia cura por 3t." },
-                { nome: "Julgamento", dano: 25, elemento: "Purificação", cdMax: 8, cdAtual: 0, tipo: "ataque", efeito: "julgamento_hp", desc: "Causa 25 de dano (40 de dano se Silver estiver com HP cheio)." }
+                { nome: "Julgamento", dano: 25, elemento: "Purificação", cdMax: 8, cdAtual: 0, tipo: "ataque", efeito: "julgamento_hp", desc: "Causa 25 de dano (40 se Silver com HP cheio)." }
             ],
             limitBreak: { nome: "Lâmina Divina", dano: 45, elemento: "Purificação", tipo: "limit_silver", desc: "Causa dano em todos os oponentes e aplica o estado LEVE." }
         },
@@ -725,7 +724,7 @@
                 { nome: "Garras Esqueléticas", dano: 10, elemento: "Corrupção", cdMax: 0, cdAtual: 0, tipo: "ataque", efeito: "obsessao", desc: "Aplica OBSESSÃO no alvo por 2t (+20 de dano dos ataques da Niw)." },
                 { nome: "Morcego Sombrio", dano: 0, elemento: "Corrupção", cdMax: 11, cdAtual: 0, tipo: "invocar_morcego", desc: "Invoca um Morcego (🦇) flutuante. No PRÓXIMO ataque da Niw ele explodirá (+30 dano)." },
                 { nome: "Pulso Sombrio", dano: 25, elemento: "Corrupção", cdMax: 3, cdAtual: 0, tipo: "ataque", desc: "Pulso de energia sombria que distorce o espaço." },
-                { nome: "Energizar", dano: 0, elemento: "Físico", cdMax: 1, cdAtual: 0, tipo: "buff_proprio_niw", desc: "Cura 25 HP próprio e faz o próximo ataque aplicar OBSESSÃO." }
+                { nome: "Energizar", dano: 0, elemento: "Físico", cdMax: 1, cdAtual: 0, tipo: "buff_proprio_niw", desc: "Cura 25 HP próprio e energiza o próximo ataque com OBSESSÃO." }
             ],
             limitBreak: { nome: "Energia Amaldiçoada", dano: 38, elemento: "Corrupção", tipo: "limit_niw", desc: "Acerta todo o time oponente e aplica Obsessão ou Maldição!" }
         },
@@ -740,6 +739,39 @@
             ],
             temKarinBarras: true,
             karinDef: 0, karinAtq: 0
+        },
+        "Din": {
+            hpMax: 200, danoFisico: 20, elementoBase: "Corrupção", fraqueza: "Terra", imunidade: "Vento",
+            passiva: { nome: "Regente dos Mortos", desc: "Aliado derrotado cura Din em +50 HP e concede Regeneração (10 HP/t por 10t). Com Ysma, cura +100 HP." },
+            habilidades: [
+                { nome: "Adaga Sombria", dano: 20, elemento: "Físico", cdMax: 0, cdAtual: 0, tipo: "ataque", desc: "Ataque físico básico (Vira Purificação se Mariel no time)." },
+                { nome: "Tiro do Ceifador", dano: 30, elemento: "Corrupção", cdMax: 4, cdAtual: 0, tipo: "ataque", efeito: "bloqueio_cura", desc: "Aplica Bloqueio de Cura (Ganha escudo de -25 por 2t se Anna no time)." },
+                { nome: "Escudo das Almas", dano: 0, elemento: "Suporte", cdMax: 4, cdAtual: 0, tipo: "din_escudo_almas", desc: "Concede escudo e Auto-Reviver 😇 (Volta com 50% HP se zerar). Cura +50 HP no Campos." },
+                { nome: "Floreio das Almas", dano: 20, elemento: "Corrupção", cdMax: 3, cdAtual: 0, tipo: "ataque", efeito: "sangramento", desc: "Causa Sangramento e Bloqueio de Cura se Cristal no time." }
+            ],
+            limitBreak: { nome: "Lamento das Almas", dano: 0, elemento: "Corrupção", tipo: "limit_din_revive", desc: "Revive todos os aliados caídos no campo de batalha!" }
+        },
+        "Cristal": {
+            hpMax: 110, danoFisico: 15, elementoBase: "Mágico", fraqueza: "Mágico", imunidade: "Purificação",
+            passiva: { nome: "Preparo de Poções", desc: "Após levar 30+ de dano, substitui ataques comuns por poções especiais por 1 turno." },
+            habilidades: [
+                { nome: "Cajado Maravi-lindo", dano: 15, elemento: "Físico", cdMax: 0, cdAtual: 0, tipo: "ataque", desc: "Ataque básico (Vira Mágico se Dunnie no time)." },
+                { nome: "Estilhaços de Gelo", dano: 20, elemento: "Gelo", cdMax: 6, cdAtual: 0, tipo: "ataque", efeito: "congelamento", desc: "Aplica o estado Congelado no alvo." },
+                { nome: "Chamas Mágicas", dano: 23, elemento: "Fogo", cdMax: 4, cdAtual: 0, tipo: "ataque", efeito: "queimadura", desc: "Aplica Queimado (Atinge time inimigo inteiro se Campos no time)." },
+                { nome: "Divar", dano: 0, elemento: "Purificação", cdMax: 3, cdAtual: 0, tipo: "cristal_divar", desc: "Concede Auto-Reviver a si mesma (Aplica Regeneração se Shy no time)." }
+            ],
+            temFrascosCristal: true, frascosRestantes: 3
+        },
+        "Shy": {
+            hpMax: 100, danoFisico: 20, elementoBase: "Mágico", fraqueza: "Nenhuma", imunidade: "Nenhuma",
+            passiva: { nome: "Heroína Rúnica", desc: "Ataques elementais causam +10 dano. Com Karin, ataques de Terra aplicam Pesado." },
+            habilidades: [
+                { nome: "Espada Rúnica", dano: 20, elemento: "Físico", cdMax: 0, cdAtual: 0, tipo: "ataque", desc: "Ataque básico (Vira Fogo se Rhayane no time)." },
+                { nome: "Runa de Fogo", dano: 20, elemento: "Fogo", cdMax: 4, cdAtual: 0, tipo: "ataque", efeito: "queimadura_20", desc: "20% chance de queimar (100% se Cristal no time)." },
+                { nome: "Floreio Rúnico", dano: 20, elemento: "Mágico", cdMax: 4, cdAtual: 0, tipo: "ataque", efeito: "shy_floreio", desc: "Escudo de -20 para Shy (Causa Sangramento se Din no time)." },
+                { nome: "Runa de Gelo", dano: 20, elemento: "Gelo", cdMax: 3, cdAtual: 0, tipo: "shy_gelo", efeito: "congelamento_30", desc: "30% chance de congelar (Vira Tempestade de Gelo com Ysma, dano 30 a todos, CD: 9)." }
+            ],
+            limitBreak: { nome: "Cavaleira Rúnica", dano: 30, elemento: "Fogo", tipo: "limit_shy", desc: "Atropela o time oponente com sua moto causando dano absoluto, Pesado e Sangrando!" }
         }
     };
 
@@ -877,13 +909,16 @@
             temPreparoReceita: base.temPreparoReceita || false,
             temImbuirMagia: base.temImbuirMagia || false,
             imbuirMagiaTurnos: 0,
+            temFrascosCristal: base.temFrascosCristal || false,
+            frascosRestantes: base.temFrascosCristal ? 3 : 0,
+            modoPocoesTurnos: 0,
             formaMonstro: base.formaMonstro ? JSON.parse(JSON.stringify(base.formaMonstro)) : null,
             marcasMagicas: base.marcasMagicas !== undefined ? 3 : null,
             temKarinBarras: base.temKarinBarras || false,
             karinDef: 0, karinAtq: 0, buffKarinAtqBonus: 0, escudoKarinPaladina: 0,
-            escudoSimbiose: 0, escudoDunnie: 0, escudoDoctor: 0, escudoKevin: 0, escudoMika: 0, escudoMariel: 0, escudoGroxyGold: 0, escudoAnna: 0, escudoKarin: 0, escudoSilver: 0,
+            escudoSimbiose: 0, escudoDunnie: 0, escudoDoctor: 0, escudoKevin: 0, escudoMika: 0, escudoMariel: 0, escudoGroxyGold: 0, escudoAnna: 0, escudoKarin: 0, escudoSilver: 0, escudoDin: 0, escudoShy: 0,
             buffAtqDoctor: 0, buffAtqYsma: 0, buffAtqNightSinergia: 0, debuffAtqNight: 0, bloqueioCuraTurnos: 0, buffAtqDoctorSobrecarga: 0, buffAtqMikaKevin: 0, buffAtqSilverCura: 0,
-            buffMarielGrupo: 0, buffMarielCorrupcao: 0, passoPlumaTurnos: 0, muitoDoceTurnos: 0, bencaoTurnos: 0,
+            buffMarielGrupo: 0, buffMarielCorrupcao: 0, passoPlumaTurnos: 0, muitoDoceTurnos: 0, bencaoTurnos: 0, regeneracaoTurnos: 0, autoReviver: false, acelaradoTurnos: 0,
             paralisiaTurnos: 0, paralisiaChance: 0, sangramento: 0, queimadura: 0, veneno: 0, venenoForte: 0, congelado: false, leve: 0, pesado: 0, molhado: 0,
             obsessaoTurnos: 0, obsessaoOrigemId: null, maldicaoTurnos: 0, proximoAtqObsessao: false,
             emBerserk: false, ehMonstroAnna: false, turnosTransformacaoAnna: 0,
@@ -904,17 +939,16 @@
         let temAnnaOponente = timeTemPersonagem(oponentePrefix, 'Anna');
         let temCamposMesmoTime = timeTemPersonagem(timePrefix, 'Campos');
 
-        // Se Campos estiver no mesmo time, ele desabilita a Anna!
         if (temCamposMesmoTime) return false;
         return temAnnaOponente;
     }
 
     function limparBuffsUnidade(unidade) {
-        let escudosRemovidos = unidade.escudoSimbiose + unidade.escudoDunnie + unidade.escudoDoctor + unidade.escudoKevin + unidade.escudoMika + unidade.escudoMariel + unidade.escudoGroxyGold + unidade.escudoAnna + unidade.escudoKarin + unidade.escudoSilver;
+        let escudosRemovidos = unidade.escudoSimbiose + unidade.escudoDunnie + unidade.escudoDoctor + unidade.escudoKevin + unidade.escudoMika + unidade.escudoMariel + unidade.escudoGroxyGold + unidade.escudoAnna + unidade.escudoKarin + unidade.escudoSilver + unidade.escudoDin + unidade.escudoShy;
         let buffsAtqRemovidos = unidade.buffAtqDoctor + unidade.buffAtqYsma + unidade.buffAtqNightSinergia + unidade.buffMarielGrupo + unidade.buffMarielCorrupcao + unidade.buffAtqDoctorSobrecarga + unidade.buffAtqMikaKevin + unidade.buffAtqSilverCura;
         
         unidade.escudoSimbiose = 0; unidade.escudoDunnie = 0; unidade.escudoDoctor = 0;
-        unidade.escudoKevin = 0; unidade.escudoMika = 0; unidade.escudoMariel = 0; unidade.escudoGroxyGold = 0; unidade.escudoAnna = 0; unidade.escudoKarin = 0; unidade.escudoSilver = 0;
+        unidade.escudoKevin = 0; unidade.escudoMika = 0; unidade.escudoMariel = 0; unidade.escudoGroxyGold = 0; unidade.escudoAnna = 0; unidade.escudoKarin = 0; unidade.escudoSilver = 0; unidade.escudoDin = 0; unidade.escudoShy = 0;
         unidade.buffAtqDoctor = 0; unidade.buffAtqYsma = 0; unidade.buffAtqNightSinergia = 0;
         unidade.buffMarielGrupo = 0; unidade.buffMarielCorrupcao = 0; unidade.buffAtqDoctorSobrecarga = 0; unidade.buffAtqMikaKevin = 0; unidade.buffAtqSilverCura = 0;
         unidade.passoPlumaTurnos = 0; unidade.muitoDoceTurnos = 0; unidade.bencaoTurnos = 0;
@@ -936,6 +970,11 @@
             let temYsma = timeTemPersonagem(prefix, 'Ysma');
             let temGroxy = timeTemPersonagem(prefix, 'Groxy');
             let temKarin = timeTemPersonagem(prefix, 'Karin');
+            let temMariel = timeTemPersonagem(prefix, 'Mariel');
+            let temDin = timeTemPersonagem(prefix, 'Din');
+            let temCristal = timeTemPersonagem(prefix, 'Cristal');
+            let temShy = timeTemPersonagem(prefix, 'Shy');
+            let temRhayane = timeTemPersonagem(prefix, 'Rhayane');
 
             if (temGroxy && timeTemPersonagem(prefix, 'Silver')) {
                 ['0', '1', '2'].forEach(s => {
@@ -961,6 +1000,15 @@
                 let u = unidades[prefix + s];
                 if (!u || u.hpAtual <= 0) return;
 
+                if (u.nome === 'Din' && temMariel) {
+                    u.habilidades[0].elemento = "Purificação";
+                }
+                if (u.nome === 'Cristal' && temDunnie) {
+                    u.habilidades[0].elemento = "Mágico";
+                }
+                if (u.nome === 'Shy' && temRhayane) {
+                    u.habilidades[0].elemento = "Fogo";
+                }
                 if (u.nome === 'Ysma' && temGroxy) {
                     u.habilidades[0] = { nome: "Acerto Perfurante de Vento", dano: 15, elemento: "Vento", cdMax: 0, cdAtual: 0, tipo: "ataque", desc: "Elemento convertido para Vento pelo Groxy." };
                 }
@@ -1123,6 +1171,8 @@
 
         let danoBase = habilidade.dano;
 
+        if (timeTemPersonagem(prefixoAttacker, 'Shy')) danoBase += 10;
+
         if (habilidade.tipo === 'ataque_ysma_gelo' && defensor.hpAtual === defensor.hpMax) {
             danoBase = 25;
             log(`❄️ <b>Raio de Gelo (Ysma):</b> Causal 25 de dano no oponente com HP cheio!`);
@@ -1197,7 +1247,7 @@
             return 0;
         }
 
-        let reducaoTotal = defensor.escudoDunnie + defensor.escudoDoctor + defensor.escudoSimbiose + defensor.escudoKevin + defensor.escudoMika + defensor.escudoMariel + defensor.escudoGroxyGold + defensor.escudoAnna + defensor.escudoKarin + defensor.escudoKarinPaladina + defensor.escudoSilver;
+        let reducaoTotal = defensor.escudoDunnie + defensor.escudoDoctor + defensor.escudoSimbiose + defensor.escudoKevin + defensor.escudoMika + defensor.escudoMariel + defensor.escudoGroxyGold + defensor.escudoAnna + defensor.escudoKarin + defensor.escudoKarinPaladina + defensor.escudoSilver + defensor.escudoDin + defensor.escudoShy;
 
         if (reducaoTotal > 0 && danoBase > 0) {
             danoBase = Math.max(0, danoBase - reducaoTotal);
@@ -1275,7 +1325,7 @@
     }
 
     function carregarLimite(unidade, qtd) {
-        if (unidade.marcasMagicas !== null || unidade.temKarinBarras || unidade.temImbuirMagia) return;
+        if (unidade.marcasMagicas !== null || unidade.temKarinBarras || unidade.temImbuirMagia || unidade.temFrascosCristal) return;
 
         unidade.limite = Math.min(100, Math.max(0, unidade.limite + qtd));
 
@@ -1410,6 +1460,23 @@
             return;
         }
 
+        if (indiceHab === 'limit' && atacante.nome === 'Din') {
+            ['p0', 'p1', 'p2'].forEach(pId => {
+                let ali = unidades[pId];
+                if (ali && ali.hpAtual <= 0) {
+                    ali.hpAtual = Math.floor(ali.hpMax * 0.5);
+                    log(`💀✨ <b>Lamento das Almas (Din):</b> ${ali.nome} foi revivido com 50% de HP!`);
+                    dispararBuffPulse(ali.id);
+                }
+            });
+            dispararFlashLimites();
+            aplicarDanoPosAtaque(atacante);
+            atualizarUI();
+            if (verificarVitoria()) return;
+            iniciarTurnoInimigo();
+            return;
+        }
+
         let habilidade = (indiceHab === 'limit') ? atacante.limitBreak : atacante.habilidades[indiceHab];
 
         if (indiceHab === 'limit') {
@@ -1444,6 +1511,25 @@
             return;
         }
 
+        if (habilidade.tipo === 'limit_shy') {
+            ['e0', 'e1', 'e2'].forEach(eId => {
+                let eU = unidades[eId];
+                if (eU && eU.hpAtual > 0) {
+                    let danoAbsoluto = 30;
+                    eU.hpAtual = Math.max(0, eU.hpAtual - danoAbsoluto);
+                    eU.pesado = 3;
+                    eU.sangramento = 3;
+                    mostrarEfeitoFlutuante(eU.id, `-${danoAbsoluto}`, "dano");
+                    log(`🏍️🔥 <b>Cavaleira Rúnica (Shy):</b> Atropelou ${eU.nome} causando 30 de dano absoluto, Pesado e Sangrando!`);
+                }
+            });
+            aplicarDanoPosAtaque(atacante);
+            atualizarUI();
+            if (verificarVitoria()) return;
+            iniciarTurnoInimigo();
+            return;
+        }
+
         if (habilidade.tipo && habilidade.tipo.startsWith('buff_aliado')) {
             modoSelecaoSuporte = true;
             habilidadeSuportePendente = { habilidade, indiceHab };
@@ -1452,12 +1538,11 @@
             return;
         }
 
-        // MORCEGO SOMBRIO
         if (habilidade.tipo === 'invocar_morcego') {
             habilidade.cdAtual = habilidade.cdMax;
             atacante.temMorcegoInvocado = true;
             mostrarEfeitoFlutuante(atacante.id, "🦇 PREPARADO!", "info");
-            log(`🦇 <b>Morcego Sombrio:</b> Niw invocou o Morcego Sombrio! Ele está flutuando perto dela e vai se lançar no próximo ataque.`);
+            log(`🦇 <b>Morcego Sombrio:</b> Niw invocou o Morcego Sombrio! Ele vai se lançar no próximo ataque.`);
             
             aplicarDanoPosAtaque(atacante);
             atualizarUI();
@@ -1501,6 +1586,27 @@
             aplicarCura(atacante, 30, atacante);
             log(`🫧 <b>Bolhas de Lavanda:</b> Mika causou ${dano} de dano e recuperou +30 HP!`);
         }
+        else if (habilidade.tipo === 'din_escudo_almas') {
+            modoSelecaoSuporte = true;
+            habilidadeSuportePendente = { habilidade, indiceHab };
+            log(`👻 <b>Escudo das Almas:</b> Clique em um aliado para dar Escudo e Auto-Reviver 😇!`);
+            atualizarUI();
+            return;
+        }
+        else if (habilidade.tipo === 'cristal_divar') {
+            atacante.autoReviver = true;
+            habilidade.cdAtual = habilidade.cdMax;
+            if (timeTemPersonagem(prefixo, 'Shy')) {
+                atacante.regeneracaoTurnos = 5;
+                log(`✨ <b>Divar + Shy:</b> Cristal aplicou Regeneração em si mesma!`);
+            }
+            log(`✨ <b>Divar:</b> Cristal aplicou Auto-Reviver 😇 em si mesma!`);
+            aplicarDanoPosAtaque(atacante);
+            atualizarUI();
+            if (verificarVitoria()) return;
+            iniciarTurnoInimigo();
+            return;
+        }
         else if (habilidade.tipo === 'sumonar_flor') {
             habilidade.cdAtual = habilidade.cdMax;
             let florId = prefixo + 'Flor';
@@ -1510,7 +1616,7 @@
                 unidades[florId] = {
                     id: florId, nome: "Flor de Cura", hpMax: 40, hpAtual: 40, danoFisico: 0,
                     fraqueza: "Fogo", imunidade: "Biológico", limite: 0, habilidades: [], limitBreak: null,
-                    escudoSimbiose: 0, escudoDunnie: 0, escudoDoctor: 0, escudoKevin: 0, escudoMika: 0, escudoMariel: 0, escudoGroxyGold: 0, escudoAnna: 0, escudoKarin: 0, escudoSilver: 0,
+                    escudoSimbiose: 0, escudoDunnie: 0, escudoDoctor: 0, escudoKevin: 0, escudoMika: 0, escudoMariel: 0, escudoGroxyGold: 0, escudoAnna: 0, escudoKarin: 0, escudoSilver: 0, escudoDin: 0, escudoShy: 0,
                     paralisiaTurnos: 0, sangramento: 0, queimadura: 0, veneno: 0, congelado: false, ehFlorSumonada: true, marcasMagicas: null
                 };
                 log(`🌸 <b>Florescer da Mana:</b> Leandro sumonou a Flor de Cura atrás do personagem do meio!`);
@@ -1525,7 +1631,7 @@
                 unidades[barreiraId] = {
                     id: barreiraId, nome: "Barreira de Cristal", hpMax: 80, hpAtual: 80, danoFisico: 0,
                     fraqueza: "Água", imunidade: "Terra", limite: 0, habilidades: [], limitBreak: null,
-                    escudoSimbiose: 0, escudoDunnie: 0, escudoDoctor: 0, escudoKevin: 0, escudoMika: 0, escudoMariel: 0, escudoGroxyGold: 0, escudoAnna: 0, escudoKarin: 0, escudoSilver: 0,
+                    escudoSimbiose: 0, escudoDunnie: 0, escudoDoctor: 0, escudoKevin: 0, escudoMika: 0, escudoMariel: 0, escudoGroxyGold: 0, escudoAnna: 0, escudoKarin: 0, escudoSilver: 0, escudoDin: 0, escudoShy: 0,
                     paralisiaTurnos: 0, sangramento: 0, queimadura: 0, veneno: 0, congelado: false, ehBarreiraSumonada: true, marcasMagicas: null
                 };
                 log(`🛡️ <b>Barreira de Cristal:</b> Karin invocouse a Barreira na frente do primeiro personagem!`);
@@ -1567,6 +1673,35 @@
         }
         else {
             let elemEfetivo = habilidade.elemento;
+            if (atacante.nome === 'Shy' && elemEfetivo === 'Terra' && timeTemPersonagem(prefixo, 'Karin')) {
+                defensor.pesado = 3;
+                log(`🪨✨ <b>Heroína Rúnica + Karin:</b> Ataque de Terra aplicou Pesado automaticamente!`);
+            }
+            if (atacante.nome === 'Shy' && habilidade.nome === 'Runa de Fogo' && timeTemPersonagem(prefixo, 'Cristal')) {
+                defensor.queimadura = 2;
+                log(`🔥🧪 <b>Runa de Fogo + Cristal:</b> Queimadura aplicada com 100% de garantia!`);
+            }
+            if (atacante.nome === 'Shy' && habilidade.nome === 'Floreio Rúnico' && timeTemPersonagem(prefixo, 'Din')) {
+                defensor.sangramento = 3;
+                log(`🩸👻 <b>Floreio Rúnico + Din:</b> Causou Sangramento no oponente!`);
+            }
+            if (atacante.nome === 'Shy' && habilidade.nome === 'Runa de Gelo' && timeTemPersonagem(prefixo, 'Ysma')) {
+                ['e0', 'e1', 'e2'].forEach(eId => {
+                    let eU = unidades[eId];
+                    if (eU && eU.hpAtual > 0) {
+                        let danoT = calcularDano(atacante, eU, { dano: 30, elemento: "Gelo" });
+                        eU.hpAtual = Math.max(0, eU.hpAtual - danoT);
+                        mostrarEfeitoFlutuante(eU.id, `-${danoT}`, "dano");
+                    }
+                });
+                habilidade.cdAtual = 9;
+                log(`❄️🪄 <b>Tempestade de Gelo (Shy + Ysma):</b> Atingiu o time oponente inteiro causando 30 de dano!`);
+                aplicarDanoPosAtaque(atacante);
+                if (verificarVitoria()) return;
+                iniciarTurnoInimigo();
+                return;
+            }
+
             let dano = calcularDano(atacante, defensor, habilidade, elemEfetivo);
             defensor.hpAtual = Math.max(0, defensor.hpAtual - dano);
             mostrarEfeitoFlutuante(defensor.id, `-${dano}`, "dano");
@@ -1615,6 +1750,14 @@
             }
         } else if (habilidade.tipo === 'buff_aliado_karin') {
             aliadoTarget.escudoKarin = 1;
+        } else if (habilidade.tipo === 'din_escudo_almas') {
+            aliadoTarget.escudoDin = 2;
+            aliadoTarget.autoReviver = true;
+            if (aliadoTarget.nome === 'Campos') {
+                aplicarCura(aliadoTarget, 50, atacante);
+                log(`👻🖤 <b>Escudo das Almas + Campos:</b> Campos recuperou +50 de HP!`);
+            }
+            log(`👻✨ <b>Escudo das Almas:</b> Concedeu escudo e Auto-Reviver 😇 a ${aliadoTarget.nome}!`);
         }
 
         habilidade.cdAtual = habilidade.cdMax;
@@ -1630,7 +1773,15 @@
     function processarEfeitosStatus() {
         for (let id in unidades) {
             let u = unidades[id];
-            if (u.hpAtual <= 0) continue;
+            if (u.hpAtual <= 0) {
+                if (u.autoReviver) {
+                    u.autoReviver = false;
+                    u.hpAtual = Math.floor(u.hpMax * 0.5);
+                    log(`😇✨ <b>AUTO-REVIVER ATIVADO!</b> ${u.nome} voltou à vida com 50% de HP!`);
+                    dispararBuffPulse(u.id);
+                }
+                continue;
+            }
 
             if (u.imbuirMagiaTurnos > 0) {
                 u.imbuirMagiaTurnos--;
@@ -1638,6 +1789,14 @@
             }
 
             if (u.buffAtqSilverCura > 0) u.buffAtqSilverCura--;
+            if (u.regeneracaoTurnos > 0) {
+                aplicarCura(u, 10, u);
+                u.regeneracaoTurnos--;
+            }
+
+            if (u.nome === 'Din' && u.regeneracaoTurnos > 0) {
+                aplicarCura(u, 10, u);
+            }
 
             if ((u.sangramento > 0 || u.queimadura > 0 || u.veneno > 0 || u.paralisiaTurnos > 0 || u.congelado || u.leve > 0 || u.pesado > 0 || u.molhado > 0 || u.obsessaoTurnos > 0 || u.maldicaoTurnos > 0) && u.nome === 'Niw') {
                 let valorCura = timeTemPersonagem(u.id.substring(0, 1), 'Anna') ? 30 : 20;
@@ -1666,6 +1825,8 @@
             if (u.escudoGroxyGold > 0) u.escudoGroxyGold--;
             if (u.escudoAnna > 0) u.escudoAnna--;
             if (u.escudoSilver > 0) u.escudoSilver--;
+            if (u.escudoDin > 0) u.escudoDin--;
+            if (u.escudoShy > 0) u.escudoShy--;
 
             if (u.ehMonstroAnna) {
                 u.turnosTransformacaoAnna--;
@@ -1791,11 +1952,11 @@
                     limitBar.style.width = u.karinDef + "%";
                     limitBar.className = "fill-limit bar-karin-def";
                     if (marcasBox) marcasBox.innerHTML = '';
-                } else if (u.temImbuirMagia) {
+                } else if (u.temImbuirMagia || u.temFrascosCristal) {
                     limitBar.style.display = 'block';
-                    limitBar.style.width = u.limite + "%";
+                    limitBar.style.width = u.temFrascosCristal ? (u.frascosRestantes * 33.3) + "%" : u.limite + "%";
                     limitBar.className = "fill-limit";
-                    limitBar.style.backgroundColor = "#2196f3";
+                    limitBar.style.backgroundColor = u.temFrascosCristal ? "#9c27b0" : "#2196f3";
                     if (marcasBox) marcasBox.innerHTML = '';
                 } else {
                     limitBar.style.display = 'block';
@@ -1824,6 +1985,8 @@
 
             if (statusBadge) {
                 let listaStatus = [];
+                if (u.autoReviver) listaStatus.push("😇 AUTO-REVIVER");
+                if (u.regeneracaoTurnos > 0) listaStatus.push(`🧪 REGEN (${u.regeneracaoTurnos}t)`);
                 if (u.imbuirMagiaTurnos > 0) listaStatus.push(`🔮 MAGIA (${u.imbuirMagiaTurnos}t)`);
                 if (u.congelado) listaStatus.push("❄️ CONGELADO");
                 if (u.paralisiaTurnos > 0) listaStatus.push(`⚡ PARALISIA (${u.paralisiaTurnos}t)`);
@@ -1840,7 +2003,7 @@
                 if (u.passoPlumaTurnos > 0) listaStatus.push(`🪶 PASSO PLUMA (${u.passoPlumaTurnos}t)`);
                 if (u.muitoDoceTurnos > 0) listaStatus.push(`🍬 MUITO DOCE (${u.muitoDoceTurnos}t)`);
                 if (u.bloqueioCuraTurnos > 0) listaStatus.push(`🚫 SEM CURA (${u.bloqueioCuraTurnos}t)`);
-                if (u.escudoSimbiose > 0 || u.escudoKevin > 0 || u.escudoMika > 0 || u.escudoDoctor > 0 || u.escudoDunnie > 0 || u.escudoMariel > 0 || u.escudoGroxyGold > 0 || u.escudoAnna > 0 || u.escudoKarin > 0 || u.escudoKarinPaladina > 0 || u.escudoSilver > 0) listaStatus.push(`🛡️ ESCUDO ATIVO`);
+                if (u.escudoSimbiose > 0 || u.escudoKevin > 0 || u.escudoMika > 0 || u.escudoDoctor > 0 || u.escudoDunnie > 0 || u.escudoMariel > 0 || u.escudoGroxyGold > 0 || u.escudoAnna > 0 || u.escudoKarin > 0 || u.escudoKarinPaladina > 0 || u.escudoSilver > 0 || u.escudoDin > 0 || u.escudoShy > 0) listaStatus.push(`🛡️ ESCUDO ATIVO`);
 
                 statusBadge.innerHTML = listaStatus.join("<br>");
             }
@@ -1896,6 +2059,13 @@
                 } else {
                     btnL.innerText = `MAGIA RECARREGANDO...`;
                 }
+            } else if (at.temFrascosCristal) {
+                btnL.style.display = 'block';
+                btnL.disabled = true;
+                btnL.className = "";
+                btnL.style.background = "#e1bee7";
+                btnL.style.color = "#4a148c";
+                btnL.innerText = `🧪 FRASCOS DE POÇÃO: ${at.frascosRestantes}/3`;
             } else if (at.marcasMagicas !== null || at.temKarinBarras || at.temDespertar || at.temTransformacao || at.temPreparoReceita) {
                 btnL.style.display = 'none';
             } else if (at.limitBreak) {
