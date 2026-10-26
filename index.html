@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>3v3 Paper RPG - 21 Personagens & Mecânicas</title>
+    <title>3v3 Paper RPG - Corrigido & Otimizado</title>
     <style>
         * { box-sizing: border-box; margin: 0; padding: 0; user-select: none; }
         body { background: #1a1a1a; font-family: 'Courier New', Courier, monospace; color: #333; display: flex; justify-content: center; align-items: center; min-height: 100vh; padding: 10px; }
@@ -69,26 +69,27 @@
             100% { opacity: 0; }
         }
 
+        /* ANIMAÇÃO DA MOTO DA SHY */
+        #moto-overlay {
+            display: none; position: absolute; top: 0; left: 0; width: 100%; height: 100%;
+            background: rgba(0, 0, 0, 0.85); z-index: 150; justify-content: center; align-items: center;
+            flex-direction: column; color: #ff9800; font-family: 'Courier New', Courier, monospace;
+        }
+        .moto-anim-text { font-size: 28px; font-weight: bold; text-shadow: 0 0 10px #ff5722; text-align: center; animation: motoShake 0.1s infinite alternate; }
+        .moto-icon { font-size: 70px; margin-bottom: 10px; animation: motoDrive 0.8s linear forwards; }
+        @keyframes motoShake { 0% { transform: translateX(-3px); } 100% { transform: translateX(3px); } }
+        @keyframes motoDrive { 0% { transform: translateX(-300px) scale(0.5); opacity: 0; } 50% { transform: translateX(0px) scale(1.3); opacity: 1; } 100% { transform: translateX(300px) scale(0.5); opacity: 0; } }
+
         #select-screen { 
-            display: flex; 
-            flex-direction: column; 
-            align-items: center; 
-            justify-content: center; 
-            width: 100%;
+            display: flex; flex-direction: column; align-items: center; justify-content: center; width: 100%;
         }
         .select-header { text-align: center; color: #5c4033; border-bottom: 2px dashed #8b5a2b; padding-bottom: 8px; width: 100%; }
         .select-header h2 { font-size: 18px; }
         .select-header p { font-size: 12px; margin-top: 4px; color: #d32f2f; font-weight: bold; }
 
         .roster-grid { 
-            display: grid; 
-            grid-template-columns: repeat(auto-fit, minmax(120px, 1fr)); 
-            gap: 8px; 
-            margin-top: 8px; 
-            width: 100%; 
-            max-height: 280px; 
-            overflow-y: auto; 
-            padding: 4px;
+            display: grid; grid-template-columns: repeat(auto-fit, minmax(120px, 1fr)); 
+            gap: 8px; margin-top: 8px; width: 100%; max-height: 280px; overflow-y: auto; padding: 4px;
         }
         .roster-card {
             background: #fff8dc; border: 2px solid #5c4033; border-radius: 8px; padding: 6px; text-align: center;
@@ -128,11 +129,8 @@
         .field { 
             display: flex; justify-content: space-between; 
             border: none; border-radius: 8px; padding: 12px; height: 340px; position: relative;
-            background-size: cover !important; 
-            background-position: center !important; 
-            background-repeat: no-repeat !important;
-            transition: background-image 0.5s ease-in-out;
-            box-shadow: inset 0 0 10px rgba(0,0,0,0.3);
+            background-size: cover !important; background-position: center !important; background-repeat: no-repeat !important;
+            transition: background-image 0.5s ease-in-out; box-shadow: inset 0 0 10px rgba(0,0,0,0.3);
         }
 
         .bg-cenario-1 { background-image: url('cenario1.jpg') !important; }
@@ -300,6 +298,12 @@
 <body>
 
 <audio id="audio-bg" loop></audio>
+
+<!-- ANIMAÇÃO DA MOTO DA SHY -->
+<div id="moto-overlay">
+    <div class="moto-icon">🏍️💨</div>
+    <div class="moto-anim-text">CAVALEIRA RÚNICA: ATROPELAMENTO TOTAL!</div>
+</div>
 
 <div id="profile-modal">
     <div class="profile-box">
@@ -746,10 +750,10 @@
             habilidades: [
                 { nome: "Adaga Sombria", dano: 20, elemento: "Físico", cdMax: 0, cdAtual: 0, tipo: "ataque", desc: "Ataque físico básico (Vira Purificação se Mariel no time)." },
                 { nome: "Tiro do Ceifador", dano: 30, elemento: "Corrupção", cdMax: 4, cdAtual: 0, tipo: "ataque", efeito: "bloqueio_cura", desc: "Aplica Bloqueio de Cura (Ganha escudo de -25 por 2t se Anna no time)." },
-                { nome: "Escudo das Almas", dano: 0, elemento: "Suporte", cdMax: 4, cdAtual: 0, tipo: "din_escudo_almas", desc: "Concede escudo e Auto-Reviver 😇 (Volta com 50% HP se zerar). Cura +50 HP no Campos." },
+                { nome: "Escudo das Almas", dano: 0, elemento: "Suporte", cdMax: 4, cdAtual: 0, tipo: "din_escudo_almas", desc: "Concede escudo e Auto-Reviver 😇 (Volta com 50% HP se zerar, dura 1t). Cura +50 HP no Campos." },
                 { nome: "Floreio das Almas", dano: 20, elemento: "Corrupção", cdMax: 3, cdAtual: 0, tipo: "ataque", efeito: "sangramento", desc: "Causa Sangramento e Bloqueio de Cura se Cristal no time." }
             ],
-            limitBreak: { nome: "Lamento das Almas", dano: 0, elemento: "Corrupção", tipo: "limit_din_revive", desc: "Revive todos os aliados caídos no campo de batalha!" }
+            limitBreak: { nome: "Lamento das Almas", dano: 0, elemento: "Corrupção", tipo: "limit_din_revive", desc: "Revive todos os aliados caídos no campo de batalha com 50% de HP!" }
         },
         "Cristal": {
             hpMax: 110, danoFisico: 15, elementoBase: "Mágico", fraqueza: "Mágico", imunidade: "Purificação",
@@ -903,6 +907,7 @@
             danoFisico: base.danoFisico, fraqueza: base.fraqueza, imunidade: base.imunidade,
             limite: base.temImbuirMagia ? 100 : 0, 
             habilidades: JSON.parse(JSON.stringify(base.habilidades)),
+            habilidadesNormaisCristal: base.temFrascosCristal ? JSON.parse(JSON.stringify(base.habilidades)) : null,
             limitBreak: base.limitBreak ? JSON.parse(JSON.stringify(base.limitBreak)) : null,
             temDespertar: base.temDespertar || false,
             temTransformacao: base.temTransformacao || false,
@@ -912,13 +917,14 @@
             temFrascosCristal: base.temFrascosCristal || false,
             frascosRestantes: base.temFrascosCristal ? 3 : 0,
             modoPocoesTurnos: 0,
+            danoAcumuladoCristal: 0,
             formaMonstro: base.formaMonstro ? JSON.parse(JSON.stringify(base.formaMonstro)) : null,
             marcasMagicas: base.marcasMagicas !== undefined ? 3 : null,
             temKarinBarras: base.temKarinBarras || false,
             karinDef: 0, karinAtq: 0, buffKarinAtqBonus: 0, escudoKarinPaladina: 0,
             escudoSimbiose: 0, escudoDunnie: 0, escudoDoctor: 0, escudoKevin: 0, escudoMika: 0, escudoMariel: 0, escudoGroxyGold: 0, escudoAnna: 0, escudoKarin: 0, escudoSilver: 0, escudoDin: 0, escudoShy: 0,
             buffAtqDoctor: 0, buffAtqYsma: 0, buffAtqNightSinergia: 0, debuffAtqNight: 0, bloqueioCuraTurnos: 0, buffAtqDoctorSobrecarga: 0, buffAtqMikaKevin: 0, buffAtqSilverCura: 0,
-            buffMarielGrupo: 0, buffMarielCorrupcao: 0, passoPlumaTurnos: 0, muitoDoceTurnos: 0, bencaoTurnos: 0, regeneracaoTurnos: 0, autoReviver: false, acelaradoTurnos: 0,
+            buffMarielGrupo: 0, buffMarielCorrupcao: 0, passoPlumaTurnos: 0, muitoDoceTurnos: 0, bencaoTurnos: 0, regeneracaoTurnos: 0, autoReviver: false, autoReviverTurnos: 0, aceleradoTurnos: 0,
             paralisiaTurnos: 0, paralisiaChance: 0, sangramento: 0, queimadura: 0, veneno: 0, venenoForte: 0, congelado: false, leve: 0, pesado: 0, molhado: 0,
             obsessaoTurnos: 0, obsessaoOrigemId: null, maldicaoTurnos: 0, proximoAtqObsessao: false,
             emBerserk: false, ehMonstroAnna: false, turnosTransformacaoAnna: 0,
@@ -1005,6 +1011,7 @@
                 }
                 if (u.nome === 'Cristal' && temDunnie) {
                     u.habilidades[0].elemento = "Mágico";
+                    if(u.habilidadesNormaisCristal) u.habilidadesNormaisCristal[0].elemento = "Mágico";
                 }
                 if (u.nome === 'Shy' && temRhayane) {
                     u.habilidades[0].elemento = "Fogo";
@@ -1253,6 +1260,28 @@
             danoBase = Math.max(0, danoBase - reducaoTotal);
         }
 
+        if (danoBase > 0 && defensor.temFrascosCristal && defensor.modoPocoesTurnos === 0) {
+            defensor.danoAcumuladoCristal += danoBase;
+            if (defensor.danoAcumuladoCristal >= 30) {
+                defensor.danoAcumuladoCristal = 0;
+                defensor.modoPocoesTurnos = 1;
+                let temGuedesTime = timeTemPersonagem(prefixoDefensor, 'Guedes');
+                
+                let pForca = { nome: "Poção de Força", dano: 0, elemento: "Mágico", cdMax: 6, cdAtual: 0, tipo: "pocao_forca", desc: "Adiciona +30 de dano para um aliado." };
+                let pVel = { nome: "Poção de Velocidade", dano: 0, elemento: "Mágico", cdMax: 6, cdAtual: 0, tipo: "pocao_velocidade", desc: "Adiciona acelerado (-3 cooldowns) a um aliado." };
+                let pVida = { nome: "Poção de Vida", dano: 0, elemento: "Mágico", cdMax: 6, cdAtual: 0, tipo: "pocao_vida", desc: "Cura +30 HP de um aliado." };
+                
+                if (temGuedesTime) {
+                    let pSorte = { nome: "Poção da Sorte", dano: 0, elemento: "Elétrico", cdMax: 6, cdAtual: 0, tipo: "pocao_sorte", desc: "Concede Muito Doce a um aliado." };
+                    defensor.habilidades = [pForca, pVel, pVida, pSorte];
+                } else {
+                    defensor.habilidades = [pForca, pVel, pVida, pVida];
+                }
+                log(`🧪✨ <b>Preparo de Poções (Cristal):</b> Sofreu 30+ de dano e ativou o Modo Poções por 1 turno!`);
+                dispararBuffPulse(defensor.id);
+            }
+        }
+
         if (defensor.ehMonstroAnna) {
             aplicarCura(defensor, 10, defensor);
             log(`🐦‍⬛ <b>Penas do Monstro (Anna):</b> Recuperou +10 HP ao ser atacada!`);
@@ -1463,7 +1492,7 @@
         if (indiceHab === 'limit' && atacante.nome === 'Din') {
             ['p0', 'p1', 'p2'].forEach(pId => {
                 let ali = unidades[pId];
-                if (ali && ali.hpAtual <= 0) {
+                if (ali) {
                     ali.hpAtual = Math.floor(ali.hpMax * 0.5);
                     log(`💀✨ <b>Lamento das Almas (Din):</b> ${ali.nome} foi revivido com 50% de HP!`);
                     dispararBuffPulse(ali.id);
@@ -1512,21 +1541,26 @@
         }
 
         if (habilidade.tipo === 'limit_shy') {
-            ['e0', 'e1', 'e2'].forEach(eId => {
-                let eU = unidades[eId];
-                if (eU && eU.hpAtual > 0) {
-                    let danoAbsoluto = 30;
-                    eU.hpAtual = Math.max(0, eU.hpAtual - danoAbsoluto);
-                    eU.pesado = 3;
-                    eU.sangramento = 3;
-                    mostrarEfeitoFlutuante(eU.id, `-${danoAbsoluto}`, "dano");
-                    log(`🏍️🔥 <b>Cavaleira Rúnica (Shy):</b> Atropelou ${eU.nome} causando 30 de dano absoluto, Pesado e Sangrando!`);
-                }
-            });
-            aplicarDanoPosAtaque(atacante);
-            atualizarUI();
-            if (verificarVitoria()) return;
-            iniciarTurnoInimigo();
+            let motoOverlay = document.getElementById('moto-overlay');
+            motoOverlay.style.display = 'flex';
+            setTimeout(() => {
+                motoOverlay.style.display = 'none';
+                ['e0', 'e1', 'e2'].forEach(eId => {
+                    let eU = unidades[eId];
+                    if (eU && eU.hpAtual > 0) {
+                        let danoAbsoluto = 30;
+                        eU.hpAtual = Math.max(0, eU.hpAtual - danoAbsoluto);
+                        eU.pesado = 3;
+                        eU.sangramento = 3;
+                        mostrarEfeitoFlutuante(eU.id, `-${danoAbsoluto}`, "dano");
+                        log(`🏍️🔥 <b>Cavaleira Rúnica (Shy):</b> Atropelou ${eU.nome} com sua moto causando 30 de dano absoluto, Pesado e Sangrando!`);
+                    }
+                });
+                aplicarDanoPosAtaque(atacante);
+                atualizarUI();
+                if (verificarVitoria()) return;
+                iniciarTurnoInimigo();
+            }, 800);
             return;
         }
 
@@ -1595,12 +1629,42 @@
         }
         else if (habilidade.tipo === 'cristal_divar') {
             atacante.autoReviver = true;
+            atacante.autoReviverTurnos = 2; // Dura 1 turno completo do jogador
             habilidade.cdAtual = habilidade.cdMax;
             if (timeTemPersonagem(prefixo, 'Shy')) {
                 atacante.regeneracaoTurnos = 5;
                 log(`✨ <b>Divar + Shy:</b> Cristal aplicou Regeneração em si mesma!`);
             }
             log(`✨ <b>Divar:</b> Cristal aplicou Auto-Reviver 😇 em si mesma!`);
+            aplicarDanoPosAtaque(atacante);
+            atualizarUI();
+            if (verificarVitoria()) return;
+            iniciarTurnoInimigo();
+            return;
+        }
+        else if (habilidade.tipo && habilidade.tipo.startsWith('pocao_')) {
+            atacante.frascosRestantes--;
+            if (atacante.frascosRestantes <= 0) {
+                atacante.frascosRestantes = 3;
+                atacante.modoPocoesTurnos = 0;
+                atacante.habilidades = JSON.parse(JSON.stringify(atacante.habilidadesNormaisCristal));
+                log(`🧪💥 <b>DEDOS MÁGICOS (Cristal):</b> Todos os frascos quebraram! Explosão de status aplicada aos inimigos!`);
+                ['e0', 'e1', 'e2'].forEach(eId => {
+                    let eu = unidades[eId];
+                    if(eu && eu.hpAtual > 0) {
+                        let stList = ['maldicaoTurnos', 'sangramento', 'pesado', 'molhado', 'queimadura', 'congelado'];
+                        let stEscolha = stList[Math.floor(Math.random() * stList.length)];
+                        if(stEscolha === 'congelado') eu.congelado = true;
+                        else eu[stEscolha] = 3;
+                    }
+                });
+            } else {
+                modoSelecaoSuporte = true;
+                habilidadeSuportePendente = { habilidade, indiceHab };
+                log(`🧪 <b>${habilidade.nome}:</b> Escolha um aliado para receber o efeito da poção!`);
+                atualizarUI();
+                return;
+            }
             aplicarDanoPosAtaque(atacante);
             atualizarUI();
             if (verificarVitoria()) return;
@@ -1753,11 +1817,24 @@
         } else if (habilidade.tipo === 'din_escudo_almas') {
             aliadoTarget.escudoDin = 2;
             aliadoTarget.autoReviver = true;
+            aliadoTarget.autoReviverTurnos = 2; // Dura 1 turno
             if (aliadoTarget.nome === 'Campos') {
                 aplicarCura(aliadoTarget, 50, atacante);
                 log(`👻🖤 <b>Escudo das Almas + Campos:</b> Campos recuperou +50 de HP!`);
             }
             log(`👻✨ <b>Escudo das Almas:</b> Concedeu escudo e Auto-Reviver 😇 a ${aliadoTarget.nome}!`);
+        } else if (habilidade.tipo === 'pocao_forca') {
+            aliadoTarget.buffAtqYsma += 1;
+            log(`🧪💪 <b>Poção de Força:</b> +30 de dano concedido a ${aliadoTarget.nome}!`);
+        } else if (habilidade.tipo === 'pocao_velocidade') {
+            aliadoTarget.habilidades.forEach(h => h.cdAtual = Math.max(0, h.cdAtual - 3));
+            log(`🧪⚡ <b>Poção de Velocidade:</b> Cooldowns de ${aliadoTarget.nome} reduzidos em 3 turnos!`);
+        } else if (habilidade.tipo === 'pocao_vida') {
+            aplicarCura(aliadoTarget, 30, atacante);
+            log(`🧪❤️ <b>Poção de Vida:</b> Curou +30 HP de ${aliadoTarget.nome}!`);
+        } else if (habilidade.tipo === 'pocao_sorte') {
+            aliadoTarget.muitoDoceTurnos = 3;
+            log(`🧪🍬 <b>Poção da Sorte:</b> Concedeu Muito Doce a ${aliadoTarget.nome}!`);
         }
 
         habilidade.cdAtual = habilidade.cdMax;
@@ -1773,6 +1850,7 @@
     function processarEfeitosStatus() {
         for (let id in unidades) {
             let u = unidades[id];
+
             if (u.hpAtual <= 0) {
                 if (u.autoReviver) {
                     u.autoReviver = false;
@@ -1781,6 +1859,22 @@
                     dispararBuffPulse(u.id);
                 }
                 continue;
+            }
+
+            if (u.autoReviver) {
+                u.autoReviverTurnos--;
+                if (u.autoReviverTurnos <= 0) {
+                    u.autoReviver = false;
+                    log(`⌛ <b>Auto-Reviver expirou:</b> O efeito de reviver de ${u.nome} acabou.`);
+                }
+            }
+
+            if (u.modoPocoesTurnos > 0) {
+                u.modoPocoesTurnos--;
+                if (u.modoPocoesTurnos === 0 && u.temFrascosCristal) {
+                    u.habilidades = JSON.parse(JSON.stringify(u.habilidadesNormaisCristal));
+                    log(`🧪 <b>Modo Poções encerrado:</b> Cristal voltou aos seus ataques normais.`);
+                }
             }
 
             if (u.imbuirMagiaTurnos > 0) {
@@ -1794,8 +1888,11 @@
                 u.regeneracaoTurnos--;
             }
 
-            if (u.nome === 'Din' && u.regeneracaoTurnos > 0) {
-                aplicarCura(u, 10, u);
+            let temDinTime = timeTemPersonagem(u.id.substring(0, 1), 'Din');
+            let temYsmaTime = timeTemPersonagem(u.id.substring(0, 1), 'Ysma');
+            if (u.nome === 'Din' && u.hpAtual < u.hpMax) {
+                // Checa morte de aliados para passiva
+                // Feito no verificador de dano fatal
             }
 
             if ((u.sangramento > 0 || u.queimadura > 0 || u.veneno > 0 || u.paralisiaTurnos > 0 || u.congelado || u.leve > 0 || u.pesado > 0 || u.molhado > 0 || u.obsessaoTurnos > 0 || u.maldicaoTurnos > 0) && u.nome === 'Niw') {
@@ -1827,6 +1924,30 @@
             if (u.escudoSilver > 0) u.escudoSilver--;
             if (u.escudoDin > 0) u.escudoDin--;
             if (u.escudoShy > 0) u.escudoShy--;
+
+            if (u.hpAtual <= 0 && u.autoReviver) {
+                u.autoReviver = false;
+                u.hpAtual = Math.floor(u.hpMax * 0.5);
+                log(`😇✨ <b>AUTO-REVIVER ATIVADO!</b> ${u.nome} voltou à vida com 50% de HP!`);
+                dispararBuffPulse(u.id);
+            }
+
+            // Passiva do Din ao ver aliado cair
+            let prefixoUnidade = u.id.substring(0, 1);
+            ['0', '1', '2'].forEach(slot => {
+                let aliadoSlotId = prefixoUnidade + slot;
+                let ali = unidades[aliadoSlotId];
+                if(ali && ali.hpAtual <= 0 && !ali.registradoQuedaDin && ali.id !== u.id) {
+                    let dinPresente = ['0', '1', '2'].map(s => unidades[prefixoUnidade + s]).find(x => x && x.nome === 'Din' && x.hpAtual > 0);
+                    if(dinPresente) {
+                        ali.registradoQuedaDin = true;
+                        let curaDin = timeTemPersonagem(prefixoUnidade, 'Ysma') ? 100 : 50;
+                        aplicarCura(dinPresente, curaDin, dinPresente);
+                        dinPresente.regeneracaoTurnos = 10;
+                        log(`💀👻 <b>Regente dos Mortos (Din):</b> Um aliado caiu! Din curou +${curaDin} de HP e ganhou Regeneração por 10 turnos!`);
+                    }
+                }
+            });
 
             if (u.ehMonstroAnna) {
                 u.turnosTransformacaoAnna--;
