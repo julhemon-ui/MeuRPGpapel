@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>3v3 Paper RPG - Menu & Multiplayer</title>
+    <title>3v3 Paper RPG - Completo & Multiplayer</title>
     <!-- Importando o PeerJS para o Multiplayer P2P -->
     <script src="https://unpkg.com/peerjs@1.4.7/dist/peerjs.min.js"></script>
     <style>
@@ -613,6 +613,10 @@
                 if (timeAliadoSelecionado.length === 3 && timeInimigoSelecionado.length === 3) {
                     iniciarCombateOnline();
                 }
+            } else if (data.tipo === 'iniciar_combate_remoto') {
+                timeAliadoSelecionado = data.enemies;
+                timeInimigoSelecionado = data.allies;
+                iniciarCombateOnline();
             } else if (data.tipo === 'acao_turno') {
                 executarAcaoRemota(data);
             }
@@ -620,30 +624,270 @@
     }
 
     const BANCO_DE_DADOS_PERSONAGENS = {
-        "Ysma": { hpMax: 100, danoFisico: 15, elementoBase: "Mágico", fraqueza: "Purificação", imunidade: "Fogo", passiva: { nome: "Hexy", desc: "Dano extra" }, habilidades: [{nome:"Acerto", dano:15, elemento:"Físico", cdMax:0, cdAtual:0, tipo:"ataque", desc:"Básico"}] },
-        "Campos": { hpMax: 200, danoFisico: 20, elementoBase: "Corrupção", fraqueza: "Purificação", imunidade: "Corrupção", passiva: { nome: "Vampiro", desc: "Cura" }, habilidades: [{nome:"Garras", dano:20, elemento:"Físico", cdMax:0, cdAtual:0, tipo:"ataque", desc:"Básico"}] },
-        "Dunnie": { hpMax: 110, danoFisico: 20, elementoBase: "Físico", fraqueza: "Biológico", imunidade: "Purificação", passiva: { nome: "Antigo", desc: "Escudo" }, habilidades: [{nome:"Estocada", dano:20, elemento:"Físico", cdMax:0, cdAtual:0, tipo:"ataque", desc:"Básico"}] },
-        "Doctor": { hpMax: 200, danoFisico: 20, elementoBase: "Elétrico", fraqueza: "Água", imunidade: "Elétrico", passiva: { nome: "Rede", desc: "Elétrico" }, habilidades: [{nome:"Soco", dano:20, elemento:"Físico", cdMax:0, cdAtual:0, tipo:"ataque", desc:"Básico"}] },
-        "Night": { hpMax: 120, danoFisico: 15, elementoBase: "Corrupção", fraqueza: "Purificação", imunidade: "Vento", passiva: { nome: "Sombra", desc: "Esquiva" }, habilidades: [{nome:"Corte", dano:15, elemento:"Físico", cdMax:0, cdAtual:0, tipo:"ataque", desc:"Básico"}] },
-        "Groxy": { hpMax: 100, danoFisico: 15, elementoBase: "Vento", fraqueza: "Fogo", imunidade: "Biológico", passiva: { nome: "Abóbora", desc: "Vento" }, habilidades: [{nome:"Tornado", dano:15, elemento:"Vento", cdMax:0, cdAtual:0, tipo:"ataque", desc:"Básico"}] },
-        "Silver": { hpMax: 130, danoFisico: 20, elementoBase: "Purificação", fraqueza: "Gelo", imunidade: "Purificação", passiva: { nome: "Aura", desc: "Purifica" }, habilidades: [{nome:"Estocada Branca", dano:20, elemento:"Purificação", cdMax:0, cdAtual:0, tipo:"ataque", desc:"Básico"}] },
-        "Mika": { hpMax: 120, danoFisico: 15, elementoBase: "Água", fraqueza: "Corrupção", imunidade: "Fogo", passiva: { nome: "Estrela", desc: "Cura" }, habilidades: [{nome:"Disparo", dano:15, elemento:"Água", cdMax:0, cdAtual:0, tipo:"ataque", desc:"Básico"}] },
-        "Kevin": { hpMax: 100, danoFisico: 15, elementoBase: "Físico", fraqueza: "Gelo", imunidade: "Água", passiva: { nome: "Leal", desc: "Resistência" }, habilidades: [{nome:"Investida", dano:15, elemento:"Físico", cdMax:0, cdAtual:0, tipo:"ataque", desc:"Básico"}] },
-        "Mariel": { hpMax: 200, danoFisico: 15, elementoBase: "Purificação", fraqueza: "Vento", imunidade: "Terra", passiva: { nome: "Asas", desc: "Luz" }, habilidades: [{nome:"Infusão", dano:0, elemento:"Físico", cdMax:1, cdAtual:0, tipo:"buff_proprio", desc:"Escudo"}] },
-        "Samael": { hpMax: 120, danoFisico: 15, elementoBase: "Purificação", fraqueza: "Terra", imunidade: "Vento", passiva: { nome: "Leve", desc: "Imune" }, habilidades: [{nome:"Penas", dano:20, elemento:"Purificação", cdMax:1, cdAtual:0, tipo:"ataque", desc:"Básico"}] },
-        "Guedes": { hpMax: 100, danoFisico: 15, elementoBase: "Surpresa", fraqueza: "Terra", imunidade: "Gelo", passiva: { nome: "Moedas", desc: "Loja" }, habilidades: [{nome:"Roubar", dano:15, elemento:"Vento", cdMax:0, cdAtual:0, tipo:"ataque", desc:"Básico"}] },
-        "Rhayane": { hpMax: 140, danoFisico: 20, elementoBase: "Fogo", fraqueza: "Gelo", imunidade: "Fogo", passiva: { nome: "Fogo", desc: "Chamas" }, habilidades: [{nome:"Brasas", dano:20, elemento:"Fogo", cdMax:0, cdAtual:0, tipo:"ataque", desc:"Básico"}] },
-        "Anna": { hpMax: 150, danoFisico: 15, elementoBase: "Corrupção", fraqueza: "Gelo", imunidade: "Biológico", passiva: { nome: "Corvo", desc: "Penas" }, habilidades: [{nome:"Flecha", dano:15, elemento:"Corrupção", cdMax:0, cdAtual:0, tipo:"ataque", desc:"Básico"}] },
-        "Sarah": { hpMax: 130, danoFisico: 20, elementoBase: "Biológico", fraqueza: "Terra", imunidade: "Biológico", passiva: { nome: "Doce", desc: "Veneno" }, habilidades: [{nome:"Bolo", dano:20, elemento:"Biológico", cdMax:1, cdAtual:0, tipo:"ataque", desc:"Básico"}] },
-        "Leandro": { hpMax: 110, danoFisico: 10, elementoBase: "Mágico", fraqueza: "Fogo", imunidade: "Biológico", passiva: { nome: "Cristal", desc: "Reflexo" }, habilidades: [{nome:"Floreio", dano:10, elemento:"Mágico", cdMax:0, cdAtual:0, tipo:"ataque", desc:"Básico"}] },
-        "Niw": { hpMax: 122, danoFisico: 10, elementoBase: "Corrupção", fraqueza: "Água", imunidade: "Corrupção", passiva: { nome: "Contos", desc: "Cura" }, habilidades: [{nome:"Garras", dano:10, elemento:"Corrupção", cdMax:0, cdAtual:0, tipo:"ataque", desc:"Básico"}] },
-        "Karin": { hpMax: 180, danoFisico: 10, elementoBase: "Terra", fraqueza: "Biológico", imunidade: "Terra", passiva: { nome: "Paladina", desc: "Escudo" }, habilidades: [{nome:"Cristal", dano:10, elemento:"Terra", cdMax:0, cdAtual:0, tipo:"ataque", desc:"Básico"}] },
-        "Din": { hpMax: 200, danoFisico: 20, elementoBase: "Corrupção", fraqueza: "Terra", imunidade: "Vento", passiva: { nome: "Mortos", desc: "Cura" }, habilidades: [{nome:"Adaga", dano:20, elemento:"Físico", cdMax:0, cdAtual:0, tipo:"ataque", desc:"Básico"}] },
-        "Cristal": { hpMax: 110, danoFisico: 15, elementoBase: "Mágico", fraqueza: "Mágico", imunidade: "Purificação", passiva: { nome: "Poção", desc: "Frascos" }, habilidades: [{nome:"Cajado", dano:15, elemento:"Físico", cdMax:0, cdAtual:0, tipo:"ataque", desc:"Básico"}] },
-        "Shy": { hpMax: 100, danoFisico: 20, elementoBase: "Mágico", fraqueza: "Nenhuma", imunidade: "Nenhuma", passiva: { nome: "Rúnica", desc: "Dano" }, habilidades: [{nome:"Espada", dano:20, elemento:"Físico", cdMax:0, cdAtual:0, tipo:"ataque", desc:"Básico"}] },
-        "Raissa": { hpMax: 180, danoFisico: 20, elementoBase: "Vento", fraqueza: "Elétrico", imunidade: "Terra", passiva: { nome: "Correntes", desc: "Vínculo" }, habilidades: [{nome:"Corrente", dano:20, elemento:"Vento", cdMax:0, cdAtual:0, tipo:"ataque", desc:"Básico"}] },
-        "Coraly": { hpMax: 200, danoFisico: 20, elementoBase: "Corrupção", fraqueza: "Elétrico", imunidade: "Corrupção", passiva: { nome: "Vampiro", desc: "Sangue" }, habilidades: [{nome:"Garras", dano:20, elemento:"Corrupção", cdMax:0, cdAtual:0, tipo:"ataque", desc:"Básico"}] },
-        "Gigi": { hpMax: 130, danoFisico: 10, elementoBase: "Biológico", fraqueza: "Fogo", imunidade: "Biológico", passiva: { nome: "Inseto", desc: "Vírus" }, habilidades: [{nome:"Brincar", dano:10, elemento:"Biológico", cdMax:0, cdAtual:0, tipo:"ataque", desc:"Básico"}] }
+        "Ysma": {
+            hpMax: 100, danoFisico: 18, elementoBase: "Mágico", fraqueza: "Purificação", imunidade: "Fogo",
+            passiva: { nome: "Hexy", desc: "A cada 2 ataques, dobra o dano da magia." },
+            habilidades: [
+                { nome: "Orbe Rúnica", dano: 18, elemento: "Mágico", cdMax: 0, cdAtual: 0, tipo: "ataque", desc: "Dispara magia pura." },
+                { nome: "Cura Etérea", dano: -22, elemento: "Suporte", cdMax: 1, cdAtual: 0, tipo: "cura", desc: "Cura um aliado." },
+                { nome: "Maldição Arcana", dano: 24, elemento: "Mágico", cdMax: 1, cdAtual: 0, tipo: "ataque", desc: "Magia pesada." },
+                { nome: "Escudo Mágico", dano: 0, elemento: "Suporte", cdMax: 2, cdAtual: 0, tipo: "buff_proprio", desc: "Aumenta resistência." }
+            ],
+            limite: { nome: "Cajado Supremo", desc: "Causa dano massivo mágico.", tipo: "especial", dano: 55 }
+        },
+        "Campos": {
+            hpMax: 210, danoFisico: 22, elementoBase: "Corrupção", fraqueza: "Purificação", imunidade: "Corrupção",
+            passiva: { nome: "Vampiro de Sangue", desc: "Cura 30% do dano causado." },
+            habilidades: [
+                { nome: "Garras Sombrias", dano: 22, elemento: "Corrupção", cdMax: 0, cdAtual: 0, tipo: "ataque", desc: "Rasga o alvo." },
+                { nome: "Mordida Sanguinária", dano: 28, elemento: "Corrupção", cdMax: 1, cdAtual: 0, tipo: "ataque", desc: "Rouba HP." },
+                { nome: "Névoa Corrupta", dano: 16, elemento: "Corrupção", cdMax: 1, cdAtual: 0, tipo: "ataque_geral", desc: "Atinge todos." },
+                { nome: "Regeneração Negra", dano: -35, elemento: "Suporte", cdMax: 2, cdAtual: 0, tipo: "cura", desc: "Cura a si mesmo." }
+            ],
+            limite: { nome: "Fúria do Vampiro", desc: "Ataque triplo devastador.", tipo: "especial", dano: 65 }
+        },
+        "Dunnie": {
+            hpMax: 120, danoFisico: 25, elementoBase: "Físico", fraqueza: "Biológico", imunidade: "Purificação",
+            passiva: { nome: "Guardião Antigo", desc: "Ganha escudo ao atacar." },
+            habilidades: [
+                { nome: "Estocada Férrea", dano: 25, elemento: "Físico", cdMax: 0, cdAtual: 0, tipo: "ataque", desc: "Estocada direta." },
+                { nome: "Postura Defensiva", dano: 0, elemento: "Suporte", cdMax: 1, cdAtual: 0, tipo: "buff_proprio", desc: "Bloqueia parte do dano." },
+                { nome: "Golpe Duplo", dano: 30, elemento: "Físico", cdMax: 1, cdAtual: 0, tipo: "ataque", desc: "Dois cortes rápidos." },
+                { nome: "Grito de Guerra", dano: 10, elemento: "Físico", cdMax: 2, cdAtual: 0, tipo: "ataque_geral", desc: "Atinge todos." }
+            ],
+            limite: { nome: "Execução Final", desc: "Golpe supremo de espada.", tipo: "especial", dano: 70 }
+        },
+        "Doctor": {
+            hpMax: 190, danoFisico: 16, elementoBase: "Elétrico", fraqueza: "Água", imunidade: "Elétrico",
+            passiva: { nome: "Rede Elétrica", desc: "Choque reverso em atacantes." },
+            habilidades: [
+                { nome: "Soco Volts", dano: 18, elemento: "Elétrico", cdMax: 0, cdAtual: 0, tipo: "ataque", desc: "Soco eletrificado." },
+                { nome: "Descarga", dano: 26, elemento: "Elétrico", cdMax: 1, cdAtual: 0, tipo: "ataque", desc: "Raio estático." },
+                { nome: "Injeção de Regeneração", dano: -30, elemento: "Suporte", cdMax: 1, cdAtual: 0, tipo: "cura", desc: "Cura aliado." },
+                { nome: "Campo Magnético", dano: 0, elemento: "Suporte", cdMax: 2, cdAtual: 0, tipo: "buff_proprio", desc: "Escudo elétrico." }
+            ],
+            limite: { nome: "Tempestade Tesla", desc: "Eletrocuta todos os inimigos.", tipo: "especial", dano: 60 }
+        },
+        "Night": {
+            hpMax: 130, danoFisico: 20, elementoBase: "Corrupção", fraqueza: "Purificação", imunidade: "Vento",
+            passiva: { nome: "Passo Sombrio", desc: "Esquiva de 15% de ataques." },
+            habilidades: [
+                { nome: "Corte das Sombras", dano: 20, elemento: "Corrupção", cdMax: 0, cdAtual: 0, tipo: "ataque", desc: "Lâmina escura." },
+                { nome: "Adaga Venenosa", dano: 24, elemento: "Biológico", cdMax: 1, cdAtual: 0, tipo: "ataque", desc: "Causa veneno." },
+                { nome: "Manto da Noite", dano: 0, elemento: "Suporte", cdMax: 1, cdAtual: 0, tipo: "buff_proprio", desc: "Fica invisível." },
+                { nome: "Ataque Furtivo", dano: 32, elemento: "Corrupção", cdMax: 2, cdAtual: 0, tipo: "ataque", desc: "Crítico garantido." }
+            ],
+            limite: { nome: "Eclipse Total", desc: "Corte das trevas absolutas.", tipo: "especial", dano: 68 }
+        },
+        "Groxy": {
+            hpMax: 110, danoFisico: 18, elementoBase: "Vento", fraqueza: "Fogo", imunidade: "Biológico",
+            passiva: { nome: "Abóbora Mística", desc: "Gera energia de vento." },
+            habilidades: [
+                { nome: "Rajada de Vento", dano: 18, elemento: "Vento", cdMax: 0, cdAtual: 0, tipo: "ataque", desc: "Lufada cortante." },
+                { nome: "Semente Explosiva", dano: 25, elemento: "Biológico", cdMax: 1, cdAtual: 0, tipo: "ataque", desc: "Semente que explode." },
+                { nome: "Brisa Curativa", dano: -20, elemento: "Suporte", cdMax: 1, cdAtual: 0, tipo: "cura", desc: "Cura leve." },
+                { nome: "Tornado", dano: 22, elemento: "Vento", cdMax: 2, cdAtual: 0, tipo: "ataque_geral", desc: "Ventos fortes." }
+            ],
+            limite: { nome: "Furacão Verde", desc: "Tempestade de folhas e vento.", tipo: "especial", dano: 58 }
+        },
+        "Silver": {
+            hpMax: 140, danoFisico: 20, elementoBase: "Purificação", fraqueza: "Gelo", imunidade: "Purificação",
+            passiva: { nome: "Aura Sagrada", desc: "Purifica status negativos." },
+            habilidades: [
+                { nome: "Lança Prateada", dano: 20, elemento: "Purificação", cdMax: 0, cdAtual: 0, tipo: "ataque", desc: "Lança de luz." },
+                { nome: "Bênção de Prata", dano: -25, elemento: "Purificação", cdMax: 1, cdAtual: 0, tipo: "cura", desc: "Cura sagrada." },
+                { nome: "Escudo de Luz", dano: 0, elemento: "Suporte", cdMax: 1, cdAtual: 0, tipo: "buff_proprio", desc: "Barreira de prata." },
+                { nome: "Julgamento", dano: 30, elemento: "Purificação", cdMax: 2, cdAtual: 0, tipo: "ataque", desc: "Luz divina." }
+            ],
+            limite: { nome: "Fulguração Divina", desc: "Explosão de pura luz sagrada.", tipo: "especial", dano: 65 }
+        },
+        "Mika": {
+            hpMax: 130, danoFisico: 16, elementoBase: "Água", fraqueza: "Corrupção", imunidade: "Fogo",
+            passiva: { nome: "Estrela Guia", desc: "Aumenta cura dos aliados." },
+            habilidades: [
+                { nome: "Jato d'Água", dano: 16, elemento: "Água", cdMax: 0, cdAtual: 0, tipo: "ataque", desc: "Jato rápido." },
+                { nome: "Ondas de Cura", dano: -30, elemento: "Água", cdMax: 1, cdAtual: 0, tipo: "cura", desc: "Onda regenerativa." },
+                { nome: "Bolha Protetora", dano: 0, elemento: "Suporte", cdMax: 1, cdAtual: 0, tipo: "buff_proprio", desc: "Escudo de água." },
+                { nome: "Tsunami", dano: 24, elemento: "Água", cdMax: 2, cdAtual: 0, tipo: "ataque_geral", desc: "Onda gigante." }
+            ],
+            limite: { nome: "Cemitério de Coral", desc: "Inunda o campo com energia aquática.", tipo: "especial", dano: 60 }
+        },
+        "Kevin": {
+            hpMax: 150, danoFisico: 20, elementoBase: "Físico", fraqueza: "Gelo", imunidade: "Água",
+            passiva: { nome: "Espírito Leal", desc: "Resistência a dano físico." },
+            habilidades: [
+                { nome: "Investida Leal", dano: 20, elemento: "Físico", cdMax: 0, cdAtual: 0, tipo: "ataque", desc: "Investida com escudo." },
+                { nome: "Golpe de Escudo", dano: 18, elemento: "Físico", cdMax: 1, cdAtual: 0, tipo: "ataque", desc: "Atordoia o inimigo." },
+                { nome: "Proteger Aliado", dano: 0, elemento: "Suporte", cdMax: 1, cdAtual: 0, tipo: "buff_proprio", desc: "Absorve dano." },
+                { nome: "Pancada Brutal", dano: 28, elemento: "Físico", cdMax: 2, cdAtual: 0, tipo: "ataque", desc: "Soco pesado." }
+            ],
+            limite: { nome: "Muralha Impenetrável", desc: "Carga blindada imparável.", tipo: "especial", dano: 62 }
+        },
+        "Mariel": {
+            hpMax: 210, danoFisico: 15, elementoBase: "Purificação", fraqueza: "Vento", imunidade: "Terra",
+            passiva: { nome: "Asas Celestiais", desc: "Cura passiva por turno." },
+            habilidades: [
+                { nome: "Toque de Luz", dano: 15, elemento: "Purificação", cdMax: 0, cdAtual: 0, tipo: "ataque", desc: "Luz sagrada." },
+                { nome: "Cura Completa", dano: -40, elemento: "Purificação", cdMax: 1, cdAtual: 0, tipo: "cura", desc: "Cura intensa." },
+                { nome: "Barreira de Asas", dano: 0, elemento: "Suporte", cdMax: 1, cdAtual: 0, tipo: "buff_proprio", desc: "Proteção aérea." },
+                { nome: "Purificação em Massa", dano: -20, elemento: "Purificação", cdMax: 2, cdAtual: 0, tipo: "cura_geral", desc: "Cura todos aliados." }
+            ],
+            limite: { nome: "Ascensão Divina", desc: "Milagre de cura e luz.", tipo: "especial", dano: 70 }
+        },
+        "Samael": {
+            hpMax: 130, danoFisico: 22, elementoBase: "Purificação", fraqueza: "Terra", imunidade: "Vento",
+            passiva: { nome: "Pluma Leve", desc: "Esquiva de ataques lentos." },
+            habilidades: [
+                { nome: "Penas Cortantes", dano: 22, elemento: "Purificação", cdMax: 0, cdAtual: 0, tipo: "ataque", desc: "Dispara penas." },
+                { nome: "Voo Rasante", dano: 26, elemento: "Purificação", cdMax: 1, cdAtual: 0, tipo: "ataque", desc: "Mergulho rápido." },
+                { nome: "Cura Alada", dano: -25, elemento: "Suporte", cdMax: 1, cdAtual: 0, tipo: "cura", desc: "Cura com plumas." },
+                { nome: "Tempestade de Plumas", dano: 20, elemento: "Purificação", cdMax: 2, cdAtual: 0, tipo: "ataque_geral", desc: "Chuva de penas." }
+            ],
+            limite: { nome: "Julgamento Alado", desc: "Ataque aéreo supremo.", tipo: "especial", dano: 65 }
+        },
+        "Guedes": {
+            hpMax: 120, danoFisico: 18, elementoBase: "Surpresa", fraqueza: "Terra", imunidade: "Gelo",
+            passiva: { nome: "Moedas da Sorte", desc: "Ganha moedas a cada ação." },
+            habilidades: [
+                { nome: "Lançar Moeda", dano: 18, elemento: "Surpresa", cdMax: 0, cdAtual: 0, tipo: "ataque", desc: "Joga moeda afiada." },
+                { nome: "Roubo de Bolsa", dano: 22, elemento: "Físico", cdMax: 1, cdAtual: 0, tipo: "ataque", desc: "Rouba vida do inimigo." },
+                { nome: "Chuva de Ouro", dano: 25, elemento: "Surpresa", cdMax: 2, cdAtual: 0, tipo: "ataque_geral", desc: "Moedas caem em todos." },
+                { nome: "Poção da Sorte", dano: -25, elemento: "Suporte", cdMax: 1, cdAtual: 0, tipo: "cura", desc: "Cura com sorte." }
+            ],
+            limite: { nome: "Jackpot Absoluto", desc: "Explosão de moedas de ouro.", tipo: "especial", dano: 75 }
+        },
+        "Rhayane": {
+            hpMax: 150, danoFisico: 24, elementoBase: "Fogo", fraqueza: "Gelo", imunidade: "Fogo",
+            passiva: { nome: "Chamas Eternas", desc: "Causa queimadura ao atacar." },
+            habilidades: [
+                { nome: "Bola de Fogo", dano: 24, elemento: "Fogo", cdMax: 0, cdAtual: 0, tipo: "ataque", desc: "Chama viva." },
+                { nome: "Lança-Chamas", dano: 30, elemento: "Fogo", cdMax: 1, cdAtual: 0, tipo: "ataque", desc: "Fogo contínuo." },
+                { nome: "Manto Ígneo", dano: 0, elemento: "Suporte", cdMax: 1, cdAtual: 0, tipo: "buff_proprio", desc: "Escudo de fogo." },
+                { nome: "Inferno", dano: 22, elemento: "Fogo", cdMax: 2, cdAtual: 0, tipo: "ataque_geral", desc: "Mar de chamas." }
+            ],
+            limite: { nome: "Supernova Vulcânica", desc: "Explosão de magma puro.", tipo: "especial", dano: 72 }
+        },
+        "Anna": {
+            hpMax: 160, danoFisico: 20, elementoBase: "Corrupção", fraqueza: "Gelo", imunidade: "Biológico",
+            passiva: { nome: "Olhar do Corvo", desc: "Aumenta chance de crítico." },
+            habilidades: [
+                { nome: "Flecha Corrompida", dano: 20, elemento: "Corrupção", cdMax: 0, cdAtual: 0, tipo: "ataque", desc: "Flecha negra." },
+                { nome: "Bando de Corvos", dano: 26, elemento: "Corrupção", cdMax: 1, cdAtual: 0, tipo: "ataque", desc: "Ataque em bando." },
+                { nome: "Cura Sombria", dano: -20, elemento: "Suporte", cdMax: 1, cdAtual: 0, tipo: "cura", desc: "Cura com sombras." },
+                { nome: "Chuva de Flechas", dano: 18, elemento: "Corrupção", cdMax: 2, cdAtual: 0, tipo: "ataque_geral", desc: "Chuva negra." }
+            ],
+            limite: { nome: "Apocalipse dos Corvos", desc: "Enxame sombrio devastador.", tipo: "especial", dano: 68 }
+        },
+        "Sarah": {
+            hpMax: 140, danoFisico: 22, elementoBase: "Biológico", fraqueza: "Terra", imunidade: "Biológico",
+            passiva: { nome: "Doce Venenoso", desc: "Aplica veneno nos ataques." },
+            habilidades: [
+                { nome: "Bolo Tóxico", dano: 22, elemento: "Biológico", cdMax: 0, cdAtual: 0, tipo: "ataque", desc: "Bolo com veneno." },
+                { nome: "Geleia Ácida", dano: 28, elemento: "Biológico", cdMax: 1, cdAtual: 0, tipo: "ataque", desc: "Ácido corrosivo." },
+                { nome: "Antídoto Doce", dano: -25, elemento: "Suporte", cdMax: 1, cdAtual: 0, tipo: "cura", desc: "Cura e limpa veneno." },
+                { nome: "Nuvem Tóxica", dano: 20, elemento: "Biológico", cdMax: 2, cdAtual: 0, tipo: "ataque_geral", desc: "Gás venenoso." }
+            ],
+            limite: { nome: "Banquete Fatal", desc: "Explosão de toxinas e doces.", tipo: "especial", dano: 65 }
+        },
+        "Leandro": {
+            hpMax: 130, danoFisico: 18, elementoBase: "Mágico", fraqueza: "Fogo", imunidade: "Biológico",
+            passiva: { nome: "Cristal Mágico", desc: "Reflete parte dos danos mágicos." },
+            habilidades: [
+                { nome: "Floreio de Cristal", dano: 18, elemento: "Mágico", cdMax: 0, cdAtual: 0, tipo: "ataque", desc: "Corte cristalino." },
+                { nome: "Ressonância", dano: 25, elemento: "Mágico", cdMax: 1, cdAtual: 0, tipo: "ataque", desc: "Onda de cristal." },
+                { nome: "Escudo Prismático", dano: 0, elemento: "Suporte", cdMax: 1, cdAtual: 0, tipo: "buff_proprio", desc: "Barreira de cristal." },
+                { nome: "Estilhaços", dano: 20, elemento: "Mágico", cdMax: 2, cdAtual: 0, tipo: "ataque_geral", desc: "Chuva de cacos." }
+            ],
+            limite: { nome: "Prisma Definitivo", desc: "Laser de cristal puro.", tipo: "especial", dano: 66 }
+        },
+        "Niw": {
+            hpMax: 135, danoFisico: 18, elementoBase: "Corrupção", fraqueza: "Água", imunidade: "Corrupção",
+            passiva: { nome: "Contos Sombrios", desc: "Cura aliados ao derrotar inimigos." },
+            habilidades: [
+                { nome: "Garras do Conto", dano: 18, elemento: "Corrupção", cdMax: 0, cdAtual: 0, tipo: "ataque", desc: "Garras das trevas." },
+                { nome: "Lenda Sombria", dano: 26, elemento: "Corrupção", cdMax: 1, cdAtual: 0, tipo: "ataque", desc: "História trágica." },
+                { nome: "Cura Mística", dano: -22, elemento: "Suporte", cdMax: 1, cdAtual: 0, tipo: "cura", desc: "Cura com magia." },
+                { nome: "Pesadelo", dano: 20, elemento: "Corrupção", cdMax: 2, cdAtual: 0, tipo: "ataque_geral", desc: "Medo em área." }
+            ],
+            limite: { nome: "Grimório Final", desc: "Invoca páginas das trevas.", tipo: "especial", dano: 67 }
+        },
+        "Karin": {
+            hpMax: 190, danoFisico: 18, elementoBase: "Terra", fraqueza: "Biológico", imunidade: "Terra",
+            passiva: { nome: "Paladina da Terra", desc: "Ganha defesa passiva." },
+            habilidades: [
+                { nome: "Cristal Terrestre", dano: 18, elemento: "Terra", cdMax: 0, cdAtual: 0, tipo: "ataque", desc: "Rocha afiada." },
+                { nome: "Tremor", dano: 24, elemento: "Terra", cdMax: 1, cdAtual: 0, tipo: "ataque", desc: "Tremor no chão." },
+                { nome: "Baluarte de Pedra", dano: 0, elemento: "Suporte", cdMax: 1, cdAtual: 0, tipo: "buff_proprio", desc: "Escudo de pedra." },
+                { nome: "Terremoto", dano: 22, elemento: "Terra", cdMax: 2, cdAtual: 0, tipo: "ataque_geral", desc: "Abala todos." }
+            ],
+            limite: { nome: "Fortaleza de Gaia", desc: "Impacto sísmico devastador.", tipo: "especial", dano: 70 }
+        },
+        "Din": {
+            hpMax: 210, danoFisico: 25, elementoBase: "Corrupção", fraqueza: "Terra", imunidade: "Vento",
+            passiva: { nome: "Ceifeiro de Almas", desc: "Aumenta dano após derrotas." },
+            habilidades: [
+                { nome: "Adaga Sombria", dano: 25, elemento: "Físico", cdMax: 0, cdAtual: 0, tipo: "ataque", desc: "Adaga rápida." },
+                { nome: "Corte Profundo", dano: 32, elemento: "Corrupção", cdMax: 1, cdAtual: 0, tipo: "ataque", desc: "Sangramento." },
+                { nome: "Surgido do Além", dano: -30, elemento: "Suporte", cdMax: 2, cdAtual: 0, tipo: "cura", desc: "Cura absorvendo alma." },
+                { nome: "Dança das Adagas", dano: 22, elemento: "Físico", cdMax: 2, cdAtual: 0, tipo: "ataque_geral", desc: "Multi-cortes." }
+            ],
+            limite: { nome: "Colheita das Sombras", desc: "Foice espectral suprema.", tipo: "especial", dano: 75 }
+        },
+        "Cristal": {
+            hpMax: 120, danoFisico: 16, elementoBase: "Mágico", fraqueza: "Mágico", imunidade: "Purificação",
+            passiva: { nome: "Frascos Alquímicos", desc: "Alterna bônus de poções." },
+            habilidades: [
+                { nome: "Cajadada", dano: 16, elemento: "Físico", cdMax: 0, cdAtual: 0, tipo: "ataque", desc: "Golpe com cajado." },
+                { nome: "Poção Explosiva", dano: 28, elemento: "Fogo", cdMax: 1, cdAtual: 0, tipo: "ataque", desc: "Frasco de fogo." },
+                { nome: "Poção de Cura", dano: -30, elemento: "Suporte", cdMax: 1, cdAtual: 0, tipo: "cura", desc: "Cura alquímica." },
+                { nome: "Névoa Alquímica", dano: 20, elemento: "Biológico", cdMax: 2, cdAtual: 0, tipo: "ataque_geral", desc: "Névoa tóxica." }
+            ],
+            limite: { nome: "Grande Alquimia", desc: "Explosão de misturas rúnicas.", tipo: "especial", dano: 68 }
+        },
+        "Shy": {
+            hpMax: 110, danoFisico: 26, elementoBase: "Mágico", fraqueza: "Nenhuma", imunidade: "Nenhuma",
+            passiva: { nome: "Espada Rúnica", desc: "Ignora defesas parciais." },
+            habilidades: [
+                { nome: "Corte Rúnico", dano: 26, elemento: "Mágico", cdMax: 0, cdAtual: 0, tipo: "ataque", desc: "Lâmina encantada." },
+                { nome: "Investida Mágica", dano: 32, elemento: "Mágico", cdMax: 1, cdAtual: 0, tipo: "ataque", desc: "Carga veloz." },
+                { nome: "Concentração Rúnica", dano: 0, elemento: "Suporte", cdMax: 1, cdAtual: 0, tipo: "buff_proprio", desc: "Aumenta dano." },
+                { nome: "Corte em Arco", dano: 22, elemento: "Mágico", cdMax: 2, cdAtual: 0, tipo: "ataque_geral", desc: "Atinge todos." }
+            ],
+            limite: { nome: "Julgamento Rúnico", desc: "Corte dimensional supremo.", tipo: "especial", dano: 80 }
+        },
+        "Raissa": {
+            hpMax: 190, danoFisico: 22, elementoBase: "Vento", fraqueza: "Elétrico", imunidade: "Terra",
+            passiva: { nome: "Correntes Fantasmas", desc: "Atrai ataques para si." },
+            habilidades: [
+                { nome: "Chicote de Vento", dano: 22, elemento: "Vento", cdMax: 0, cdAtual: 0, tipo: "ataque", desc: "Chicote rápido." },
+                { nome: "Surto Fantasmal", dano: 30, elemento: "Vento", cdMax: 1, cdAtual: 0, tipo: "ataque", desc: "Investida espiritual." },
+                { nome: "Manto Espectral", dano: 0, elemento: "Suporte", cdMax: 1, cdAtual: 0, tipo: "buff_proprio", desc: "Esquiva alta." },
+                { nome: "Vendaval", dano: 20, elemento: "Vento", cdMax: 2, cdAtual: 0, tipo: "ataque_geral", desc: "Ventos cortantes." }
+            ],
+            limite: { nome: "Fúria dos Espectros", desc: "Invoca correntes espirituais.", tipo: "especial", dano: 72 }
+        },
+        "Coraly": {
+            hpMax: 200, danoFisico: 24, elementoBase: "Corrupção", fraqueza: "Elétrico", imunidade: "Corrupção",
+            passiva: { nome: "Sangue Corrompido", desc: "Cura ao causar dano crítico." },
+            habilidades: [
+                { nome: "Garras de Sangue", dano: 24, elemento: "Corrupção", cdMax: 0, cdAtual: 0, tipo: "ataque", desc: "Garras afiadas." },
+                { nome: "Sugação Vital", dano: 30, elemento: "Corrupção", cdMax: 1, cdAtual: 0, tipo: "ataque", desc: "Drena vida." },
+                { nome: "Regeneração Sombria", dano: -35, elemento: "Suporte", cdMax: 1, cdAtual: 0, tipo: "cura", desc: "Cura pesada." },
+                { nome: "Erupção Sanguinária", dano: 22, elemento: "Corrupção", cdMax: 2, cdAtual: 0, tipo: "ataque_geral", desc: "Sangue em área." }
+            ],
+            limite: { nome: "Banho de Sangue Absoluto", desc: "Fúria vampírica total.", tipo: "especial", dano: 78 }
+        },
+        "Gigi": {
+            hpMax: 140, danoFisico: 18, elementoBase: "Biológico", fraqueza: "Fogo", imunidade: "Biológico",
+            passiva: { nome: "Metamorfose de Inseto", desc: "Ganha bônus de velocidade e ataque." },
+            habilidades: [
+                { nome: "Picada Venenosa", dano: 18, elemento: "Biológico", cdMax: 0, cdAtual: 0, tipo: "ataque", desc: "Ferão tóxico." },
+                { nome: "Esporos Ácidos", dano: 26, elemento: "Biológico", cdMax: 1, cdAtual: 0, tipo: "ataque", desc: "Nuvem ácida." },
+                { nome: "Casulo Protetor", dano: 0, elemento: "Suporte", cdMax: 1, cdAtual: 0, tipo: "buff_proprio", desc: "Cura e defende." },
+                { nome: "Enxame", dano: 20, elemento: "Biológico", cdMax: 2, cdAtual: 0, tipo: "ataque_geral", desc: "Ataque de insetos." }
+            ],
+            limite: { nome: "Metamorfose Suprema", desc: "Forma final de inseto gigante.", tipo: "especial", dano: 70 }
+        }
     };
 
     let timeAliadoSelecionado = [];
@@ -653,7 +897,6 @@
     let atacanteAtualId = 'p1';
     let alvoInimigoId = 'e1';
     let emTurnoInimigo = false;
-    let modoSelecaoSuporte = false;
 
     function renderizarRoster() {
         let container = document.getElementById('roster-container');
@@ -715,7 +958,7 @@
             id: id, nome: nomeModelo, hpMax: base.hpMax, hpAtual: base.hpMax,
             danoFisico: base.danoFisico, fraqueza: base.fraqueza, imunidade: base.imunidade,
             limite: 0, habilidades: JSON.parse(JSON.stringify(base.habilidades)),
-            habilidadesBloqueadasIndices: []
+            especial: JSON.parse(JSON.stringify(base.limite))
         };
     }
 
@@ -790,15 +1033,28 @@
     function executarAcaoJogador(indiceHab) {
         if (emTurnoInimigo) return;
         let atacante = unidades[atacanteAtualId];
-        let defensor = unidades[alvoInimigoId];
         if (atacante.hpAtual <= 0) return;
 
-        let habilidade = atacante.habilidades[indiceHab];
+        let habilidade;
+        if (indiceHab === 'limit') {
+            habilidade = atacante.especial;
+            atacante.limite = 0;
+        } else {
+            habilidade = atacante.habilidades[indiceHab];
+        }
         if (!habilidade) return;
 
-        let dano = habilidade.dano || 15;
-        defensor.hpAtual = Math.max(0, defensor.hpAtual - dano);
-        log(`<b>${atacante.nome}</b> usou <b>${habilidade.nome}</b> em <b>${defensor.nome}</b> causando ${dano} de dano!`);
+        let defensor = unidades[alvoInimigoId];
+        let danoFinal = habilidade.dano;
+
+        if (habilidade.tipo === 'cura') {
+            defensor.hpAtual = Math.min(defensor.hpMax, defensor.hpAtual - danoFinal);
+            log(`💚 <b>${atacante.nome}</b> curou <b>${defensor.nome}</b> em ${Math.abs(danoFinal)} HP!`);
+        } else {
+            defensor.hpAtual = Math.max(0, defensor.hpAtual - danoFinal);
+            log(`⚔️ <b>${atacante.nome}</b> usou <b>${habilidade.nome}</b> em <b>${defensor.nome}</b> causando ${danoFinal} de dano!`);
+            atacante.limite = Math.min(100, atacante.limite + 25);
+        }
 
         if (verificarVitoria()) return;
         finalizarTurnoAcao();
@@ -883,8 +1139,10 @@
             let card = document.getElementById(`unit-${id}`);
             if (!card) continue;
             let hpBar = document.getElementById(`hp-${id}`);
+            let limitBar = document.getElementById(`limit-${id}`);
             document.getElementById(`name-${id}`).innerText = u.nome;
             if (hpBar) hpBar.style.width = Math.max(0, (u.hpAtual / u.hpMax) * 100) + "%";
+            if (limitBar) limitBar.style.width = (u.limite || 0) + "%";
 
             if (u.hpAtual <= 0) card.classList.add('dead');
             else card.classList.remove('dead');
@@ -901,11 +1159,21 @@
                 let h = at.habilidades[i];
                 if (h) {
                     btn.style.display = 'block';
-                    btn.innerHTML = h.nome;
+                    btn.innerHTML = `${h.nome} <span style="font-size:9px; display:block; opacity:0.8;">(${h.elemento})</span>`;
                     btn.disabled = emTurnoInimigo;
                 } else {
                     btn.style.display = 'none';
                 }
+            }
+            let btnLimit = document.getElementById('btn-limit');
+            if (at.limite >= 100) {
+                btnLimit.disabled = emTurnoInimigo;
+                btnLimit.className = 'ready';
+                btnLimit.innerHTML = `⭐ QUEBRA DE LIMITES: ${at.especial.nome} (100%)`;
+            } else {
+                btnLimit.disabled = true;
+                btnLimit.className = '';
+                btnLimit.innerHTML = `QUEBRA DE LIMITES (${at.limite || 0}%)`;
             }
         }
     }
@@ -928,7 +1196,7 @@
                 let atacanteInimigo = unidades[idInimigo];
                 let alvoAliado = unidades[aliadosVivos[Math.floor(Math.random() * aliadosVivos.length)]];
 
-                let dano = 15;
+                let dano = 18;
                 alvoAliado.hpAtual = Math.max(0, alvoAliado.hpAtual - dano);
                 log(`⚔️ <b>${atacanteInimigo.nome} (Inimigo)</b> atacou ${alvoAliado.nome} causando ${dano} de dano!`);
             }
