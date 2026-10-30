@@ -341,7 +341,7 @@
     </div>
 </div>
 
-<!-- 1. TELA DE MENU PRINCIPAL -->
+<!-- 1. TELA DE MENU PRINCIPAL (ADICIONADA) -->
 <div id="menu-screen" class="screen" style="display:flex;">
     <div class="menu-title">3v3 PAPER RPG</div>
     <div class="menu-subtitle">Expansão Espectral & Biológica</div>
@@ -351,7 +351,7 @@
     </div>
 </div>
 
-<!-- TELA DE LOBBY ONLINE -->
+<!-- TELA DE LOBBY ONLINE (ADICIONADA) -->
 <div id="online-lobby-screen" class="screen" style="display:none;">
     <div class="menu-title">MULTIPLAYER ONLINE</div>
     <div class="lobby-box">
@@ -563,6 +563,7 @@
         }
     }
 
+    // Funções de transição de Menu e Lobby Online
     function irParaTreino() {
         modoJogo = 'treino';
         document.getElementById('menu-screen').style.display = 'none';
@@ -1099,7 +1100,6 @@
         if (modoJogo === 'treino') {
             btnStart.disabled = !(timeAliadoSelecionado.length === 3 && timeInimigoSelecionado.length === 3);
         } else {
-            // No modo online, o host decide quando iniciar após ambos escolherem
             btnStart.disabled = !(soyHost && timeAliadoSelecionado.length === 3 && timeInimigoSelecionado.length === 3);
         }
     }
