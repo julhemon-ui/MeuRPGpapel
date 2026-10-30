@@ -79,6 +79,19 @@
         @keyframes motoShake { 0% { transform: translateX(-3px); } 100% { transform: translateX(3px); } }
         @keyframes motoDrive { 0% { transform: translateX(-300px) scale(0.5); opacity: 0; } 50% { transform: translateX(0px) scale(1.3); opacity: 1; } 100% { transform: translateX(300px) scale(0.5); opacity: 0; } }
 
+        /* OVERLAY VISUAL DA QUEBRA DE LIMITES DA RAISSA */
+        #raissa-overlay {
+            display: none; position: absolute; top: 0; left: 0; width: 100%; height: 100%;
+            background: radial-gradient(circle, rgba(103, 58, 183, 0.85) 0%, rgba(18, 11, 36, 0.95) 100%);
+            z-index: 150; justify-content: center; align-items: center;
+            flex-direction: column; color: #e040fb; font-family: 'Courier New', Courier, monospace;
+            box-shadow: inset 0 0 50px #7c4dff;
+        }
+        .raissa-anim-text { font-size: 26px; font-weight: bold; text-shadow: 0 0 12px #e040fb, 0 0 20px #7c4dff; text-align: center; animation: raissaPulseText 0.3s infinite alternate; }
+        .raissa-icon { font-size: 75px; margin-bottom: 10px; animation: raissaGhostFloat 0.8s ease-in-out infinite alternate; }
+        @keyframes raissaPulseText { 0% { transform: scale(0.98); text-shadow: 0 0 10px #e040fb; } 100% { transform: scale(1.04); text-shadow: 0 0 25px #00e5ff; } }
+        @keyframes raissaGhostFloat { 0% { transform: translateY(-10px) scale(0.9); opacity: 0.7; } 100% { transform: translateY(10px) scale(1.1); opacity: 1; } }
+
         #select-screen { 
             display: flex; flex-direction: column; align-items: center; justify-content: center; width: 100%;
         }
@@ -135,6 +148,7 @@
         .bg-cenario-1 { background-image: url('cenario1.jpg') !important; }
         .bg-cenario-2 { background-image: url('cenario2.jpg') !important; }
         .bg-cenario-3 { background-image: url('cenario3.jpg') !important; }
+        .bg-cenario-4 { background-image: url('cenario4.png') !important; }
 
         .team-side { width: 48%; height: 100%; position: relative; }
         
@@ -299,6 +313,11 @@
     <div class="moto-anim-text">CAVALEIRA RÚNICA: ATROPELAMENTO TOTAL!</div>
 </div>
 
+<div id="raissa-overlay">
+    <div class="raissa-icon">👻✨</div>
+    <div class="raissa-anim-text">SURTO FANTASMAGÓRICO!</div>
+</div>
+
 <div id="profile-modal">
     <div class="profile-box">
         <button class="close-profile" onclick="fecharPerfil()">✕</button>
@@ -452,9 +471,19 @@
 
 <script>
     const TRILHAS_BATALHA = ['musica1.mp3', 'musica2.mp3', 'musica3.mp3'];
+    const MUSICA_MENU = 'musicamenu.mp3';
 
     let indiceMusicaAtual = -1;
     let audioMutado = false;
+
+    function tocarMusicaMenu() {
+        let audioEl = document.getElementById('audio-bg');
+        audioEl.src = MUSICA_MENU;
+        audioEl.volume = 0.4;
+        audioEl.muted = audioMutado;
+        audioEl.onended = null;
+        audioEl.play().catch(e => console.log("Aguardando interação do usuário para áudio do menu."));
+    }
 
     function tocarMusicaAleatoria() {
         let audioEl = document.getElementById('audio-bg');
@@ -468,7 +497,6 @@
         audioEl.volume = 0.4;
         audioEl.muted = audioMutado;
         audioEl.onended = tocarMusicaAleatoria;
-        
         audioEl.play().catch(e => console.log("Aguardando interação para áudio."));
     }
 
@@ -484,9 +512,9 @@
 
     function aplicarCenarioAleatorio() {
         let campo = document.getElementById('field-area');
-        campo.classList.remove('bg-cenario-1', 'bg-cenario-2', 'bg-cenario-3');
+        campo.classList.remove('bg-cenario-1', 'bg-cenario-2', 'bg-cenario-3', 'bg-cenario-4');
         
-        let num = Math.floor(Math.random() * 3) + 1;
+        let num = Math.floor(Math.random() * 4) + 1;
         campo.classList.add(`bg-cenario-${num}`);
         log(`🎨 <b>Cenário sorteado:</b> Cenário ${num} carregado no campo de batalha!`);
     }
@@ -798,11 +826,11 @@
             passiva: { nome: "Gotas de Morte", desc: "Ataques biológicos têm 30% de chance de aplicar 'Vírus' (+20 dano biológico, contágio 33%). Time imune a DNA Vamp!" },
             habilidades: [
                 { nome: "Brincar Pesado", dano: 10, elemento: "Biológico", cdMax: 0, cdAtual: 0, tipo: "ataque", desc: "Ataque biológico básico." },
-                { nome: "Pulso Caótico", dano: 20, elemento: "Corrupção", cdMax: 3, cdAtual: 0, tipo: "gigi_pulso", desc: "Atinge todos e envenena quem tem mais de 50 de HP." },
-                { nome: "Armadura Ácida", dano: 0, elemento: "Suporte", cdMax: 8, cdAtual: 0, tipo: "gigi_armadura", desc: "Limpa estados ruins e cura 30 HP." },
-                { nome: "Foice de Louva-Deus", dano: 30, elemento: "Biológico", cdMax: 10, cdAtual: 0, tipo: "ataque", efeito: "sangramento", desc: "Corte biológico que causa sangramento." }
+                { nome: "Pulso Caótico", dano: 20, elemento: "Corrupção", cdMax: 5, cdAtual: 0, tipo: "gigi_pulso", desc: "Acerta todos os oponentes e dá o estado de envenenado a quem estiver com mais de 50 de vida." },
+                { nome: "Armadura Ácida", dano: 0, elemento: "Suporte", cdMax: 10, cdAtual: 0, tipo: "gigi_armadura", desc: "Limpa os estados e cura 30 de HP." },
+                { nome: "Foice de Louva-Deus", dano: 15, elemento: "Biológico", cdMax: 10, cdAtual: 0, tipo: "ataque", efeito: "sangramento", desc: "Deixa o alvo sangrando." }
             ],
-            temMetamorfose: true, formaAtual: "louvadeus" // louvadeus, escorpião, borboleta, larva, centopeia
+            temMetamorfose: true, formaAtual: "louvadeus"
         }
     };
 
@@ -956,7 +984,6 @@
             obsessaoTurnos: 0, obsessaoOrigemId: null, maldicaoTurnos: 0, proximoAtqObsessao: false,
             emBerserk: false, ehMonstroAnna: false, turnosTransformacaoAnna: 0,
             ehFlorSumonada: false, ehBarreiraSumonada: false, temMorcegoInvocado: false,
-            // NOVAS PROPRIEDADES DOS 3 NOVOS PERSONAGENS
             raissaVinculoId: null,
             contadorAcertosCorrupcao: 0, dnaVampTurnos: 0, dnaVampEstagio: 0, sedePorSangueTurnos: 0,
             virusTurnos: 0, temMetamorfose: base.temMetamorfose || false, formaAtual: base.formaAtual || "louvadeus",
@@ -1020,13 +1047,11 @@
             let temDoctor = timeTemPersonagem(prefix, 'Doctor');
             let temGigi = timeTemPersonagem(prefix, 'Gigi');
 
-            // --- SINERGIAS DA RAISSA ---
             if (temRaissa) {
                 ['0', '1', '2'].forEach(s => {
                     let u = unidades[prefix + s];
                     if (!u || u.hpAtual <= 0) return;
                     if (u.nome === 'Raissa') {
-                        // Conectar Raissa com aliado aleatório para passiva de link de vida
                         let aliadosDisponiveis = ['0', '1', '2'].map(slot => prefix + slot).filter(id => id !== u.id && unidades[id] && unidades[id].hpAtual > 0);
                         if (aliadosDisponiveis.length > 0) {
                             let alvoLink = aliadosDisponiveis[Math.floor(Math.random() * aliadosDisponiveis.length)];
@@ -1049,16 +1074,12 @@
                 });
             }
 
-            // --- SINERGIAS DA CORALY ---
             if (temCoraly) {
                 ['0', '1', '2'].forEach(s => {
                     let u = unidades[prefix + s];
                     if (!u || u.hpAtual <= 0) return;
                     if (u.nome === 'Coraly' && temCristal) {
                         u.habilidades[1].tipo = "coraly_absorver_cristal";
-                    }
-                    if (u.nome === 'Cristal' && temCoraly) {
-                        // Modifica ataque base da Cristal (já tratado no dano/habilidade)
                     }
                     if (u.nome === 'Leandro' && temCoraly) {
                         u.habilidades[1] = { nome: "Foice Vampírica", dano: 26, elemento: "Corrupção", cdMax: 5, cdAtual: 0, tipo: "leandro_foice_vampirica", efeito: "sangramento", desc: "Deixa o alvo sangrando." };
@@ -1072,7 +1093,6 @@
                 });
             }
 
-            // --- SINERGIAS DA GIGI ---
             if (temGigi) {
                 ['0', '1', '2'].forEach(s => {
                     let u = unidades[prefix + s];
@@ -1188,7 +1208,7 @@
         if (algumTimeTemPersonagem('Campos')) log(`🖤 <b>Estabilidade do Campos:</b> A passiva da Anna foi DESABILITADA!`);
         if (algumTimeTemPersonagem('Mariel')) log(`🕊️ <b>Aura Celestial (Mariel):</b> Sinergias entre Kevin e Mika desabilitadas!`);
         if (algumTimeTemPersonagem('Anna') && !algumTimeTemPersonagem('Campos')) log(`🐦‍⬛ <b>Penas de Corvo (Anna):</b> Sinergias do time oponente bloqueadas!`);
-        if (algumTimeTemPersonagem('Rhayane')) log(`👑 <b>Rainha Esmeralda (Rhayane):</b> Aliados imunes a dano do elemento Terra!`);
+        if (algumTimeTemPersonagem('Rhayane')) log(`👑 <b>Rainha Esmeralda (Rhayane):</b> Aliados imunes a ataques do elemento Terra!`);
         if (algumTimeTemPersonagem('Sarah')) log(`🌊 <b>Rainha do Azul Profundo (Sarah):</b> Aliados imunes a Veneno!`);
         if (algumTimeTemPersonagem('Gigi')) log(`🐛 <b>Gotas de Morte (Gigi):</b> Time inteiro imune ao estado de DNA Vampírico!`);
 
@@ -1218,8 +1238,7 @@
         document.getElementById('select-instruction').innerText = "Escolha 3 personagens para o SEU TIME";
         document.getElementById('log-box').innerHTML = "> Seleção concluída! Comece a batalha.";
 
-        let audioEl = document.getElementById('audio-bg');
-        audioEl.pause();
+        tocarMusicaMenu();
 
         atualizarPainelSlots();
         renderizarRoster();
@@ -1281,7 +1300,7 @@
         let danoBase = habilidade.dano;
 
         if (timeTemPersonagem(prefixoAttacker, 'Shy')) danoBase += 10;
-        if (elem === 'Biológico' && defensor.virusTurnos > 0) danoBase += 20; // Bônus de Dano do Vírus da Gigi
+        if (elem === 'Biológico' && defensor.virusTurnos > 0) danoBase += 20;
 
         if (habilidade.tipo === 'ataque_ysma_gelo' && defensor.hpAtual === defensor.hpMax) {
             danoBase = 25;
@@ -1345,7 +1364,6 @@
             log(`🛡️ <b>Paladina do Velho Testamento (Karin):</b> Reduziu 20 de dano por vida baixa!`);
         }
 
-        // Passiva da Raissa: Retaliação do Surto Fantasmagórico se dano > 30
         if (defensor.raissaFantasmaAtivo && danoBase >= 30) {
             log(`👻✨ <b>Surto Fantasmagórico (Raissa):</b> O fantasma retaliou ${atacante.nome} causando ${danoBase} de dano!`);
             atacante.hpAtual = Math.max(0, atacante.hpAtual - danoBase);
@@ -1442,15 +1460,15 @@
             log(`🌸 <b>Flor de Cura (Mana):</b> Curou +20 HP de todo o grupo após ataque sofrido!`);
         }
 
-        // Gestão de Sede por Sangue (Coraly)
-        if (atacante.sedePorSangueTurnos > 0 || (elem === 'Corrupção' && atacante.sedePorSangueTurnos > 0)) {
+        if (atacante.sedePorSangueTurnos > 0 && elem === 'Corrupção' && danoBase > 0) {
             aplicarCura(atacante, 25, atacante);
+            log(`🩸 <b>Sede por Sangue (Atacante):</b> ${atacante.nome} curou +25 HP ao causar dano de Corrupção!`);
         }
-        if (defensor.sedePorSangueTurnos > 0 && danoBase > 0) {
+        if (defensor.sedePorSangueTurnos > 0 && elem === 'Corrupção' && danoBase > 0) {
             aplicarCura(defensor, 25, defensor);
+            log(`🩸 <b>Sede por Sangue (Defensor):</b> ${defensor.nome} curou +25 HP ao sofrer dano de Corrupção!`);
         }
 
-        // Gestão de Acertos de Corrupção para DNA Vampírico da Coraly
         if (atacante.nome === 'Coraly' && elem === 'Corrupção' && danoBase > 0) {
             defensor.contadorAcertosCorrupcao++;
             if (defensor.contadorAcertosCorrupcao >= 3 && defensor.dnaVampTurnos === 0 && !timeTemPersonagem(prefixoDefensor, 'Gigi')) {
@@ -1461,7 +1479,6 @@
             }
         }
 
-        // Sinergia Campos + Coraly (Campos também aplica DNA Vamp)
         if (atacante.nome === 'Campos' && timeTemPersonagem(prefixoAttacker, 'Coraly') && elem === 'Corrupção' && danoBase > 0) {
             defensor.contadorAcertosCorrupcao++;
             if (defensor.contadorAcertosCorrupcao >= 3 && defensor.dnaVampTurnos === 0 && !timeTemPersonagem(prefixoDefensor, 'Gigi')) {
@@ -1472,7 +1489,6 @@
             }
         }
 
-        // Passiva da Gigi: Chance de aplicar Vírus com ataques biológicos
         if (elem === 'Biológico' && timeTemPersonagem(prefixoAttacker, 'Gigi') && Math.random() < 0.30 && defensor.virusTurnos === 0) {
             defensor.virusTurnos = 15;
             log(`🦠 <b>Gotas de Morte (Gigi):</b> ${defensor.nome} foi infectado pelo estado de VÍRUS!`);
@@ -1498,11 +1514,10 @@
             log(`✨⚔️ <b>Passiva da Silver (Cura Recebida):</b> Silver ganhou +20 de Dano e Escudo por 2 turnos!`);
         }
 
-        // Sinergia Surto Fantasmagórico (Raissa) ao curar aliado com fantasma
         if (unidade.raissaFantasmaAtivo) {
             unidade.passoPlumaTurnos = 3;
             unidade.regeneracaoTurnos = 5;
-            unidade.escudoShy = 2; // Reutilizando escudo genérico
+            unidade.escudoShy = 2;
             log(`👻🪶 <b>Surto Fantasmagórico:</b> Aliado curado ganhou Passo da Pluma, Regeneração e Escudo!`);
         }
 
@@ -1633,10 +1648,9 @@
 
         if (atacante.hpAtual <= 0) return;
 
-        // Verificar se a habilidade está bloqueada pelo Trancafiar da Raissa
         if (atacante.habilidadesBloqueadasIndices.includes(indiceHab)) {
             log(`🔒 <b>Habilidade Bloqueada!</b> ${atacante.nome} tentou usar uma habilidade trancada por um cadeado e perdeu a ação.`);
-            mostrarEfeitoFlutuante(atacante.id, "🔒 BLOQUEADA!", "info");
+            mostrarEfeitoFlutuante(atacante.id, "🔒 BLOQUEADO!", "info");
             iniciarTurnoInimigo();
             return;
         }
@@ -1667,17 +1681,15 @@
         }
 
         if (indiceHab === 'limit' && atacante.nome === 'Gigi') {
-            // Ciclo de Metamorfose da Gigi
             let formas = ["louvadeus", "escorpiao", "borboleta", "larva", "centopeia"];
             let idxF = formas.indexOf(atacante.formaAtual);
             atacante.formaAtual = formas[(idxF + 1) % formas.length];
 
-            // Altera a 4ª habilidade conforme a forma
             if (atacante.formaAtual === "louvadeus") {
-                atacante.habilidades[3] = { nome: "Foice de Louva-Deus", dano: 30, elemento: "Biológico", cdMax: 10, cdAtual: 0, tipo: "ataque", efeito: "sangramento", desc: "Corte biológico que causa sangramento." };
+                atacante.habilidades[3] = { nome: "Foice de Louva-Deus", dano: 15, elemento: "Biológico", cdMax: 10, cdAtual: 0, tipo: "ataque", efeito: "sangramento", desc: "Deixa o alvo sangrando." };
                 log(`🐛 <b>Metamorfose (Gigi):</b> Assumiu a forma de Louva-Deus 🐛!`);
             } else if (atacante.formaAtual === "escorpiao") {
-                atacante.habilidades[3] = { nome: "Ferrão", dano: 30, elemento: "Biológico", cdMax: 10, cdAtual: 0, tipo: "ataque", efeito: "veneno", desc: "Deixa o alvo envenenado." };
+                atacante.habilidades[3] = { nome: "Ferrão", dano: 15, elemento: "Biológico", cdMax: 10, cdAtual: 0, tipo: "ataque", efeito: "veneno", desc: "Deixa o alvo envenenado." };
                 log(`🦂 <b>Metamorfose (Gigi):</b> Assumiu a forma de Escorpião 🦂!`);
             } else if (atacante.formaAtual === "borboleta") {
                 atacante.habilidades[3] = { nome: "Louros de Seda", dano: 0, elemento: "Biológico", cdMax: 10, cdAtual: 0, tipo: "gigi_borboleta", desc: "Cura 40 HP e dá regeneração ao time inteiro." };
@@ -1686,11 +1698,11 @@
                 atacante.habilidades[3] = { nome: "Hora do Chá", dano: 20, elemento: "Biológico", cdMax: 10, cdAtual: 0, tipo: "gigi_larva", desc: "Atinge o time inimigo e reflete debuffs próprios de volta." };
                 log(`🐛 <b>Metamorfose (Gigi):</b> Assumiu a forma de Larva 🐛!`);
             } else if (atacante.formaAtual === "centopeia") {
-                atacante.habilidades[3] = { nome: "Cuspi Ácido", dano: 30, elemento: "Biológico", cdMax: 10, cdAtual: 0, tipo: "gigi_centopeia", efeito: "veneno", desc: "Deixa o alvo envenenado e com vírus." };
+                atacante.habilidades[3] = { nome: "Cuspi Ácido", dano: 15, elemento: "Biológico", cdMax: 10, cdAtual: 0, tipo: "gigi_centopeia", efeito: "veneno", desc: "Deixa o alvo envenenado e com vírus." };
                 log(`🐛 <b>Metamorfose (Gigi):</b> Assumiu a forma de Centopéia 🐛!`);
             }
             atualizarUI();
-            return; // Trocar de forma não gasta o turno!
+            return;
         }
 
         if (indiceHab === 'limit' && atacante.nome === 'Din') {
@@ -1777,15 +1789,20 @@
         }
 
         if (habilidade.tipo === 'limit_raissa') {
-            ['e0', 'e1', 'e2', 'p0', 'p1', 'p2'].forEach(uid => {
-                if (unidades[uid] && unidades[uid].hpAtual > 0) unidades[uid].raissaFantasmaAtivo = true;
-            });
-            log(`👻✨ <b>Surto Fantasmagórico (Raissa):</b> Aplicou fantasmas em todos em campo!`);
-            habilidade.cdAtual = habilidade.cdMax || 10;
-            aplicarDanoPosAtaque(atacante);
-            atualizarUI();
-            if (verificarVitoria()) return;
-            iniciarTurnoInimigo();
+            let raissaOverlay = document.getElementById('raissa-overlay');
+            raissaOverlay.style.display = 'flex';
+            setTimeout(() => {
+                raissaOverlay.style.display = 'none';
+                ['e0', 'e1', 'e2', 'p0', 'p1', 'p2'].forEach(uid => {
+                    if (unidades[uid] && unidades[uid].hpAtual > 0) unidades[uid].raissaFantasmaAtivo = true;
+                });
+                log(`👻✨ <b>Surto Fantasmagórico (Raissa):</b> Aplicou uma névoa fantasmagórica e aura espectral em todos em campo!`);
+                habilidade.cdAtual = habilidade.cdMax || 10;
+                aplicarDanoPosAtaque(atacante);
+                atualizarUI();
+                if (verificarVitoria()) return;
+                iniciarTurnoInimigo();
+            }, 800);
             return;
         }
 
@@ -1811,7 +1828,7 @@
 
         if (habilidade.tipo === 'desejo_lunar') {
             atacante.hpAtual = Math.min(atacante.hpMax, atacante.hpAtual + 30);
-            atacante.buffAtqYsma += 1; // Bônus de ATQ
+            atacante.buffAtqYsma += 1;
             atacante.regeneracaoTurnos = 5;
             habilidade.cdAtual = habilidade.cdMax;
             log(`🌙 <b>Desejo Lunar (Raissa):</b> Curou 30 HP, ganhou ATQ bônus e Regeneração por 5 turnos!`);
@@ -1933,7 +1950,6 @@
                     mostrarEfeitoFlutuante(eU.id, `-${dano}`, "dano");
                 }
             });
-            // Reflete debuffs próprios
             if (atacante.veneno > 0 || atacante.sangramento > 0 || atacante.queimadura > 0) {
                 atacante.veneno = 0; atacante.sangramento = 0; atacante.queimadura = 0;
                 defensor.veneno = 3; defensor.sangramento = 3;
@@ -2136,7 +2152,6 @@
         else {
             let elemEfetivo = habilidade.elemento;
 
-            // Sinergias de Sinergias Especiais
             if (habilidade.tipo === 'campos_quebra_coracao') {
                 defensor.queimadura = 2;
                 aplicarCura(atacante, 20, atacante);
@@ -2177,6 +2192,7 @@
                 defensor.hpAtual = Math.max(0, defensor.hpAtual - dano);
                 mostrarEfeitoFlutuante(defensor.id, `-${dano}`, "dano");
                 aplicarCura(atacante, roubo, atacante);
+                habilidade.cdAtual = habilidade.cdMax;
             }
             else if (habilidade.tipo === 'coraly_absorver_cristal') {
                 let dano = calcularDano(atacante, defensor, habilidade, elemEfetivo);
@@ -2188,6 +2204,7 @@
                     defensor.dnaVampEstagio = 1;
                     log(`🦇💎 <b>Absorver (Coraly + Cristal):</b> Roubou vida e aplicou DNA Vampírico!`);
                 }
+                habilidade.cdAtual = habilidade.cdMax;
             }
             else if (habilidade.tipo === 'leandro_foice_vampirica') {
                 defensor.sangramento = 3;
@@ -2210,6 +2227,7 @@
                 defensor.hpAtual = Math.max(0, defensor.hpAtual - dano);
                 mostrarEfeitoFlutuante(defensor.id, `-${dano}`, "dano");
                 log(`🦇⚡ <b>Terapia de Choque (Coraly + Doctor):</b> Causou dano elétrico e paralisou ${defensor.nome}!`);
+                habilidade.cdAtual = habilidade.cdMax;
             }
             else {
                 let dano = calcularDano(atacante, defensor, habilidade, elemEfetivo);
@@ -2305,9 +2323,7 @@
             let u = unidades[id];
 
             if (u.hpAtual <= 0) {
-                // Verificar se a Raissa está vinculada a alguém
                 if (u.raissaVinculoId && unidades[u.raissaVinculoId] && unidades[u.raissaVinculoId].hpAtual > 0) {
-                    // Impede morte individual se o parceiro do vínculo estiver vivo
                     u.hpAtual = 1;
                     log(`🔗 <b>Correntes do Amor (Raissa):</b> O vínculo salvou <b>${u.nome}</b> de cair! Compartilham o destino.`);
                 } else if (u.autoReviver) {
@@ -2319,26 +2335,29 @@
                 continue;
             }
 
-            // Gerenciamento de turnos das habilidades bloqueadas (Trancafiar da Raissa)
+            if (u.sedePorSangueTurnos > 0) {
+                u.sedePorSangueTurnos--;
+                if (u.sedePorSangueTurnos === 0) {
+                    log(`🩸 <b>Fim da Sede por Sangue:</b> O efeito de vampirismo de ${u.nome} acabou.`);
+                }
+            }
+
             if (u.habilidadesBloqueadasIndices.length > 0) {
-                if (Math.random() < 0.35) { // Reduz o cadeado gradativamente
+                if (Math.random() < 0.35) {
                     u.habilidadesBloqueadasIndices.pop();
                     log(`🔓 <b>Desbloqueio:</b> Um cadeado de habilidade de ${u.nome} foi removido.`);
                 }
             }
 
-            // Progressão do DNA Vampírico da Coraly
             if (u.dnaVampTurnos > 0 && u.dnaVampTurnos < 999) {
                 u.dnaVampTurnos--;
             }
             if (u.dnaVampTurnos >= 999) {
                 u.dnaVampEstagio++;
                 if (u.dnaVampEstagio === 2) {
-                    // Turno 2: Ataques mudam para elemento Corrupção
                     u.habilidades.forEach(h => h.elemento = "Corrupção");
                     log(`🧬 <b>DNA Vampírico (Estágio 2):</b> ${u.nome} foi totalmente corrompido! Seus ataques agora são de Corrupção.`);
                 } else if (u.dnaVampEstagio >= 3) {
-                    // Turno 3+: Substitui a 4ª habilidade por beber sangue
                     u.habilidades[3] = {
                         nome: "Beber Sangue", dano: 0, elemento: "Corrupção", cdMax: 4, cdAtual: 0, tipo: "beber_sangue",
                         desc: "Causa 40 de dano em um aliado e cura 30 do próprio HP."
@@ -2347,7 +2366,6 @@
                 }
             }
 
-            // Contágio do Vírus da Gigi (33% de chance de espalhar)
             if (u.virusTurnos > 0) {
                 u.virusTurnos--;
                 if (Math.random() < 0.33) {
@@ -2608,7 +2626,7 @@
                 if (u.raissaVinculoId) listaStatus.push("🔗 VINCULADO");
                 if (u.raissaFantasmaAtivo) listaStatus.push("👻 FANTASMA");
                 if (u.dnaVampTurnos > 0) listaStatus.push("🧬 DNA VAMP");
-                if (u.sedePorSangueTurnos > 0) listaStatus.push("🩸 SEDE SANGUE");
+                if (u.sedePorSangueTurnos > 0) listaStatus.push(`🩸 SEDE (${u.sedePorSangueTurnos}t)`);
                 if (u.virusTurnos > 0) listaStatus.push("🦠 VÍRUS");
                 if (u.autoReviver) listaStatus.push("😇 AUTO-REVIVER");
                 if (u.regeneracaoTurnos > 0) listaStatus.push(`🧪 REGEN (${u.regeneracaoTurnos}t)`);
@@ -2663,7 +2681,6 @@
                         btn.disabled = h.cdAtual > 0 || emTurnoInimigo;
                     }
 
-                    // Verifica se o botão está bloqueado com cadeado pelo Trancafiar
                     if (at.habilidadesBloqueadasIndices.includes(i)) {
                         nomeExibido = `🔒 ${nomeExibido}`;
                         btn.disabled = true;
@@ -2785,6 +2802,7 @@
 
     window.onload = function() {
         renderizarRoster();
+        tocarMusicaMenu();
     };
 </script>
 
