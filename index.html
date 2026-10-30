@@ -17,8 +17,7 @@
             position: relative; overflow: hidden; margin: 0 auto; min-height: 500px; display: flex; justify-content: center; align-items: center;
         }
 
-        /* TELA DE MENU PRINCIPAL */
-        #menu-screen { text-align: center; gap: 20px; }
+        #menu-screen { text-align: center; gap: 20px; display: flex; }
         .menu-title { font-size: 32px; color: #5c4033; text-shadow: 2px 2px 0px #d4b886; margin-bottom: 10px; }
         .menu-subtitle { font-size: 14px; color: #8b5a2b; margin-bottom: 20px; font-weight: bold; }
         .menu-btn-group { display: flex; flex-direction: column; gap: 12px; width: 260px; margin: 0 auto; }
@@ -31,7 +30,6 @@
         .btn-menu.online { background: #1976d2; border-color: #0d47a1; }
         .btn-menu.online:hover { background: #0d47a1; }
 
-        /* TELA DE LOBBY ONLINE */
         #online-lobby-screen { display: none; text-align: center; gap: 15px; }
         .lobby-box { background: #fff8dc; border: 3px solid #5c4033; padding: 20px; border-radius: 8px; width: 100%; max-width: 400px; margin: 0 auto; }
         .lobby-input { width: 100%; padding: 10px; font-size: 14px; border: 2px solid #5c4033; border-radius: 6px; margin: 8px 0; text-align: center; font-family: inherit; }
@@ -161,12 +159,8 @@
             border: none; border-radius: 8px; padding: 12px; height: 340px; position: relative;
             background-size: cover !important; background-position: center !important; background-repeat: no-repeat !important;
             transition: background-image 0.5s ease-in-out; box-shadow: inset 0 0 10px rgba(0,0,0,0.3);
+            background-color: #dcd0c0;
         }
-
-        .bg-cenario-1 { background-image: url('cenario1.jpg') !important; }
-        .bg-cenario-2 { background-image: url('cenario2.jpg') !important; }
-        .bg-cenario-3 { background-image: url('cenario3.jpg') !important; }
-        .bg-cenario-4 { background-image: url('cenario4.png') !important; }
 
         .team-side { width: 48%; height: 100%; position: relative; }
         
@@ -200,23 +194,6 @@
         @keyframes berserkPulse {
             0% { box-shadow: 0 0 5px #ff1744; }
             100% { box-shadow: 0 0 18px #ff1744, inset 0 0 8px #d50000; }
-        }
-
-        .unit-card.crow-transformed::after {
-            content: '🐦‍⬛'; position: absolute; top: -12px; left: -8px; font-size: 18px; animation: crowFloat 1s infinite alternate;
-        }
-        @keyframes crowFloat { from { transform: translateY(0); } to { transform: translateY(-6px); } }
-
-        .unit-card.bat-invoked::before {
-            content: '🦇'; position: absolute; top: -18px; right: -6px; font-size: 22px; z-index: 20; animation: batFloat 0.7s infinite alternate ease-in-out;
-        }
-        @keyframes batFloat { from { transform: translateY(0px) scale(1); } to { transform: translateY(-7px) scale(1.15); } }
-
-        .unit-card.buff-pulse { animation: buffGlow 0.8s ease-in-out; }
-        @keyframes buffGlow {
-            0% { box-shadow: 0 0 0px #2196f3; border-color: #5c4033; }
-            50% { box-shadow: 0 0 20px #2196f3, inset 0 0 10px #2196f3; border-color: #2196f3; transform: scale(1.12); }
-            100% { box-shadow: 0 0 0px #2196f3; border-color: #5c4033; }
         }
 
         .floating-pop {
@@ -306,4 +283,668 @@
         .elem-Purificação { background: #ede7f6; color: #4a148c; border-color: #7e57c2; }
         .elem-Terra { background: #d7ccc8; color: #4e342e; border-color: #5d4037; }
         .elem-Surpresa { background: #fff9c4; color: #f57f17; border-color: #fbc02d; }
-        .elem-Suporte { background: #e0f2f1; col
+        .elem-Suporte { background: #e0f2f1; color: #004d40; border-color: #00897b; }
+
+        #btn-limit { grid-column: span 2; background: #ffecb3; border-color: #b78103; color: #8c5b00; }
+        #btn-limit.ready {
+            background: #ff9800; color: #fff; border-color: #e65100;
+            animation: pulseLimit 1.2s infinite alternate; font-size: 12px; text-shadow: 0 0 2px #000;
+        }
+        #btn-limit.btn-ysma-magia { background: #2196f3; color: #fff; border-color: #0d47a1; }
+        #btn-limit.btn-gigi-form { background: #ab47bc; color: #fff; border-color: #6a1b9a; }
+
+        @keyframes pulseLimit {
+            0% { transform: scale(1); box-shadow: 0 0 4px #ff9800; }
+            100% { transform: scale(1.03); box-shadow: 0 0 14px #ff3d00; background: #ff3d00; }
+        }
+    </style>
+</head>
+<body>
+
+<audio id="audio-bg" loop></audio>
+
+<div id="moto-overlay">
+    <div class="moto-icon">🏍️💨</div>
+    <div class="moto-anim-text">CAVALEIRA RÚNICA: ATROPELAMENTO TOTAL!</div>
+</div>
+
+<div id="raissa-overlay">
+    <div class="raissa-icon">👻✨</div>
+    <div class="raissa-anim-text">SURTO FANTASMAGÓRICO!</div>
+</div>
+
+<div id="profile-modal">
+    <div class="profile-box">
+        <button class="close-profile" onclick="fecharPerfil()">✕</button>
+        <div id="profile-content"></div>
+    </div>
+</div>
+
+<!-- 1. TELA DE MENU PRINCIPAL -->
+<div id="menu-screen" class="screen">
+    <div class="menu-title">3v3 PAPER RPG</div>
+    <div class="menu-subtitle">O Batalhão Épico de Cartas e Estratégia</div>
+    <div class="menu-btn-group">
+        <button class="btn-menu" onclick="irParaTreino()">⚔️ MODO TREINO (VS IA)</button>
+        <button class="btn-menu online" onclick="abrirLobbyOnline()">🌐 MODO ONLINE (MULTIPLAYER)</button>
+    </div>
+</div>
+
+<!-- TELA DE LOBBY ONLINE -->
+<div id="online-lobby-screen" class="screen" style="display:none;">
+    <div class="menu-title">MULTIPLAYER ONLINE</div>
+    <div class="lobby-box">
+        <p style="font-size: 12px; margin-bottom: 4px;"><b>Criar Sala (Escolha um nome curto):</b></p>
+        <input type="text" id="input-my-room-name" class="lobby-input" placeholder="Ex: sala1, duelo">
+        <button class="btn-menu online" style="width:100%; padding: 10px; font-size: 13px;" onclick="criarSalaOnline()">CRIAR SALA</button>
+        <div id="my-room-status" style="font-size: 11px; margin-top: 8px; color: #2e7d32; font-weight: bold;"></div>
+        
+        <hr style="margin: 15px 0; border: 1px dashed #8b5a2b;">
+        
+        <p style="font-size: 12px; margin-bottom: 4px;"><b>Entrar na Sala do Amigo:</b></p>
+        <input type="text" id="input-room-id" class="lobby-input" placeholder="Digite o nome da sala">
+        <button class="btn-menu" style="width:100%; padding: 10px; font-size: 13px; background: #2e7d32; border-color: #1b5e20;" onclick="entrarSalaOnline()">CONECTAR À SALA</button>
+    </div>
+    <button class="btn-menu" style="width: 200px; padding: 8px; font-size: 11px; background: #795548;" onclick="voltarMenuPrincipal()">VOLTAR AO MENU</button>
+</div>
+
+<!-- 2. TELA DE SELEÇÃO DE PERSONAGENS -->
+<div id="select-screen" class="screen" style="display:none;">
+    <div class="select-header">
+        <h2>SELEÇÃO DE PERSONAGENS</h2>
+        <p id="select-instruction">Escolha 3 personagens para o SEU TIME</p>
+    </div>
+
+    <div class="roster-grid" id="roster-container"></div>
+
+    <div class="slots-container">
+        <div class="team-slot-group">
+            <h3 style="color: #1976d2;">SEU TIME</h3>
+            <div class="slots-list">
+                <div id="slot-p0" class="slot-box">1º</div>
+                <div id="slot-p1" class="slot-box">2º</div>
+                <div id="slot-p2" class="slot-box">3º</div>
+            </div>
+        </div>
+        <div class="team-slot-group">
+            <h3 id="enemy-team-title" style="color: #d32f2f;">TIME INIMIGO</h3>
+            <div class="slots-list">
+                <div id="slot-e0" class="slot-box">1º</div>
+                <div id="slot-e1" class="slot-box">2º</div>
+                <div id="slot-e2" class="slot-box">3º</div>
+            </div>
+        </div>
+    </div>
+
+    <button id="btn-start-game" class="btn-start" disabled onclick="iniciarCombate()">INICIAR BATALHA ⚔</button>
+</div>
+
+<!-- 3. TELA DE JOGO -->
+<div id="game-screen" class="screen" style="display:none;">
+    <div id="end-screen">
+        <div class="end-box">
+            <div id="end-title"></div>
+            <div id="end-desc" class="end-desc"></div>
+            <button class="btn-restart" onclick="reiniciarPartida()">VOLTAR AO MENU 🔄</button>
+        </div>
+    </div>
+
+    <div id="screen-flash"></div>
+
+    <button id="audio-control" onclick="alternarAudio()" title="Ligar/Desligar Música">🔊</button>
+    <div id="turn-indicator">SEU TURNO</div>
+
+    <div id="field-area" class="field">
+        <div class="team-side ally-side">
+            <div id="unit-p0" class="unit-card pos-back-top" onclick="cliqueCardAliado('p0')">
+                <div class="dead-overlay">❌</div>
+                <div id="name-p0">-</div>
+                <div class="bar-bg"><div id="hp-p0" class="fill-hp"></div></div>
+                <div class="bar-bg"><div id="limit-p0" class="fill-limit"></div></div>
+                <div id="marcas-p0" class="marcas-leandro"></div>
+                <div id="status-p0" class="status-badge"></div>
+            </div>
+            <div id="unit-p1" class="unit-card pos-front" onclick="cliqueCardAliado('p1')">
+                <div class="dead-overlay">❌</div>
+                <div id="name-p1">-</div>
+                <div class="bar-bg"><div id="hp-p1" class="fill-hp"></div></div>
+                <div class="bar-bg"><div id="limit-p1" class="fill-limit"></div></div>
+                <div id="marcas-p1" class="marcas-leandro"></div>
+                <div id="status-p1" class="status-badge"></div>
+            </div>
+            <div id="unit-p2" class="unit-card pos-back-bottom" onclick="cliqueCardAliado('p2')">
+                <div class="dead-overlay">❌</div>
+                <div id="name-p2">-</div>
+                <div class="bar-bg"><div id="hp-p2" class="fill-hp"></div></div>
+                <div class="bar-bg"><div id="limit-p2" class="fill-limit"></div></div>
+                <div id="marcas-p2" class="marcas-leandro"></div>
+                <div id="status-p2" class="status-badge"></div>
+            </div>
+            <div id="unit-pFlor" class="unit-card pos-invocacao-flor" style="display:none;" onclick="cliqueCardAliado('pFlor')">
+                <div class="dead-overlay">❌</div>
+                <div id="name-pFlor">Flor de Cura</div>
+                <div class="bar-bg"><div id="hp-pFlor" class="fill-hp"></div></div>
+                <div id="status-pFlor" class="status-badge"></div>
+            </div>
+            <div id="unit-pBarreira" class="unit-card pos-invocacao-barreira" style="display:none;" onclick="cliqueCardAliado('pBarreira')">
+                <div class="dead-overlay">❌</div>
+                <div id="name-pBarreira">Barreira</div>
+                <div class="bar-bg"><div id="hp-pBarreira" class="fill-hp"></div></div>
+                <div id="status-pBarreira" class="status-badge"></div>
+            </div>
+        </div>
+
+        <div class="team-side enemy-side">
+            <div id="unit-e0" class="unit-card pos-back-top" onclick="selecionarAlvoInimigo('e0')">
+                <div class="dead-overlay">❌</div>
+                <div class="target-cursor">▼ ALVO</div>
+                <div id="weak-e0" class="weakness-dot"></div>
+                <div id="name-e0">-</div>
+                <div class="bar-bg"><div id="hp-e0" class="fill-hp"></div></div>
+                <div class="bar-bg"><div id="limit-e0" class="fill-limit"></div></div>
+                <div id="marcas-e0" class="marcas-leandro"></div>
+                <div id="status-e0" class="status-badge"></div>
+            </div>
+            <div id="unit-e1" class="unit-card pos-front" onclick="selecionarAlvoInimigo('e1')">
+                <div class="dead-overlay">❌</div>
+                <div class="target-cursor">▼ ALVO</div>
+                <div id="weak-e1" class="weakness-dot"></div>
+                <div id="name-e1">-</div>
+                <div class="bar-bg"><div id="hp-e1" class="fill-hp"></div></div>
+                <div class="bar-bg"><div id="limit-e1" class="fill-limit"></div></div>
+                <div id="marcas-e1" class="marcas-leandro"></div>
+                <div id="status-e1" class="status-badge"></div>
+            </div>
+            <div id="unit-e2" class="unit-card pos-back-bottom" onclick="selecionarAlvoInimigo('e2')">
+                <div class="dead-overlay">❌</div>
+                <div class="target-cursor">▼ ALVO</div>
+                <div id="weak-e2" class="weakness-dot"></div>
+                <div id="name-e2">-</div>
+                <div class="bar-bg"><div id="hp-e2" class="fill-hp"></div></div>
+                <div class="bar-bg"><div id="limit-e2" class="fill-limit"></div></div>
+                <div id="marcas-e2" class="marcas-leandro"></div>
+                <div id="status-e2" class="status-badge"></div>
+            </div>
+            <div id="unit-eFlor" class="unit-card pos-invocacao-flor" style="display:none;" onclick="selecionarAlvoInimigo('eFlor')">
+                <div class="dead-overlay">❌</div>
+                <div class="target-cursor">▼ ALVO</div>
+                <div id="name-eFlor">Flor de Cura</div>
+                <div class="bar-bg"><div id="hp-eFlor" class="fill-hp"></div></div>
+                <div id="status-eFlor" class="status-badge"></div>
+            </div>
+            <div id="unit-eBarreira" class="unit-card pos-invocacao-barreira" style="display:none;" onclick="selecionarAlvoInimigo('eBarreira')">
+                <div class="dead-overlay">❌</div>
+                <div class="target-cursor">▼ ALVO</div>
+                <div id="name-eBarreira">Barreira</div>
+                <div class="bar-bg"><div id="hp-eBarreira" class="fill-hp"></div></div>
+                <div id="status-eBarreira" class="status-badge"></div>
+            </div>
+        </div>
+    </div>
+
+    <div id="log-box">> Bem-vindo ao 3v3 Paper RPG!</div>
+
+    <div class="action-grid">
+        <div id="coin-counter-center">🪙 MOEDAS DO GUEDES: <span id="coin-count-val">0</span></div>
+        <button id="btn-atq1" onclick="executarAcaoJogador(0)">Habilidade 1</button>
+        <button id="btn-atq2" onclick="executarAcaoJogador(1)">Habilidade 2</button>
+        <button id="btn-atq3" onclick="executarAcaoJogador(2)">Habilidade 3</button>
+        <button id="btn-atq4" onclick="executarAcaoJogador(3)">Habilidade 4</button>
+        <button id="btn-limit" disabled onclick="executarAcaoJogador('limit')">QUEBRA DE LIMITES (0%)</button>
+    </div>
+</div>
+
+<script>
+    const TRILHAS_BATALHA = ['musica1.mp3', 'musica2.mp3', 'musica3.mp3'];
+    const MUSICA_MENU = 'musicamenu.mp3';
+
+    let indiceMusicaAtual = -1;
+    let audioMutado = false;
+    let modoJogo = 'treino';
+
+    let peer = null;
+    let conn = null;
+    let prefixoApp = "paperrpg3v3_";
+    let soyHost = false;
+
+    function tocarMusicaMenu() {
+        let audioEl = document.getElementById('audio-bg');
+        audioEl.src = MUSICA_MENU;
+        audioEl.volume = 0.4;
+        audioEl.muted = audioMutado;
+        audioEl.play().catch(e => console.log("Áudio aguardando interação."));
+    }
+
+    function tocarMusicaAleatoria() {
+        let audioEl = document.getElementById('audio-bg');
+        let novoIndice = Math.floor(Math.random() * TRILHAS_BATALHA.length);
+        indiceMusicaAtual = novoIndice;
+        audioEl.src = TRILHAS_BATALHA[novoIndice];
+        audioEl.volume = 0.4;
+        audioEl.muted = audioMutado;
+        audioEl.onended = tocarMusicaAleatoria;
+        audioEl.play().catch(e => console.log("Áudio aguardando interação."));
+    }
+
+    function alternarAudio() {
+        audioMutado = !audioMutado;
+        let audioEl = document.getElementById('audio-bg');
+        audioEl.muted = audioMutado;
+        document.getElementById('audio-control').innerText = audioMutado ? '🔇' : '🔊';
+    }
+
+    function irParaTreino() {
+        modoJogo = 'treino';
+        document.getElementById('menu-screen').style.display = 'none';
+        document.getElementById('select-screen').style.display = 'flex';
+        document.getElementById('enemy-team-title').innerText = "TIME INIMIGO (IA)";
+        renderizarRoster();
+    }
+
+    function abrirLobbyOnline() {
+        document.getElementById('menu-screen').style.display = 'none';
+        document.getElementById('online-lobby-screen').style.display = 'flex';
+    }
+
+    function voltarMenuPrincipal() {
+        if (peer) { peer.destroy(); peer = null; }
+        document.getElementById('online-lobby-screen').style.display = 'none';
+        document.getElementById('select-screen').style.display = 'none';
+        document.getElementById('game-screen').style.display = 'none';
+        document.getElementById('menu-screen').style.display = 'flex';
+        tocarMusicaMenu();
+    }
+
+    function criarSalaOnline() {
+        let nomeSalaInput = document.getElementById('input-my-room-name').value.trim();
+        if (!nomeSalaInput) { alert("Digite um nome curto para a sala!"); return; }
+        if (peer) { peer.destroy(); }
+
+        peer = new Peer(prefixoApp + nomeSalaInput);
+        peer.on('open', () => {
+            document.getElementById('my-room-status').innerText = `✅ Sala "${nomeSalaInput}" criada! Aguardando oponente...`;
+        });
+        peer.on('error', (err) => {
+            alert("Erro ao criar sala (talvez já exista): " + err.type);
+            document.getElementById('my-room-status').innerText = "";
+        });
+        peer.on('connection', (conexao) => {
+            conn = conexao;
+            soyHost = true;
+            configurarConexaoPeer();
+            alert("Oponente conectado!");
+            irParaSelecaoOnline();
+        });
+    }
+
+    function entrarSalaOnline() {
+        let nomeSalaInput = document.getElementById('input-room-id').value.trim();
+        if (!nomeSalaInput) { alert("Digite o nome da sala do seu colega!"); return; }
+        if (peer) { peer.destroy(); }
+
+        peer = new Peer();
+        peer.on('open', () => {
+            conn = peer.connect(prefixoApp + nomeSalaInput);
+            soyHost = false;
+            configurarConexaoPeer();
+            conn.on('open', () => {
+                alert("Conectado à sala com sucesso!");
+                irParaSelecaoOnline();
+            });
+            conn.on('error', () => {
+                alert("Não foi possível conectar. Verifique o nome da sala.");
+            });
+        });
+    }
+
+    function irParaSelecaoOnline() {
+        modoJogo = 'online';
+        document.getElementById('online-lobby-screen').style.display = 'none';
+        document.getElementById('select-screen').style.display = 'flex';
+        document.getElementById('enemy-team-title').innerText = "TIME DO OPONENTE";
+        renderizarRoster();
+    }
+
+    function configurarConexaoPeer() {
+        conn.on('data', (data) => {
+            if (data.tipo === 'enviar_time_inimigo') {
+                timeInimigoSelecionado = data.time;
+                atualizarPainelSlots();
+                if (timeAliadoSelecionado.length === 3 && timeInimigoSelecionado.length === 3) {
+                    iniciarCombateOnline();
+                }
+            } else if (data.tipo === 'acao_turno') {
+                executarAcaoRemota(data);
+            }
+        });
+    }
+
+    const BANCO_DE_DADOS_PERSONAGENS = {
+        "Ysma": { hpMax: 100, danoFisico: 15, elementoBase: "Mágico", fraqueza: "Purificação", imunidade: "Fogo", passiva: { nome: "Hexy", desc: "Dano extra" }, habilidades: [{nome:"Acerto", dano:15, elemento:"Físico", cdMax:0, cdAtual:0, tipo:"ataque", desc:"Básico"}] },
+        "Campos": { hpMax: 200, danoFisico: 20, elementoBase: "Corrupção", fraqueza: "Purificação", imunidade: "Corrupção", passiva: { nome: "Vampiro", desc: "Cura" }, habilidades: [{nome:"Garras", dano:20, elemento:"Físico", cdMax:0, cdAtual:0, tipo:"ataque", desc:"Básico"}] },
+        "Dunnie": { hpMax: 110, danoFisico: 20, elementoBase: "Físico", fraqueza: "Biológico", imunidade: "Purificação", passiva: { nome: "Antigo", desc: "Escudo" }, habilidades: [{nome:"Estocada", dano:20, elemento:"Físico", cdMax:0, cdAtual:0, tipo:"ataque", desc:"Básico"}] },
+        "Doctor": { hpMax: 200, danoFisico: 20, elementoBase: "Elétrico", fraqueza: "Água", imunidade: "Elétrico", passiva: { nome: "Rede", desc: "Elétrico" }, habilidades: [{nome:"Soco", dano:20, elemento:"Físico", cdMax:0, cdAtual:0, tipo:"ataque", desc:"Básico"}] },
+        "Night": { hpMax: 120, danoFisico: 15, elementoBase: "Corrupção", fraqueza: "Purificação", imunidade: "Vento", passiva: { nome: "Sombra", desc: "Esquiva" }, habilidades: [{nome:"Corte", dano:15, elemento:"Físico", cdMax:0, cdAtual:0, tipo:"ataque", desc:"Básico"}] },
+        "Groxy": { hpMax: 100, danoFisico: 15, elementoBase: "Vento", fraqueza: "Fogo", imunidade: "Biológico", passiva: { nome: "Abóbora", desc: "Vento" }, habilidades: [{nome:"Tornado", dano:15, elemento:"Vento", cdMax:0, cdAtual:0, tipo:"ataque", desc:"Básico"}] },
+        "Silver": { hpMax: 130, danoFisico: 20, elementoBase: "Purificação", fraqueza: "Gelo", imunidade: "Purificação", passiva: { nome: "Aura", desc: "Purifica" }, habilidades: [{nome:"Estocada Branca", dano:20, elemento:"Purificação", cdMax:0, cdAtual:0, tipo:"ataque", desc:"Básico"}] },
+        "Mika": { hpMax: 120, danoFisico: 15, elementoBase: "Água", fraqueza: "Corrupção", imunidade: "Fogo", passiva: { nome: "Estrela", desc: "Cura" }, habilidades: [{nome:"Disparo", dano:15, elemento:"Água", cdMax:0, cdAtual:0, tipo:"ataque", desc:"Básico"}] },
+        "Kevin": { hpMax: 100, danoFisico: 15, elementoBase: "Físico", fraqueza: "Gelo", imunidade: "Água", passiva: { nome: "Leal", desc: "Resistência" }, habilidades: [{nome:"Investida", dano:15, elemento:"Físico", cdMax:0, cdAtual:0, tipo:"ataque", desc:"Básico"}] },
+        "Mariel": { hpMax: 200, danoFisico: 15, elementoBase: "Purificação", fraqueza: "Vento", imunidade: "Terra", passiva: { nome: "Asas", desc: "Luz" }, habilidades: [{nome:"Infusão", dano:0, elemento:"Físico", cdMax:1, cdAtual:0, tipo:"buff_proprio", desc:"Escudo"}] },
+        "Samael": { hpMax: 120, danoFisico: 15, elementoBase: "Purificação", fraqueza: "Terra", imunidade: "Vento", passiva: { nome: "Leve", desc: "Imune" }, habilidades: [{nome:"Penas", dano:20, elemento:"Purificação", cdMax:1, cdAtual:0, tipo:"ataque", desc:"Básico"}] },
+        "Guedes": { hpMax: 100, danoFisico: 15, elementoBase: "Surpresa", fraqueza: "Terra", imunidade: "Gelo", passiva: { nome: "Moedas", desc: "Loja" }, habilidades: [{nome:"Roubar", dano:15, elemento:"Vento", cdMax:0, cdAtual:0, tipo:"ataque", desc:"Básico"}] },
+        "Rhayane": { hpMax: 140, danoFisico: 20, elementoBase: "Fogo", fraqueza: "Gelo", imunidade: "Fogo", passiva: { nome: "Fogo", desc: "Chamas" }, habilidades: [{nome:"Brasas", dano:20, elemento:"Fogo", cdMax:0, cdAtual:0, tipo:"ataque", desc:"Básico"}] },
+        "Anna": { hpMax: 150, danoFisico: 15, elementoBase: "Corrupção", fraqueza: "Gelo", imunidade: "Biológico", passiva: { nome: "Corvo", desc: "Penas" }, habilidades: [{nome:"Flecha", dano:15, elemento:"Corrupção", cdMax:0, cdAtual:0, tipo:"ataque", desc:"Básico"}] },
+        "Sarah": { hpMax: 130, danoFisico: 20, elementoBase: "Biológico", fraqueza: "Terra", imunidade: "Biológico", passiva: { nome: "Doce", desc: "Veneno" }, habilidades: [{nome:"Bolo", dano:20, elemento:"Biológico", cdMax:1, cdAtual:0, tipo:"ataque", desc:"Básico"}] },
+        "Leandro": { hpMax: 110, danoFisico: 10, elementoBase: "Mágico", fraqueza: "Fogo", imunidade: "Biológico", passiva: { nome: "Cristal", desc: "Reflexo" }, habilidades: [{nome:"Floreio", dano:10, elemento:"Mágico", cdMax:0, cdAtual:0, tipo:"ataque", desc:"Básico"}] },
+        "Niw": { hpMax: 122, danoFisico: 10, elementoBase: "Corrupção", fraqueza: "Água", imunidade: "Corrupção", passiva: { nome: "Contos", desc: "Cura" }, habilidades: [{nome:"Garras", dano:10, elemento:"Corrupção", cdMax:0, cdAtual:0, tipo:"ataque", desc:"Básico"}] },
+        "Karin": { hpMax: 180, danoFisico: 10, elementoBase: "Terra", fraqueza: "Biológico", imunidade: "Terra", passiva: { nome: "Paladina", desc: "Escudo" }, habilidades: [{nome:"Cristal", dano:10, elemento:"Terra", cdMax:0, cdAtual:0, tipo:"ataque", desc:"Básico"}] },
+        "Din": { hpMax: 200, danoFisico: 20, elementoBase: "Corrupção", fraqueza: "Terra", imunidade: "Vento", passiva: { nome: "Mortos", desc: "Cura" }, habilidades: [{nome:"Adaga", dano:20, elemento:"Físico", cdMax:0, cdAtual:0, tipo:"ataque", desc:"Básico"}] },
+        "Cristal": { hpMax: 110, danoFisico: 15, elementoBase: "Mágico", fraqueza: "Mágico", imunidade: "Purificação", passiva: { nome: "Poção", desc: "Frascos" }, habilidades: [{nome:"Cajado", dano:15, elemento:"Físico", cdMax:0, cdAtual:0, tipo:"ataque", desc:"Básico"}] },
+        "Shy": { hpMax: 100, danoFisico: 20, elementoBase: "Mágico", fraqueza: "Nenhuma", imunidade: "Nenhuma", passiva: { nome: "Rúnica", desc: "Dano" }, habilidades: [{nome:"Espada", dano:20, elemento:"Físico", cdMax:0, cdAtual:0, tipo:"ataque", desc:"Básico"}] },
+        "Raissa": { hpMax: 180, danoFisico: 20, elementoBase: "Vento", fraqueza: "Elétrico", imunidade: "Terra", passiva: { nome: "Correntes", desc: "Vínculo" }, habilidades: [{nome:"Corrente", dano:20, elemento:"Vento", cdMax:0, cdAtual:0, tipo:"ataque", desc:"Básico"}] },
+        "Coraly": { hpMax: 200, danoFisico: 20, elementoBase: "Corrupção", fraqueza: "Elétrico", imunidade: "Corrupção", passiva: { nome: "Vampiro", desc: "Sangue" }, habilidades: [{nome:"Garras", dano:20, elemento:"Corrupção", cdMax:0, cdAtual:0, tipo:"ataque", desc:"Básico"}] },
+        "Gigi": { hpMax: 130, danoFisico: 10, elementoBase: "Biológico", fraqueza: "Fogo", imunidade: "Biológico", passiva: { nome: "Inseto", desc: "Vírus" }, habilidades: [{nome:"Brincar", dano:10, elemento:"Biológico", cdMax:0, cdAtual:0, tipo:"ataque", desc:"Básico"}] }
+    };
+
+    let timeAliadoSelecionado = [];
+    let timeInimigoSelecionado = [];
+    let faseSelecao = "aliado";
+    let unidades = {};
+    let atacanteAtualId = 'p1';
+    let alvoInimigoId = 'e1';
+    let emTurnoInimigo = false;
+    let modoSelecaoSuporte = false;
+
+    function renderizarRoster() {
+        let container = document.getElementById('roster-container');
+        container.innerHTML = '';
+        for (let nome in BANCO_DE_DADOS_PERSONAGENS) {
+            let p = BANCO_DE_DADOS_PERSONAGENS[nome];
+            let card = document.createElement('div');
+            card.className = 'roster-card';
+            if (timeAliadoSelecionado.includes(nome)) card.classList.add('selected-ally');
+            if (timeInimigoSelecionado.includes(nome)) card.classList.add('selected-enemy');
+            card.innerHTML = `<h4>${nome}</h4><span>HP: ${p.hpMax} | ${p.elementoBase}</span>`;
+            card.onclick = () => selecionarPersonagemRoster(nome);
+            container.appendChild(card);
+        }
+    }
+
+    function selecionarPersonagemRoster(nome) {
+        if (faseSelecao === "aliado") {
+            if (timeAliadoSelecionado.includes(nome)) {
+                timeAliadoSelecionado = timeAliadoSelecionado.filter(n => n !== nome);
+            } else if (timeAliadoSelecionado.length < 3) {
+                timeAliadoSelecionado.push(nome);
+            }
+            if (timeAliadoSelecionado.length === 3) {
+                if (modoJogo === 'online') {
+                    if (conn && conn.open) conn.send({ tipo: 'enviar_time_inimigo', time: timeAliadoSelecionado });
+                    document.getElementById('select-instruction').innerText = "Aguardando o oponente...";
+                } else {
+                    faseSelecao = "inimigo";
+                    document.getElementById('select-instruction').innerText = "Escolha 3 personagens para o TIME INIMIGO (IA)";
+                }
+            }
+        } else if (faseSelecao === "inimigo" && modoJogo === 'treino') {
+            if (timeInimigoSelecionado.includes(nome)) {
+                timeInimigoSelecionado = timeInimigoSelecionado.filter(n => n !== nome);
+            } else if (timeInimigoSelecionado.length < 3) {
+                timeInimigoSelecionado.push(nome);
+            }
+        }
+        atualizarPainelSlots();
+        renderizarRoster();
+    }
+
+    function atualizarPainelSlots() {
+        document.getElementById(`slot-p0`).innerText = timeAliadoSelecionado[0] || "1º";
+        document.getElementById(`slot-p1`).innerText = timeAliadoSelecionado[1] || "2º";
+        document.getElementById(`slot-p2`).innerText = timeAliadoSelecionado[2] || "3º";
+        document.getElementById(`slot-e0`).innerText = timeInimigoSelecionado[0] || "1º";
+        document.getElementById(`slot-e1`).innerText = timeInimigoSelecionado[1] || "2º";
+        document.getElementById(`slot-e2`).innerText = timeInimigoSelecionado[2] || "3º";
+
+        let btnStart = document.getElementById('btn-start-game');
+        btnStart.disabled = !(timeAliadoSelecionado.length === 3 && timeInimigoSelecionado.length === 3);
+    }
+
+    function criarInstancia(nomeModelo, id) {
+        let base = BANCO_DE_DADOS_PERSONAGENS[nomeModelo];
+        return {
+            id: id, nome: nomeModelo, hpMax: base.hpMax, hpAtual: base.hpMax,
+            danoFisico: base.danoFisico, fraqueza: base.fraqueza, imunidade: base.imunidade,
+            limite: 0, habilidades: JSON.parse(JSON.stringify(base.habilidades)),
+            habilidadesBloqueadasIndices: []
+        };
+    }
+
+    function iniciarCombate() {
+        if (modoJogo === 'online') {
+            if (soyHost && conn && conn.open) {
+                conn.send({ tipo: 'iniciar_combate_remoto', allies: timeAliadoSelecionado, enemies: timeInimigoSelecionado });
+            }
+            iniciarCombateOnline();
+            return;
+        }
+        unidades = {
+            'p0': criarInstancia(timeAliadoSelecionado[0], "p0"),
+            'p1': criarInstancia(timeAliadoSelecionado[1], "p1"),
+            'p2': criarInstancia(timeAliadoSelecionado[2], "p2"),
+            'e0': criarInstancia(timeInimigoSelecionado[0], "e0"),
+            'e1': criarInstancia(timeInimigoSelecionado[1], "e1"),
+            'e2': criarInstancia(timeInimigoSelecionado[2], "e2")
+        };
+        configurarInicioBatalhaComum();
+    }
+
+    function iniciarCombateOnline() {
+        if (soyHost) {
+            unidades = {
+                'p0': criarInstancia(timeAliadoSelecionado[0], "p0"),
+                'p1': criarInstancia(timeAliadoSelecionado[1], "p1"),
+                'p2': criarInstancia(timeAliadoSelecionado[2], "p2"),
+                'e0': criarInstancia(timeInimigoSelecionado[0], "e0"),
+                'e1': criarInstancia(timeInimigoSelecionado[1], "e1"),
+                'e2': criarInstancia(timeInimigoSelecionado[2], "e2")
+            };
+        } else {
+            unidades = {
+                'p0': criarInstancia(timeInimigoSelecionado[0], "p0"),
+                'p1': criarInstancia(timeInimigoSelecionado[1], "p1"),
+                'p2': criarInstancia(timeInimigoSelecionado[2], "p2"),
+                'e0': criarInstancia(timeAliadoSelecionado[0], "e0"),
+                'e1': criarInstancia(timeAliadoSelecionado[1], "e1"),
+                'e2': criarInstancia(timeAliadoSelecionado[2], "e2")
+            };
+        }
+        configurarInicioBatalhaComum();
+    }
+
+    function configurarInicioBatalhaComum() {
+        document.getElementById('end-screen').style.display = 'none';
+        document.getElementById('select-screen').style.display = 'none';
+        document.getElementById('game-screen').style.display = 'flex';
+        atacanteAtualId = 'p1';
+        alvoInimigoId = 'e1';
+        atualizarUI();
+        tocarMusicaAleatoria();
+    }
+
+    function reiniciarPartida() {
+        voltarMenuPrincipal();
+    }
+
+    function cliqueCardAliado(id) {
+        if (emTurnoInimigo || unidades[id].hpAtual <= 0) return;
+        atacanteAtualId = id;
+        atualizarUI();
+    }
+
+    function selecionarAlvoInimigo(id) {
+        if (emTurnoInimigo || unidades[id].hpAtual <= 0) return;
+        alvoInimigoId = id;
+        atualizarUI();
+    }
+
+    function executarAcaoJogador(indiceHab) {
+        if (emTurnoInimigo) return;
+        let atacante = unidades[atacanteAtualId];
+        let defensor = unidades[alvoInimigoId];
+        if (atacante.hpAtual <= 0) return;
+
+        let habilidade = atacante.habilidades[indiceHab];
+        if (!habilidade) return;
+
+        let dano = habilidade.dano || 15;
+        defensor.hpAtual = Math.max(0, defensor.hpAtual - dano);
+        log(`<b>${atacante.nome}</b> usou <b>${habilidade.nome}</b> em <b>${defensor.nome}</b> causando ${dano} de dano!`);
+
+        if (verificarVitoria()) return;
+        finalizarTurnoAcao();
+    }
+
+    function finalizarTurnoAcao() {
+        if (modoJogo === 'online' && conn && conn.open) {
+            conn.send({
+                tipo: 'acao_turno',
+                atacanteId: atacanteAtualId,
+                alvoId: alvoInimigoId,
+                unidadesSnapshot: unidades
+            });
+        }
+        if (modoJogo === 'treino') {
+            iniciarTurnoInimigo();
+        } else {
+            emTurnoInimigo = true;
+            let turnInd = document.getElementById('turn-indicator');
+            turnInd.innerText = 'AGUARDANDO OPONENTE...';
+            turnInd.style.color = 'red';
+            atualizarUI();
+        }
+    }
+
+    function executarAcaoRemota(data) {
+        unidades = data.unidadesSnapshot;
+        emTurnoInimigo = false;
+        let turnInd = document.getElementById('turn-indicator');
+        turnInd.innerText = 'SEU TURNO';
+        turnInd.style.color = '#5c4033';
+        atualizarUI();
+        verificarVitoria();
+        verificarDerrota();
+    }
+
+    function log(m) {
+        let b = document.getElementById('log-box');
+        b.innerHTML += `<div>> ${m}</div>`;
+        b.scrollTop = b.scrollHeight;
+    }
+
+    function verificarVitoria() {
+        let inimigosMortos = ['e0', 'e1', 'e2'].every(id => unidades[id].hpAtual <= 0);
+        if (inimigosMortos) {
+            log("🎉 <b>VITÓRIA!</b>");
+            exibirTelaFim(true);
+            return true;
+        }
+        return false;
+    }
+
+    function verificarDerrota() {
+        let aliadosMortos = ['p0', 'p1', 'p2'].every(id => unidades[id].hpAtual <= 0);
+        if (aliadosMortos) {
+            log("💀 <b>DERROTA!</b>");
+            exibirTelaFim(false);
+            return true;
+        }
+        return false;
+    }
+
+    function exibirTelaFim(vitoria) {
+        let endScreen = document.getElementById('end-screen');
+        let title = document.getElementById('end-title');
+        let desc = document.getElementById('end-desc');
+        if (vitoria) {
+            title.className = 'end-title-win';
+            title.innerText = '🏆 VITÓRIA!';
+            desc.innerText = 'Seu time venceu!';
+        } else {
+            title.className = 'end-title-lose';
+            title.innerText = '💀 DERROTA!';
+            desc.innerText = 'Seu time foi derrotado!';
+        }
+        endScreen.style.display = 'flex';
+    }
+
+    function atualizarUI() {
+        for (let id in unidades) {
+            let u = unidades[id];
+            let card = document.getElementById(`unit-${id}`);
+            if (!card) continue;
+            let hpBar = document.getElementById(`hp-${id}`);
+            document.getElementById(`name-${id}`).innerText = u.nome;
+            if (hpBar) hpBar.style.width = Math.max(0, (u.hpAtual / u.hpMax) * 100) + "%";
+
+            if (u.hpAtual <= 0) card.classList.add('dead');
+            else card.classList.remove('dead');
+
+            card.classList.remove('selected-attacker', 'selected-target');
+            if (id === atacanteAtualId) card.classList.add('selected-attacker');
+            if (id === alvoInimigoId) card.classList.add('selected-target');
+        }
+
+        let at = unidades[atacanteAtualId];
+        if (at && at.hpAtual > 0) {
+            for (let i = 0; i < 4; i++) {
+                let btn = document.getElementById(`btn-atq${i + 1}`);
+                let h = at.habilidades[i];
+                if (h) {
+                    btn.style.display = 'block';
+                    btn.innerHTML = h.nome;
+                    btn.disabled = emTurnoInimigo;
+                } else {
+                    btn.style.display = 'none';
+                }
+            }
+        }
+    }
+
+    function iniciarTurnoInimigo() {
+        emTurnoInimigo = true;
+        let turnInd = document.getElementById('turn-indicator');
+        turnInd.innerText = 'TURNO INIMIGO (IA)...';
+        turnInd.style.color = 'red';
+        atualizarUI();
+
+        if (verificarVitoria() || verificarDerrota()) return;
+
+        setTimeout(() => {
+            let inimigosVivos = ['e0', 'e1', 'e2'].filter(id => unidades[id] && unidades[id].hpAtual > 0);
+            let aliadosVivos = ['p0', 'p1', 'p2'].filter(id => unidades[id] && unidades[id].hpAtual > 0);
+
+            if (inimigosVivos.length > 0 && aliadosVivos.length > 0) {
+                let idInimigo = inimigosVivos[Math.floor(Math.random() * inimigosVivos.length)];
+                let atacanteInimigo = unidades[idInimigo];
+                let alvoAliado = unidades[aliadosVivos[Math.floor(Math.random() * aliadosVivos.length)]];
+
+                let dano = 15;
+                alvoAliado.hpAtual = Math.max(0, alvoAliado.hpAtual - dano);
+                log(`⚔️ <b>${atacanteInimigo.nome} (Inimigo)</b> atacou ${alvoAliado.nome} causando ${dano} de dano!`);
+            }
+
+            emTurnoInimigo = false;
+            turnInd.innerText = 'SEU TURNO';
+            turnInd.style.color = '#5c4033';
+            atualizarUI();
+            verificarDerrota();
+        }, 800);
+    }
+
+    window.onload = function() {
+        tocarMusicaMenu();
+    };
+</script>
+
+</body>
+</html>
