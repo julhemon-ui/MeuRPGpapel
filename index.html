@@ -3,7 +3,9 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>3v3 Paper RPG - Expansão Espectral & Biológica</title>
+    <title>3v3 Paper RPG - Menu & Multiplayer</title>
+    <!-- Importando o PeerJS para o Multiplayer P2P -->
+    <script src="https://unpkg.com/peerjs@1.4.7/dist/peerjs.min.js"></script>
     <style>
         * { box-sizing: border-box; margin: 0; padding: 0; user-select: none; }
         body { background: #1a1a1a; font-family: 'Courier New', Courier, monospace; color: #333; display: flex; justify-content: center; align-items: center; min-height: 100vh; padding: 10px; }
@@ -12,8 +14,27 @@
             width: 100%; max-width: 880px; background: #f4ecd8;
             background-image: linear-gradient(#ccc 0.05em, transparent 0.05em), linear-gradient(90deg, #ccc 0.05em, transparent 0.05em);
             background-size: 20px 20px; border: 5px solid #5c4033; border-radius: 12px; padding: 16px; flex-direction: column; gap: 14px;
-            position: relative; overflow: hidden; margin: 0 auto;
+            position: relative; overflow: hidden; margin: 0 auto; min-height: 500px; display: flex; justify-content: center; align-items: center;
         }
+
+        /* TELA DE MENU PRINCIPAL */
+        #menu-screen { text-align: center; gap: 20px; }
+        .menu-title { font-size: 32px; color: #5c4033; text-shadow: 2px 2px 0px #d4b886; margin-bottom: 10px; }
+        .menu-subtitle { font-size: 14px; color: #8b5a2b; margin-bottom: 20px; font-weight: bold; }
+        .menu-btn-group { display: flex; flex-direction: column; gap: 12px; width: 260px; margin: 0 auto; }
+        .btn-menu {
+            background: #8b5a2b; color: #fff; border: 3px solid #5c4033; padding: 14px; font-size: 15px;
+            font-weight: bold; border-radius: 8px; cursor: pointer; transition: transform 0.2s, background-color 0.2s;
+            box-shadow: 0 4px 6px rgba(0,0,0,0.2);
+        }
+        .btn-menu:hover { transform: scale(1.05); background: #5c4033; }
+        .btn-menu.online { background: #1976d2; border-color: #0d47a1; }
+        .btn-menu.online:hover { background: #0d47a1; }
+
+        /* TELA DE LOBBY ONLINE */
+        #online-lobby-screen { display: none; text-align: center; gap: 15px; }
+        .lobby-box { background: #fff8dc; border: 3px solid #5c4033; padding: 20px; border-radius: 8px; width: 100%; max-width: 400px; margin: 0 auto; }
+        .lobby-input { width: 100%; padding: 10px; font-size: 14px; border: 2px solid #5c4033; border-radius: 6px; margin: 10px 0; text-align: center; font-family: inherit; }
 
         #profile-modal {
             display: none; position: absolute; top: 0; left: 0; width: 100%; height: 100%;
@@ -79,7 +100,6 @@
         @keyframes motoShake { 0% { transform: translateX(-3px); } 100% { transform: translateX(3px); } }
         @keyframes motoDrive { 0% { transform: translateX(-300px) scale(0.5); opacity: 0; } 50% { transform: translateX(0px) scale(1.3); opacity: 1; } 100% { transform: translateX(300px) scale(0.5); opacity: 0; } }
 
-        /* OVERLAY VISUAL DA QUEBRA DE LIMITES DA RAISSA */
         #raissa-overlay {
             display: none; position: absolute; top: 0; left: 0; width: 100%; height: 100%;
             background: radial-gradient(circle, rgba(103, 58, 183, 0.85) 0%, rgba(18, 11, 36, 0.95) 100%);
@@ -92,9 +112,7 @@
         @keyframes raissaPulseText { 0% { transform: scale(0.98); text-shadow: 0 0 10px #e040fb; } 100% { transform: scale(1.04); text-shadow: 0 0 25px #00e5ff; } }
         @keyframes raissaGhostFloat { 0% { transform: translateY(-10px) scale(0.9); opacity: 0.7; } 100% { transform: translateY(10px) scale(1.1); opacity: 1; } }
 
-        #select-screen { 
-            display: flex; flex-direction: column; align-items: center; justify-content: center; width: 100%;
-        }
+        #select-screen { display: none; flex-direction: column; align-items: center; justify-content: center; width: 100%; }
         .select-header { text-align: center; color: #5c4033; border-bottom: 2px dashed #8b5a2b; padding-bottom: 8px; width: 100%; }
         .select-header h2 { font-size: 18px; }
         .select-header p { font-size: 12px; margin-top: 4px; color: #d32f2f; font-weight: bold; }
@@ -128,7 +146,7 @@
         .btn-start { background: #4caf50; color: #fff; border: 2px solid #2e7d32; padding: 10px; font-size: 14px; font-weight: bold; border-radius: 6px; cursor: pointer; text-align: center; margin-top: 4px; width: 100%; }
         .btn-start:disabled { background: #ccc; border-color: #999; cursor: not-allowed; }
 
-        #game-screen { display: none; }
+        #game-screen { display: none; flex-direction: column; }
 
         #audio-control {
             position: absolute; top: 12px; right: 12px; background: #fff8dc; border: 2px solid #5c4033;
@@ -325,6 +343,34 @@
     </div>
 </div>
 
+<!-- 1. TELA DE MENU PRINCIPAL -->
+<div id="menu-screen" class="screen">
+    <div class="menu-title">3v3 PAPER RPG</div>
+    <div class="menu-subtitle">O Batalhão Épico de Cartas e Estratégia</div>
+    <div class="menu-btn-group">
+        <button class="btn-menu" onclick="irParaTreino()">⚔️ MODO TREINO (VS IA)</button>
+        <button class="btn-menu online" onclick="abrirLobbyOnline()">🌐 MODO ONLINE (MULTIPLAYER)</button>
+    </div>
+</div>
+
+<!-- TELA DE LOBBY ONLINE -->
+<div id="online-lobby-screen" class="screen">
+    <div class="menu-title">MULTIPLAYER ONLINE</div>
+    <div class="lobby-box">
+        <p style="font-size: 12px; margin-bottom: 8px;"><b>Criar Sala (Hospedar):</b></p>
+        <button class="btn-menu online" style="width:100%; padding: 10px; font-size: 13px;" onclick="criarSalaOnline()">GERAR CÓDIGO DA SALA</button>
+        <div id="my-peer-id" style="font-size: 11px; margin-top: 8px; color: #5c4033; word-break: break-all;"></div>
+        
+        <hr style="margin: 15px 0; border: 1px dashed #8b5a2b;">
+        
+        <p style="font-size: 12px; margin-bottom: 4px;"><b>Entrar em Sala Amiga:</b></p>
+        <input type="text" id="input-room-id" class="lobby-input" placeholder="Cole o código do oponente aqui">
+        <button class="btn-menu" style="width:100%; padding: 10px; font-size: 13px; background: #2e7d32; border-color: #1b5e20;" onclick="entrarSalaOnline()">CONECTAR À SALA</button>
+    </div>
+    <button class="btn-menu" style="width: 200px; padding: 8px; font-size: 11px; background: #795548;" onclick="voltarMenuPrincipal()">VOLTAR AO MENU</button>
+</div>
+
+<!-- 2. TELA DE SELEÇÃO DE PERSONAGENS -->
 <div id="select-screen" class="screen">
     <div class="select-header">
         <h2>SELEÇÃO DE PERSONAGENS (24 DISPONÍVEIS)</h2>
@@ -343,7 +389,7 @@
             </div>
         </div>
         <div class="team-slot-group">
-            <h3 style="color: #d32f2f;">TIME INIMIGO</h3>
+            <h3 id="enemy-team-title" style="color: #d32f2f;">TIME INIMIGO</h3>
             <div class="slots-list">
                 <div id="slot-e0" class="slot-box">1º</div>
                 <div id="slot-e1" class="slot-box">2º</div>
@@ -355,12 +401,13 @@
     <button id="btn-start-game" class="btn-start" disabled onclick="iniciarCombate()">INICIAR BATALHA ⚔</button>
 </div>
 
+<!-- 3. TELA DE JOGO -->
 <div id="game-screen" class="screen">
     <div id="end-screen">
         <div class="end-box">
             <div id="end-title"></div>
             <div id="end-desc" class="end-desc"></div>
-            <button class="btn-restart" onclick="reiniciarPartida()">JOGAR NOVAMENTE 🔄</button>
+            <button class="btn-restart" onclick="reiniciarPartida()">VOLTAR AO MENU 🔄</button>
         </div>
     </div>
 
@@ -457,7 +504,7 @@
         </div>
     </div>
 
-    <div id="log-box">> Seleção concluída! Comece a batalha.</div>
+    <div id="log-box">> Bem-vindo ao 3v3 Paper RPG!</div>
 
     <div class="action-grid">
         <div id="coin-counter-center">🪙 MOEDAS DO GUEDES: <span id="coin-count-val">0</span></div>
@@ -475,6 +522,13 @@
 
     let indiceMusicaAtual = -1;
     let audioMutado = false;
+    let modoJogo = 'treino'; // 'treino' ou 'online'
+
+    // Variáveis do PeerJS (Multiplayer)
+    let peer = null;
+    let conn = null;
+    let meuIdPeer = null;
+    let soyHost = false;
 
     function tocarMusicaMenu() {
         let audioEl = document.getElementById('audio-bg');
@@ -482,7 +536,7 @@
         audioEl.volume = 0.4;
         audioEl.muted = audioMutado;
         audioEl.onended = null;
-        audioEl.play().catch(e => console.log("Aguardando interação do usuário para áudio do menu."));
+        audioEl.play().catch(e => console.log("Aguardando interação para áudio do menu."));
     }
 
     function tocarMusicaAleatoria() {
@@ -510,10 +564,93 @@
         }
     }
 
+    function irParaTreino() {
+        modoJogo = 'treino';
+        document.getElementById('menu-screen').style.display = 'none';
+        document.getElementById('select-screen').style.display = 'flex';
+        document.getElementById('enemy-team-title').innerText = "TIME INIMIGO (IA)";
+        renderizarRoster();
+    }
+
+    function abrirLobbyOnline() {
+        document.getElementById('menu-screen').style.display = 'none';
+        document.getElementById('online-lobby-screen').style.display = 'flex';
+        inicializarPeerJS();
+    }
+
+    function voltarMenuPrincipal() {
+        if (peer) { peer.destroy(); peer = null; }
+        document.getElementById('online-lobby-screen').style.display = 'none';
+        document.getElementById('select-screen').style.display = 'none';
+        document.getElementById('game-screen').style.display = 'none';
+        document.getElementById('menu-screen').style.display = 'flex';
+        tocarMusicaMenu();
+    }
+
+    function inicializarPeerJS() {
+        if (peer) return;
+        peer = new Peer();
+        peer.on('open', (id) => {
+            meuIdPeer = id;
+            document.getElementById('my-peer-id').innerText = `Seu Código de Sala: ${id}`;
+        });
+        peer.on('connection', (conexao) => {
+            conn = conexao;
+            soyHost = true;
+            configurarConexaoPeer();
+            alert("Oponente conectado com sucesso!");
+            irParaSelecaoOnline();
+        });
+    }
+
+    function criarSalaOnline() {
+        if (!meuIdPeer) {
+            alert("Gerando conexão com o servidor, aguarde um segundo...");
+            return;
+        }
+        alert(`Sala criada! Compartilhe seu código: ${meuIdPeer}`);
+    }
+
+    function entrarSalaOnline() {
+        let code = document.getElementById('input-room-id').value.trim();
+        if (!code) {
+            alert("Digite o código da sala do oponente!");
+            return;
+        }
+        conn = peer.connect(code);
+        soyHost = false;
+        configurarConexaoPeer();
+        conn.on('open', () => {
+            alert("Conectado à sala com sucesso!");
+            irParaSelecaoOnline();
+        });
+    }
+
+    function irParaSelecaoOnline() {
+        modoJogo = 'online';
+        document.getElementById('online-lobby-screen').style.display = 'none';
+        document.getElementById('select-screen').style.display = 'flex';
+        document.getElementById('enemy-team-title').innerText = "TIME DO OPONENTE";
+        renderizarRoster();
+    }
+
+    function configurarConexaoPeer() {
+        conn.on('data', (data) => {
+            if (data.tipo === 'enviar_time_inimigo') {
+                timeInimigoSelecionado = data.time;
+                atualizarPainelSlots();
+                if (timeAliadoSelecionado.length === 3 && timeInimigoSelecionado.length === 3) {
+                    iniciarCombateOnline();
+                }
+            } else if (data.tipo === 'acao_turno') {
+                executarAcaoRemota(data);
+            }
+        });
+    }
+
     function aplicarCenarioAleatorio() {
         let campo = document.getElementById('field-area');
         campo.classList.remove('bg-cenario-1', 'bg-cenario-2', 'bg-cenario-3', 'bg-cenario-4');
-        
         let num = Math.floor(Math.random() * 4) + 1;
         campo.classList.add(`bg-cenario-${num}`);
         log(`🎨 <b>Cenário sorteado:</b> Cenário ${num} carregado no campo de batalha!`);
@@ -925,10 +1062,17 @@
             }
 
             if (timeAliadoSelecionado.length === 3) {
-                faseSelecao = "inimigo";
-                document.getElementById('select-instruction').innerText = "Agora escolha 3 personagens para o TIME INIMIGO";
+                if (modoJogo === 'online') {
+                    if (conn && conn.open) {
+                        conn.send({ tipo: 'enviar_time_inimigo', time: timeAliadoSelecionado });
+                    }
+                    document.getElementById('select-instruction').innerText = "Aguardando o oponente escolher o time dele...";
+                } else {
+                    faseSelecao = "inimigo";
+                    document.getElementById('select-instruction').innerText = "Agora escolha 3 personagens para o TIME INIMIGO (IA)";
+                }
             }
-        } else if (faseSelecao === "inimigo") {
+        } else if (faseSelecao === "inimigo" && modoJogo === 'treino') {
             if (timeInimigoSelecionado.includes(nome)) {
                 timeInimigoSelecionado = timeInimigoSelecionado.filter(n => n !== nome);
             } else if (timeInimigoSelecionado.length < 3) {
@@ -950,7 +1094,11 @@
         }
 
         let btnStart = document.getElementById('btn-start-game');
-        btnStart.disabled = !(timeAliadoSelecionado.length === 3 && timeInimigoSelecionado.length === 3);
+        if (modoJogo === 'treino') {
+            btnStart.disabled = !(timeAliadoSelecionado.length === 3 && timeInimigoSelecionado.length === 3);
+        } else {
+            btnStart.disabled = !(timeAliadoSelecionado.length === 3 && timeInimigoSelecionado.length === 3);
+        }
     }
 
     function criarInstancia(nomeModelo, id) {
@@ -1175,6 +1323,14 @@
     }
 
     function iniciarCombate() {
+        if (modoJogo === 'online') {
+            if (soyHost && conn && conn.open) {
+                conn.send({ tipo: 'iniciar_combate_remoto', allies: timeAliadoSelecionado, enemies: timeInimigoSelecionado });
+            }
+            iniciarCombateOnline();
+            return;
+        }
+
         unidades = {
             'p0': criarInstancia(timeAliadoSelecionado[0], "p0"),
             'p1': criarInstancia(timeAliadoSelecionado[1], "p1"),
@@ -1183,7 +1339,35 @@
             'e1': criarInstancia(timeInimigoSelecionado[1], "e1"),
             'e2': criarInstancia(timeInimigoSelecionado[2], "e2")
         };
+        configurarInicioBatalhaComum();
+    }
 
+    function iniciarCombateOnline() {
+        // No online, invertemos os times para cada jogador enxergar o seu lado embaixo e o oponente em cima
+        if (soyHost) {
+            unidades = {
+                'p0': criarInstancia(timeAliadoSelecionado[0], "p0"),
+                'p1': criarInstancia(timeAliadoSelecionado[1], "p1"),
+                'p2': criarInstancia(timeAliadoSelecionado[2], "p2"),
+                'e0': criarInstancia(timeInimigoSelecionado[0], "e0"),
+                'e1': criarInstancia(timeInimigoSelecionado[1], "e1"),
+                'e2': criarInstancia(timeInimigoSelecionado[2], "e2")
+            };
+        } else {
+            // O cliente inverte quem é p e quem é e na sua própria tela local
+            unidades = {
+                'p0': criarInstancia(timeInimigoSelecionado[0], "p0"),
+                'p1': criarInstancia(timeInimigoSelecionado[1], "p1"),
+                'p2': criarInstancia(timeInimigoSelecionado[2], "p2"),
+                'e0': criarInstancia(timeAliadoSelecionado[0], "e0"),
+                'e1': criarInstancia(timeAliadoSelecionado[1], "e1"),
+                'e2': criarInstancia(timeAliadoSelecionado[2], "e2")
+            };
+        }
+        configurarInicioBatalhaComum();
+    }
+
+    function configurarInicioBatalhaComum() {
         moedasGuedesTimePlayer = 0;
         moedasGuedesTimeEnemy = 0;
 
@@ -1205,13 +1389,6 @@
             }
         }
 
-        if (algumTimeTemPersonagem('Campos')) log(`🖤 <b>Estabilidade do Campos:</b> A passiva da Anna foi DESABILITADA!`);
-        if (algumTimeTemPersonagem('Mariel')) log(`🕊️ <b>Aura Celestial (Mariel):</b> Sinergias entre Kevin e Mika desabilitadas!`);
-        if (algumTimeTemPersonagem('Anna') && !algumTimeTemPersonagem('Campos')) log(`🐦‍⬛ <b>Penas de Corvo (Anna):</b> Sinergias do time oponente bloqueadas!`);
-        if (algumTimeTemPersonagem('Rhayane')) log(`👑 <b>Rainha Esmeralda (Rhayane):</b> Aliados imunes a ataques do elemento Terra!`);
-        if (algumTimeTemPersonagem('Sarah')) log(`🌊 <b>Rainha do Azul Profundo (Sarah):</b> Aliados imunes a Veneno!`);
-        if (algumTimeTemPersonagem('Gigi')) log(`🐛 <b>Gotas de Morte (Gigi):</b> Time inteiro imune ao estado de DNA Vampírico!`);
-
         document.getElementById('end-screen').style.display = 'none';
         document.getElementById('select-screen').style.display = 'none';
         document.getElementById('game-screen').style.display = 'flex';
@@ -1226,22 +1403,7 @@
     }
 
     function reiniciarPartida() {
-        timeAliadoSelecionado = [];
-        timeInimigoSelecionado = [];
-        faseSelecao = "aliado";
-        emTurnoInimigo = false;
-        modoSelecaoSuporte = false;
-
-        document.getElementById('end-screen').style.display = 'none';
-        document.getElementById('game-screen').style.display = 'none';
-        document.getElementById('select-screen').style.display = 'flex';
-        document.getElementById('select-instruction').innerText = "Escolha 3 personagens para o SEU TIME";
-        document.getElementById('log-box').innerHTML = "> Seleção concluída! Comece a batalha.";
-
-        tocarMusicaMenu();
-
-        atualizarPainelSlots();
-        renderizarRoster();
+        voltarMenuPrincipal();
     }
 
     function cliqueCardAliado(id) {
@@ -1651,19 +1813,19 @@
         if (atacante.habilidadesBloqueadasIndices.includes(indiceHab)) {
             log(`🔒 <b>Habilidade Bloqueada!</b> ${atacante.nome} tentou usar uma habilidade trancada por um cadeado e perdeu a ação.`);
             mostrarEfeitoFlutuante(atacante.id, "🔒 BLOQUEADO!", "info");
-            iniciarTurnoInimigo();
+            finalizarTurnoAcao();
             return;
         }
 
         if (atacante.congelado) {
             log(`❄ <b>${atacante.nome}</b> está congelado e perdeu a vez!`);
             atacante.congelado = false; 
-            iniciarTurnoInimigo();
+            finalizarTurnoAcao();
             return;
         }
 
         if (checarParalisia(atacante)) {
-            iniciarTurnoInimigo();
+            finalizarTurnoAcao();
             return;
         }
 
@@ -1676,7 +1838,7 @@
             aplicarDanoPosAtaque(atacante);
             atualizarUI();
             if (verificarVitoria()) return;
-            iniciarTurnoInimigo();
+            finalizarTurnoAcao();
             return;
         }
 
@@ -1726,7 +1888,7 @@
             aplicarDanoPosAtaque(atacante);
             atualizarUI();
             if (verificarVitoria()) return;
-            iniciarTurnoInimigo();
+            finalizarTurnoAcao();
             return;
         }
 
@@ -1760,7 +1922,7 @@
             aplicarDanoPosAtaque(atacante);
             atualizarUI();
             if (verificarVitoria()) return;
-            iniciarTurnoInimigo();
+            finalizarTurnoAcao();
             return;
         }
 
@@ -1783,7 +1945,7 @@
                 aplicarDanoPosAtaque(atacante);
                 atualizarUI();
                 if (verificarVitoria()) return;
-                iniciarTurnoInimigo();
+                finalizarTurnoAcao();
             }, 800);
             return;
         }
@@ -1801,7 +1963,7 @@
                 aplicarDanoPosAtaque(atacante);
                 atualizarUI();
                 if (verificarVitoria()) return;
-                iniciarTurnoInimigo();
+                finalizarTurnoAcao();
             }, 800);
             return;
         }
@@ -1822,7 +1984,7 @@
             aplicarDanoPosAtaque(atacante);
             atualizarUI();
             if (verificarVitoria()) return;
-            iniciarTurnoInimigo();
+            finalizarTurnoAcao();
             return;
         }
 
@@ -1835,7 +1997,7 @@
             aplicarDanoPosAtaque(atacante);
             atualizarUI();
             if (verificarVitoria()) return;
-            iniciarTurnoInimigo();
+            finalizarTurnoAcao();
             return;
         }
 
@@ -1846,7 +2008,7 @@
             aplicarDanoPosAtaque(atacante);
             atualizarUI();
             if (verificarVitoria()) return;
-            iniciarTurnoInimigo();
+            finalizarTurnoAcao();
             return;
         }
 
@@ -1865,7 +2027,7 @@
             aplicarDanoPosAtaque(atacante);
             atualizarUI();
             if (verificarVitoria()) return;
-            iniciarTurnoInimigo();
+            finalizarTurnoAcao();
             return;
         }
 
@@ -1886,7 +2048,7 @@
             aplicarDanoPosAtaque(atacante);
             atualizarUI();
             if (verificarVitoria()) return;
-            iniciarTurnoInimigo();
+            finalizarTurnoAcao();
             return;
         }
 
@@ -1903,7 +2065,7 @@
             aplicarDanoPosAtaque(atacante);
             atualizarUI();
             if (verificarVitoria()) return;
-            iniciarTurnoInimigo();
+            finalizarTurnoAcao();
             return;
         }
 
@@ -1920,7 +2082,7 @@
             aplicarDanoPosAtaque(atacante);
             atualizarUI();
             if (verificarVitoria()) return;
-            iniciarTurnoInimigo();
+            finalizarTurnoAcao();
             return;
         }
 
@@ -1937,7 +2099,7 @@
             aplicarDanoPosAtaque(atacante);
             atualizarUI();
             if (verificarVitoria()) return;
-            iniciarTurnoInimigo();
+            finalizarTurnoAcao();
             return;
         }
 
@@ -1959,7 +2121,7 @@
             aplicarDanoPosAtaque(atacante);
             atualizarUI();
             if (verificarVitoria()) return;
-            iniciarTurnoInimigo();
+            finalizarTurnoAcao();
             return;
         }
 
@@ -1974,7 +2136,7 @@
             aplicarDanoPosAtaque(atacante);
             atualizarUI();
             if (verificarVitoria()) return;
-            iniciarTurnoInimigo();
+            finalizarTurnoAcao();
             return;
         }
 
@@ -1995,7 +2157,7 @@
             aplicarDanoPosAtaque(atacante);
             atualizarUI();
             if (verificarVitoria()) return;
-            iniciarTurnoInimigo();
+            finalizarTurnoAcao();
             return;
         }
 
@@ -2053,7 +2215,7 @@
             aplicarDanoPosAtaque(atacante);
             atualizarUI();
             if (verificarVitoria()) return;
-            iniciarTurnoInimigo();
+            finalizarTurnoAcao();
             return;
         }
         else if (habilidade.tipo && habilidade.tipo.startsWith('pocao_')) {
@@ -2082,7 +2244,7 @@
             aplicarDanoPosAtaque(atacante);
             atualizarUI();
             if (verificarVitoria()) return;
-            iniciarTurnoInimigo();
+            finalizarTurnoAcao();
             return;
         }
         else if (habilidade.tipo === 'sumonar_flor') {
@@ -2173,7 +2335,7 @@
                 log(`🐦‍⬛🔥 <b>Corrente do Corvo (Anna + Raissa):</b> Acertou todos os oponentes!`);
                 aplicarDanoPosAtaque(atacante);
                 if (verificarVitoria()) return;
-                iniciarTurnoInimigo();
+                finalizarTurnoAcao();
                 return;
             }
             else if (habilidade.tipo === 'sarah_cetro_fogo') {
@@ -2256,7 +2418,49 @@
 
         aplicarDanoPosAtaque(atacante);
         if (verificarVitoria()) return;
-        iniciarTurnoInimigo();
+        finalizarTurnoAcao();
+    }
+
+    function finalizarTurnoAcao() {
+        if (modoJogo === 'online' && conn && conn.open) {
+            conn.send({
+                tipo: 'acao_turno',
+                atacanteId: atacanteAtualId,
+                alvoId: alvoInimigoId,
+                unidadesSnapshot: unidades
+            });
+        }
+        if (modoJogo === 'treino') {
+            iniciarTurnoInimigo();
+        } else {
+            // No online, após sua ação, passa o turno para o oponente
+            emTurnoInimigo = true;
+            let turnInd = document.getElementById('turn-indicator');
+            turnInd.innerText = 'AGUARDANDO OPONENTE...';
+            turnInd.style.color = 'red';
+            processarEfeitosStatus();
+            atualizarUI();
+        }
+    }
+
+    function executarAcaoRemota(data) {
+        // Sincroniza o estado recebido do oponente online
+        unidades = data.unidadesSnapshot;
+        emTurnoInimigo = false;
+        let turnInd = document.getElementById('turn-indicator');
+        turnInd.innerText = 'SEU TURNO';
+        turnInd.style.color = '#5c4033';
+        
+        ['p0', 'p1', 'p2'].forEach(pId => {
+            if (unidades[pId]) {
+                unidades[pId].habilidades.forEach(h => { if (h.cdAtual > 0) h.cdAtual--; });
+            }
+        });
+
+        processarEfeitosStatus();
+        atualizarUI();
+        verificarVitoria();
+        verificarDerrota();
     }
 
     function aplicarSuporteNoAliado(aliadoId) {
@@ -2315,7 +2519,7 @@
         
         aplicarDanoPosAtaque(atacante);
         if (verificarVitoria()) return;
-        iniciarTurnoInimigo();
+        finalizarTurnoAcao();
     }
 
     function processarEfeitosStatus() {
@@ -2443,41 +2647,6 @@
                 u.hpAtual = Math.floor(u.hpMax * 0.5);
                 log(`😇✨ <b>AUTO-REVIVER ATIVADO!</b> ${u.nome} voltou à vida com 50% de HP!`);
                 dispararBuffPulse(u.id);
-            }
-
-            let prefixoUnidade = u.id.substring(0, 1);
-            ['0', '1', '2'].forEach(slot => {
-                let aliadoSlotId = prefixoUnidade + slot;
-                let ali = unidades[aliadoSlotId];
-                if(ali && ali.hpAtual <= 0 && !ali.registradoQuedaDin && ali.id !== u.id) {
-                    let dinPresente = ['0', '1', '2'].map(s => unidades[prefixoUnidade + s]).find(x => x && x.nome === 'Din' && x.hpAtual > 0);
-                    if(dinPresente) {
-                        ali.registradoQuedaDin = true;
-                        let curaDin = timeTemPersonagem(prefixoUnidade, 'Ysma') ? 100 : 50;
-                        aplicarCura(dinPresente, curaDin, dinPresente);
-                        dinPresente.regeneracaoTurnos = 10;
-                        log(`💀👻 <b>Regente dos Mortos (Din):</b> Um aliado caiu! Din curou +${curaDin} de HP e ganhou Regeneração por 10 turnos!`);
-                    }
-                }
-            });
-
-            if (u.ehMonstroAnna) {
-                u.turnosTransformacaoAnna--;
-                if (u.turnosTransformacaoAnna <= 0) {
-                    u.ehMonstroAnna = false;
-                    let baseAnna = BANCO_DE_DADOS_PERSONAGENS["Anna"];
-                    u.imunidade = baseAnna.imunidade;
-                    u.fraqueza = baseAnna.fraqueza;
-                    u.habilidades = JSON.parse(JSON.stringify(baseAnna.habilidades));
-                    log(`🐦‍⬛ <b>Fim da Transformação!</b> Anna voltou ao normal.`);
-                }
-            }
-
-            if (u.emBerserk && u.limite <= 0) {
-                u.emBerserk = false;
-                log(`🔥 <b>Modo Berserk Finalizado!</b> Rhayane voltou ao normal.`);
-            } else if (u.emBerserk) {
-                u.limite = Math.max(0, u.limite - 20);
             }
         }
     }
@@ -2732,7 +2901,7 @@
     function iniciarTurnoInimigo() {
         emTurnoInimigo = true;
         let turnInd = document.getElementById('turn-indicator');
-        turnInd.innerText = 'TURNO INIMIGO...';
+        turnInd.innerText = 'TURNO INIMIGO (IA)...';
         turnInd.style.color = 'red';
         
         ['p0', 'p1', 'p2'].forEach(pId => {
@@ -2801,7 +2970,6 @@
     }
 
     window.onload = function() {
-        renderizarRoster();
         tocarMusicaMenu();
     };
 </script>
