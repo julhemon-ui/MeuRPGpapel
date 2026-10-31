@@ -15,6 +15,25 @@
             position: relative; overflow: hidden; margin: 0 auto;
         }
 
+        /* --- TELA DE MENU PRINCIPAL & LOBBY ONLINE --- */
+        #main-menu-screen, #lobby-screen {
+            display: flex; flex-direction: column; align-items: center; justify-content: center; min-height: 480px; text-align: center; gap: 20px;
+        }
+        .game-title { font-size: 32px; color: #5c4033; text-shadow: 2px 2px 0px #d7ccc8; margin-bottom: 10px; font-weight: bold; }
+        .menu-box { display: flex; flex-direction: column; gap: 12px; width: 100%; max-width: 320px; }
+        .btn-menu {
+            background: #8b5a2b; color: #fff; border: 3px solid #5c4033; padding: 14px 20px;
+            font-size: 16px; font-weight: bold; border-radius: 8px; cursor: pointer;
+            transition: transform 0.2s, background-color 0.2s;
+        }
+        .btn-menu:hover { transform: scale(1.05); background: #5c4033; }
+        .btn-menu-online { background: #1976d2; border-color: #0d47a1; }
+        .btn-menu-online:hover { background: #0d47a1; }
+        .btn-back { background: #757575; border-color: #424242; font-size: 12px; padding: 8px 12px; }
+        
+        .lobby-panel { background: #fff8dc; border: 3px solid #5c4033; border-radius: 10px; padding: 16px; width: 100%; max-width: 450px; text-align: left; }
+        .room-item { background: #fff; border: 2px solid #8b5a2b; border-radius: 6px; padding: 10px; margin-top: 8px; display: flex; justify-content: space-between; align-items: center; }
+
         #profile-modal {
             display: none; position: absolute; top: 0; left: 0; width: 100%; height: 100%;
             background: rgba(0, 0, 0, 0.8); z-index: 200; justify-content: center; align-items: center; padding: 15px;
@@ -79,7 +98,6 @@
         @keyframes motoShake { 0% { transform: translateX(-3px); } 100% { transform: translateX(3px); } }
         @keyframes motoDrive { 0% { transform: translateX(-300px) scale(0.5); opacity: 0; } 50% { transform: translateX(0px) scale(1.3); opacity: 1; } 100% { transform: translateX(300px) scale(0.5); opacity: 0; } }
 
-        /* OVERLAY VISUAL DA QUEBRA DE LIMITES DA RAISSA */
         #raissa-overlay {
             display: none; position: absolute; top: 0; left: 0; width: 100%; height: 100%;
             background: radial-gradient(circle, rgba(103, 58, 183, 0.85) 0%, rgba(18, 11, 36, 0.95) 100%);
@@ -93,7 +111,7 @@
         @keyframes raissaGhostFloat { 0% { transform: translateY(-10px) scale(0.9); opacity: 0.7; } 100% { transform: translateY(10px) scale(1.1); opacity: 1; } }
 
         #select-screen { 
-            display: flex; flex-direction: column; align-items: center; justify-content: center; width: 100%;
+            display: none; flex-direction: column; align-items: center; justify-content: center; width: 100%;
         }
         .select-header { text-align: center; color: #5c4033; border-bottom: 2px dashed #8b5a2b; padding-bottom: 8px; width: 100%; }
         .select-header h2 { font-size: 18px; }
@@ -308,6 +326,32 @@
 
 <audio id="audio-bg" loop></audio>
 
+<!-- TELA 0: MENU PRINCIPAL -->
+<div id="main-menu-screen" class="screen">
+    <div class="game-title">📜 3v3 Paper RPG ⚔️</div>
+    <div style="font-size: 12px; color: #8b5a2b; margin-top: -15px;">Expansão Espectral & Biológica</div>
+    <div class="menu-box" style="margin-top: 20px;">
+        <button class="btn-menu" onclick="abrirModoVsIA()">🎮 Jogar vs IA</button>
+        <button class="btn-menu btn-menu-online" onclick="abrirLobbyOnline()">🌐 Modo Online</button>
+    </div>
+</div>
+
+<!-- TELA DE LOBBY ONLINE -->
+<div id="lobby-screen" class="screen" style="display:none;">
+    <div class="game-title" style="font-size:24px;">🌐 MODO ONLINE (SALAS)</div>
+    <div class="menu-box" style="flex-direction:row; gap:10px; max-width:450px;">
+        <button class="btn-menu btn-menu-online" style="flex:1; font-size:13px;" onclick="criarSalaOnline()">➕ Criar Sala</button>
+        <button class="btn-menu" style="flex:1; font-size:13px; background:#4caf50; border-color:#2e7d32;" onclick="mostrarListaSalas()">🔍 Entrar em Sala</button>
+    </div>
+
+    <div class="lobby-panel" id="lobby-content" style="display:none;">
+        <div id="lobby-status-text" style="font-size:13px; color:#5c4033; font-weight:bold;">Selecione uma opção acima para começar.</div>
+        <div id="rooms-container" style="margin-top:10px;"></div>
+    </div>
+
+    <button class="btn-menu btn-back" onclick="voltarMenuPrincipal()">⬅️ Voltar ao Menu</button>
+</div>
+
 <div id="moto-overlay">
     <div class="moto-icon">🏍️💨</div>
     <div class="moto-anim-text">CAVALEIRA RÚNICA: ATROPELAMENTO TOTAL!</div>
@@ -325,6 +369,7 @@
     </div>
 </div>
 
+<!-- TELA DE SELEÇÃO DE PERSONAGENS -->
 <div id="select-screen" class="screen">
     <div class="select-header">
         <h2>SELEÇÃO DE PERSONAGENS (24 DISPONÍVEIS)</h2>
@@ -353,8 +398,10 @@
     </div>
 
     <button id="btn-start-game" class="btn-start" disabled onclick="iniciarCombate()">INICIAR BATALHA ⚔</button>
+    <button class="btn-menu btn-back" style="margin-top:8px;" onclick="voltarMenuPrincipal()">⬅️ Voltar ao Menu</button>
 </div>
 
+<!-- TELA DO JOGO -->
 <div id="game-screen" class="screen">
     <div id="end-screen">
         <div class="end-box">
@@ -463,7 +510,7 @@
         <div id="coin-counter-center">🪙 MOEDAS DO GUEDES: <span id="coin-count-val">0</span></div>
         <button id="btn-atq1" onclick="executarAcaoJogador(0)">Habilidade 1</button>
         <button id="btn-atq2" onclick="executarAcaoJogador(1)">Habilidade 2</button>
-        <button id="btn-atq3" onclick="executarAcaoJogador(2)">Habilidade 3</button>
+        <button id="btn-atq3" onclick="executarAcaoJogador(3)">Habilidade 3</button>
         <button id="btn-atq4" onclick="executarAcaoJogador(3)">Habilidade 4</button>
         <button id="btn-limit" disabled onclick="executarAcaoJogador('limit')">QUEBRA DE LIMITES (0%)</button>
     </div>
@@ -475,6 +522,63 @@
 
     let indiceMusicaAtual = -1;
     let audioMutado = false;
+
+    /* --- NAVEGAÇÃO ENTRE TELAS DO MENU --- */
+    function voltarMenuPrincipal() {
+        document.getElementById('select-screen').style.display = 'none';
+        document.getElementById('lobby-screen').style.display = 'none';
+        document.getElementById('game-screen').style.display = 'none';
+        document.getElementById('main-menu-screen').style.display = 'flex';
+    }
+
+    function abrirModoVsIA() {
+        document.getElementById('main-menu-screen').style.display = 'none';
+        document.getElementById('select-screen').style.display = 'flex';
+        renderizarRoster();
+    }
+
+    function abrirLobbyOnline() {
+        document.getElementById('main-menu-screen').style.display = 'none';
+        document.getElementById('lobby-screen').style.display = 'flex';
+        document.getElementById('lobby-content').style.display = 'none';
+    }
+
+    function criarSalaOnline() {
+        let lobbyContent = document.getElementById('lobby-content');
+        let statusText = document.getElementById('lobby-status-text');
+        let roomsContainer = document.getElementById('rooms-container');
+        
+        let codigoSala = "SALA-" + Math.floor(1000 + Math.random() * 9000);
+        lobbyContent.style.display = 'block';
+        statusText.innerHTML = `✅ Sala Criada com Sucesso!<br><span style="font-size:16px; color:#1976d2;">CÓDIGO: <b>${codigoSala}</b></span><br><br>⏳ Aguardando seu amigo entrar...`;
+        
+        roomsContainer.innerHTML = `
+            <div class="room-item">
+                <div><b>${codigoSala}</b> (1/2 Jogadores)</div>
+                <button style="background:#ff9800; border:none; color:#fff; padding:4px 8px; border-radius:4px;">Aguardando...</button>
+            </div>
+        `;
+    }
+
+    function mostrarListaSalas() {
+        let lobbyContent = document.getElementById('lobby-content');
+        let statusText = document.getElementById('lobby-status-text');
+        let roomsContainer = document.getElementById('rooms-container');
+
+        lobbyContent.style.display = 'block';
+        statusText.innerHTML = `🔎 <b>Salas Públicas Encontradas:</b>`;
+
+        roomsContainer.innerHTML = `
+            <div class="room-item">
+                <div><b>SALA-1284</b> (1/2 Jogadores)</div>
+                <button style="background:#4caf50; border:none; color:#fff; padding:6px 12px; border-radius:4px; font-weight:bold; cursor:pointer;" onclick="alert('Sistema de conexão de salas será vinculado em breve!')">ENTRAR</button>
+            </div>
+            <div class="room-item">
+                <div><b>SALA-9941</b> (1/2 Jogadores)</div>
+                <button style="background:#4caf50; border:none; color:#fff; padding:6px 12px; border-radius:4px; font-weight:bold; cursor:pointer;" onclick="alert('Sistema de conexão de salas será vinculado em breve!')">ENTRAR</button>
+            </div>
+        `;
+    }
 
     function tocarMusicaMenu() {
         let audioEl = document.getElementById('audio-bg');
@@ -2045,7 +2149,7 @@
             atacante.autoReviver = true;
             atacante.autoReviverTurnos = 2;
             habilidade.cdAtual = habilidade.cdMax;
-            if (timeTemPersonagem(prefixo, 'Shy')) {
+            if (timeTemPersonagem(prefix, 'Shy')) {
                 atacante.regeneracaoTurnos = 5;
                 log(`✨ <b>Divar + Shy:</b> Cristal aplicou Regeneração em si mesma!`);
             }
@@ -2087,7 +2191,7 @@
         }
         else if (habilidade.tipo === 'sumonar_flor') {
             habilidade.cdAtual = habilidade.cdMax;
-            let florId = prefixo + 'Flor';
+            let florId = prefix + 'Flor';
             if (unidades[florId] && unidades[florId].hpAtual > 0) {
                 log(`🌸 <b>Florescer da Mana:</b> Já existe uma Flor de Cura ativa no campo!`);
             } else {
@@ -2102,7 +2206,7 @@
         }
         else if (habilidade.tipo === 'invocar_barreira') {
             habilidade.cdAtual = habilidade.cdMax;
-            let barreiraId = prefixo + 'Barreira';
+            let barreiraId = prefix + 'Barreira';
             if (unidades[barreiraId] && unidades[barreiraId].hpAtual > 0) {
                 log(`🛡️ <b>Barreira de Cristal:</b> Já existe uma Barreira ativa no campo!`);
             } else {
@@ -2285,7 +2389,7 @@
             aliadoTarget.autoReviverTurnos = 2;
             if (aliadoTarget.nome === 'Campos') {
                 aplicarCura(aliadoTarget, 50, atacante);
-                log(`👻🖤 <b>Escudo das Almas + Campos:</b> Campos recuperou +50 de HP!`);
+                log(`ghost🖤 <b>Escudo das Almas + Campos:</b> Campos recuperou +50 de HP!`);
             }
             log(`👻✨ <b>Escudo das Almas:</b> Concedeu escudo e Auto-Reviver 😇 a ${aliadoTarget.nome}!`);
         } else if (habilidade.tipo === 'pocao_forca') {
@@ -2801,7 +2905,6 @@
     }
 
     window.onload = function() {
-        renderizarRoster();
         tocarMusicaMenu();
     };
 </script>
