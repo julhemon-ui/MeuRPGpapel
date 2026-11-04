@@ -879,7 +879,7 @@
     let unidades = {};
     let moedasGuedesTimePlayer = 0;
     let atacanteAtualId = 'p1'; 
-    let alvoInimigoId = 'e1';   
+    let alvoInimigoId = 'e0';   
     let emTurnoInimigo = false;
     let modoSelecaoSuporte = false; 
 
@@ -1015,17 +1015,7 @@
         };
     }
 
-    function timeTemPersonagem(timePrefix, nomeChar) {
-        return ['0', '1', '2'].some(slot => unidades[timePrefix + slot] && unidades[timePrefix + slot].nome === nomeChar && unidades[timePrefix + slot].hpAtual > 0);
-    }
-
-    function limparBuffsUnidade(unidade) {
-        unidade.escudoSimbiose = 0; unidade.escudoDunnie = 0; unidade.escudoDoctor = 0;
-        unidade.escudoKevin = 0; unidade.escudoMika = 0; unidade.escudoMariel = 0; unidade.escudoGroxyGold = 0; unidade.escudoAnna = 0; unidade.escudoKarin = 0; unidade.escudoSilver = 0; unidade.escudoDin = 0; unidade.escudoShy = 0; unidade.escudoGigiArmadura = 0;
-    }
-
     function iniciarCombate() {
-        // Geração 100% aleatória do time inimigo entre os 3 genéricos
         let nomesGenericos = ["Assassino do Crepúsculo", "Suculenta Carnívora", "Corrompido"];
         let timeInimigoGerado = [
             nomesGenericos[Math.floor(Math.random() * nomesGenericos.length)],
@@ -1075,7 +1065,6 @@
 
     function calcularDano(atacante, defensor, habilidade, elementoEfetivo) {
         let elem = elementoEfetivo || habilidade.elemento;
-        if (atacante.imbuirMagiaTurnos > 0) elem = "Mágico";
 
         if (defensor.nome === "Suculenta Carnívora" && elem === "Água") {
             aplicarCura(defensor, 90, defensor);
@@ -1121,14 +1110,6 @@
             unidade.hpAtual = Math.max(0, unidade.hpAtual - 10);
             mostrarEfeitoFlutuante(unidade.id, "-10 🔥", "dano");
         }
-    }
-
-    function checarParalisia(unidade) {
-        if (unidade.paralisiaTurnos > 0) {
-            log(`⚡ <b>${unidade.nome}</b> está paralisado!`);
-            return true;
-        }
-        return false;
     }
 
     function aplicarEfeitoHab(habilidade, defensor, timePrefixAttacker) {
@@ -1292,7 +1273,7 @@
     function iniciarTurnoInimigo() {
         emTurnoInimigo = true;
         let turnInd = document.getElementById('turn-indicator');
-        turnInd.innerText = 'TURNO INIMIGO... (Aguarde 10s)';
+        turnInd.innerText = 'TURNO INIMIGO...';
         turnInd.style.color = 'red';
         
         processarEfeitosStatus();
@@ -1300,7 +1281,7 @@
 
         if (verificarVitoria() || verificarDerrota()) return;
 
-        // DELAY DE 10 SEGUNDOS EXIGIDO
+        // DELAY DE 2 SEGUNDOS
         setTimeout(() => {
             let inimigosVivos = ['e0', 'e1', 'e2'].filter(id => unidades[id] && unidades[id].hpAtual > 0);
             let aliadosVivos = ['p0', 'p1', 'p2'].filter(id => unidades[id] && unidades[id].hpAtual > 0);
@@ -1314,7 +1295,7 @@
                     let habsDisponiveis = atacanteInimigo.habilidades;
                     let habUsada;
 
-                    // Regra de IA: Menos de 30% de HP prioriza suporte/cura se houver
+                    // Regra de IA: Menos de 30% de HP prioriza suporte/cura
                     if (hpPercentual < 0.30) {
                         let habsSuporte = habsDisponiveis.filter(h => h.elemento === "Suporte" || h.tipo.includes("suporte") || h.tipo.includes("escudo"));
                         if (habsSuporte.length > 0) {
@@ -1322,22 +1303,53 @@
                         }
                     }
 
+                    // Nova IA de Seleção de Alvo e Habilidade baseada em Fraqueza e Imunidade
+                    let alvoAliadoId = null;
+
                     if (!habUsada) {
-                        habUsada = habsDisponiveis[Math.floor(Math.random() * habsDisponiveis.length)];
+                        // Tentar achar uma habilidade cujo elemento atinja a fraqueza de algum aliado vivo sem ser imune
+                        let melhorOpcao = null; // { hab, alvoId, pontuacao }
+
+                        for (let aId of aliadosVivos) {
+                            let ali = unidades[aId];
+                            for (let h of habsDisponiveis) {
+                                if (h.elemento === "Suporte" || h.tipo.includes("suporte") || h.tipo.includes("escudo")) continue;
+                                if (h.elemento === ali.imunidade) continue; // Ignora se o alvo for imune
+
+                                let score = 0;
+                                if (h.elemento === ali.fraqueza) score += 10; // Tenta usar o elemento da fraqueza do alvo
+
+                                if (!melhorOpcao || score > melhorOpcao.score) {
+                                    melhorOpcao = { hab: h, alvoId: aId, score: score };
+                                }
+                            }
+                        }
+
+                        if (melhorOpcao) {
+                            habUsada = melhorOpcao.hab;
+                            alvoAliadoId = melhorOpcao.alvoId;
+                        } else {
+                            // Se todos forem imunes a todos os ataques ofensivos, escolhe aleatoriamente uma habilidade de ataque e o alvo com menor HP
+                            let habsAtaque = habsDisponiveis.filter(h => h.elemento !== "Suporte" && !h.tipo.includes("suporte"));
+                            habUsada = habsAtaque.length > 0 ? habsAtaque[Math.floor(Math.random() * habsAtaque.length)] : habsDisponiveis[0];
+                        }
                     }
 
-                    // Regra de IA: Foco em quem tem MAIS HP ATUAL entre os aliados vivos
-                    let alvoAliadoId = aliadosVivos.reduce((maiorId, atualId) => {
-                        return unidades[atualId].hpAtual > unidades[maiorId].hpAtual ? atualId : maiorId;
-                    }, aliadosVivos[0]);
+                    // Se a habilidade for ofensiva e ainda não definiu o alvo por fraqueza, aplica a regra de focar no que tem menor HP (ou não imune)
+                    if (!alvoAliadoId && habUsada && habUsada.elemento !== "Suporte" && !habUsada.tipo.includes("suporte") && !habUsada.tipo.includes("escudo")) {
+                        let alvosValidos = aliadosVivos.filter(aId => unidades[aId].imunidade !== habUsada.elemento);
+                        if (alvosValidos.length === 0) alvosValidos = aliadosVivos; // Se todos forem imunes, foca em qualquer um
 
-                    let alvoAliado = unidades[alvoAliadoId];
+                        alvoAliadoId = alvosValidos.reduce((menorId, atualId) => {
+                            return unidades[atualId].hpAtual < unidades[menorId].hpAtual ? atualId : menorId;
+                        }, alvosValidos[0]);
+                    }
 
-                    if (habUsada.elemento === "Suporte" || habUsada.tipo.includes("suporte") || habUsada.tipo.includes("escudo")) {
-                        // Inimigo usa suporte em si mesmo ou em parceiro
+                    if (habUsada && (habUsada.elemento === "Suporte" || habUsada.tipo.includes("suporte") || habUsada.tipo.includes("escudo"))) {
                         aplicarCura(atacanteInimigo, 30, atacanteInimigo);
                         log(`🛡️ <b>${atacanteInimigo.nome} (Inimigo)</b> usou <b>${habUsada.nome}</b> para se regenerar/proteger!`);
-                    } else {
+                    } else if (alvoAliadoId) {
+                        let alvoAliado = unidades[alvoAliadoId];
                         let dano = calcularDano(atacanteInimigo, alvoAliado, habUsada);
                         alvoAliado.hpAtual = Math.max(0, alvoAliado.hpAtual - dano);
                         mostrarEfeitoFlutuante(alvoAliado.id, `-${dano}`, "dano");
@@ -1353,7 +1365,7 @@
             
             atualizarUI();
             verificarDerrota();
-        }, 10000); // 10 segundos de espera
+        }, 2000); // 2 segundos de espera
     }
 
     window.onload = function() {
