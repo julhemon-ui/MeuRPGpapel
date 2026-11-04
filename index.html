@@ -1307,17 +1307,16 @@
                     let alvoAliadoId = null;
 
                     if (!habUsada) {
-                        // Tentar achar uma habilidade cujo elemento atinja a fraqueza de algum aliado vivo sem ser imune
-                        let melhorOpcao = null; // { hab, alvoId, pontuacao }
+                        let melhorOpcao = null;
 
                         for (let aId of aliadosVivos) {
                             let ali = unidades[aId];
                             for (let h of habsDisponiveis) {
                                 if (h.elemento === "Suporte" || h.tipo.includes("suporte") || h.tipo.includes("escudo")) continue;
-                                if (h.elemento === ali.imunidade) continue; // Ignora se o alvo for imune
+                                if (h.elemento === ali.imunidade) continue;
 
                                 let score = 0;
-                                if (h.elemento === ali.fraqueza) score += 10; // Tenta usar o elemento da fraqueza do alvo
+                                if (h.elemento === ali.fraqueza) score += 10;
 
                                 if (!melhorOpcao || score > melhorOpcao.score) {
                                     melhorOpcao = { hab: h, alvoId: aId, score: score };
@@ -1329,16 +1328,14 @@
                             habUsada = melhorOpcao.hab;
                             alvoAliadoId = melhorOpcao.alvoId;
                         } else {
-                            // Se todos forem imunes a todos os ataques ofensivos, escolhe aleatoriamente uma habilidade de ataque e o alvo com menor HP
                             let habsAtaque = habsDisponiveis.filter(h => h.elemento !== "Suporte" && !h.tipo.includes("suporte"));
                             habUsada = habsAtaque.length > 0 ? habsAtaque[Math.floor(Math.random() * habsAtaque.length)] : habsDisponiveis[0];
                         }
                     }
 
-                    // Se a habilidade for ofensiva e ainda não definiu o alvo por fraqueza, aplica a regra de focar no que tem menor HP (ou não imune)
                     if (!alvoAliadoId && habUsada && habUsada.elemento !== "Suporte" && !habUsada.tipo.includes("suporte") && !habUsada.tipo.includes("escudo")) {
                         let alvosValidos = aliadosVivos.filter(aId => unidades[aId].imunidade !== habUsada.elemento);
-                        if (alvosValidos.length === 0) alvosValidos = aliadosVivos; // Se todos forem imunes, foca em qualquer um
+                        if (alvosValidos.length === 0) alvosValidos = aliadosVivos;
 
                         alvoAliadoId = alvosValidos.reduce((menorId, atualId) => {
                             return unidades[atualId].hpAtual < unidades[menorId].hpAtual ? atualId : menorId;
@@ -1365,7 +1362,7 @@
             
             atualizarUI();
             verificarDerrota();
-        }, 2000); // 2 segundos de espera
+        }, 2000); // 2 segundos
     }
 
     window.onload = function() {
