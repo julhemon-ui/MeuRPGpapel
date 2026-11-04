@@ -156,7 +156,7 @@
         .bg-cenario-1 { background-image: url('cenario1.jpg') !important; }
         .bg-cenario-2 { background-image: url('cenario2.jpg') !important; }
         .bg-cenario-3 { background-image: url('cenario3.jpg') !important; }
-        .bg-cenario-4 { background-image: url('cenario4.PNG') !important; }
+        .bg-cenario-4 { background-image: url('cenario4.png') !important; }
 
         .team-side { width: 48%; height: 100%; position: relative; }
         
@@ -345,7 +345,7 @@
 <div id="select-screen" class="screen">
     <div class="select-header">
         <h2>SELEÇÃO DE PERSONAGENS (24 DISPONÍVEIS)</h2>
-        <p>Escolha 3 personagens para o SEU TIME</p>
+        <p>Escolha 3 personagens para o SEU TIME (Inimigos serão gerados aleatoriamente)</p>
     </div>
 
     <div class="roster-grid" id="roster-container"></div>
@@ -1160,6 +1160,13 @@
             if (u.hpAtual <= 0) continue;
             if (u.sangramento > 0) { u.hpAtual = Math.max(0, u.hpAtual - 10); u.sangramento--; mostrarEfeitoFlutuante(u.id, "-10 🩸", "dano"); }
             if (u.veneno > 0) { u.hpAtual = Math.max(0, u.hpAtual - 10); u.veneno--; mostrarEfeitoFlutuante(u.id, "-10 🧪", "dano"); }
+            
+            // Decrementa o Cooldown das habilidades de todas as unidades vivas
+            if (u.habilidades) {
+                u.habilidades.forEach(h => {
+                    if (h.cdAtual > 0) h.cdAtual--;
+                });
+            }
         }
     }
 
@@ -1295,7 +1302,6 @@
                     let habsDisponiveis = atacanteInimigo.habilidades;
                     let habUsada;
 
-                    // Regra de IA: Menos de 30% de HP prioriza suporte/cura
                     if (hpPercentual < 0.30) {
                         let habsSuporte = habsDisponiveis.filter(h => h.elemento === "Suporte" || h.tipo.includes("suporte") || h.tipo.includes("escudo"));
                         if (habsSuporte.length > 0) {
@@ -1303,7 +1309,6 @@
                         }
                     }
 
-                    // Nova IA de Seleção de Alvo e Habilidade baseada em Fraqueza e Imunidade
                     let alvoAliadoId = null;
 
                     if (!habUsada) {
