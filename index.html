@@ -17,7 +17,7 @@
 
         .screen.active { display: flex; }
 
-        /* TELA DE MENU PRINCIPAL */
+        /* MENU PRINCIPAL */
         #menu-screen {
             justify-content: center; align-items: center; text-align: center; height: 480px; gap: 24px;
         }
@@ -29,6 +29,34 @@
         }
         .btn-menu:hover:not(:disabled) { transform: scale(1.05); background: #a06b38; }
         .btn-menu:disabled { background: #b0a090; border-color: #706050; cursor: not-allowed; opacity: 0.7; }
+
+        /* TELA DE CAMINHOS / DUNGEON */
+        #dungeon-screen {
+            justify-content: center; align-items: center; text-align: center; height: 480px; gap: 20px;
+        }
+        .dungeon-title { font-size: 24px; color: #5c4033; font-weight: bold; }
+        .dungeon-subtitle { font-size: 13px; color: #666; margin-bottom: 10px; }
+        .paths-container { display: flex; gap: 20px; justify-content: center; width: 100%; }
+        .path-card {
+            background: #fff8dc; border: 3px solid #5c4033; border-radius: 10px; padding: 20px;
+            width: 260px; cursor: pointer; transition: transform 0.2s, background-color 0.2s;
+            display: flex; flex-direction: column; align-items: center; gap: 10px; box-shadow: 0 4px 10px rgba(0,0,0,0.2);
+        }
+        .path-card:hover { transform: translateY(-50px); background: #fff; border-color: #ff9800; }
+        .path-icon { font-size: 36px; }
+        .path-name { font-size: 16px; font-weight: bold; color: #5c4033; }
+        .path-desc { font-size: 11px; color: #444; text-align: center; }
+
+        /* LOJA DA ISA MODAL / TELA */
+        #shop-screen {
+            display: none; position: absolute; top: 0; left: 0; width: 100%; height: 100%;
+            background: #fff8dc; z-index: 120; padding: 20px; flex-direction: column; justify-content: space-between;
+        }
+        .shop-header { display: flex; justify-content: space-between; align-items: center; border-bottom: 2px dashed #5c4033; padding-bottom: 10px; }
+        .shop-body { display: flex; gap: 20px; height: 100%; align-items: center; justify-content: space-around; }
+        .shop-left { width: 40%; text-align: center; font-size: 13px; color: #5c4033; }
+        .shop-right { width: 50%; display: flex; flex-direction: column; gap: 10px; }
+        .shop-item { background: #fff; border: 2px solid #5c4033; border-radius: 8px; padding: 10px; display: flex; justify-content: space-between; align-items: center; font-size: 11px; }
 
         #profile-modal {
             display: none; position: absolute; top: 0; left: 0; width: 100%; height: 100%;
@@ -163,16 +191,10 @@
         .ally-side .pos-back-top { position: absolute; left: 12%; top: 18%; }
         .ally-side .pos-front { position: absolute; left: 40%; top: 42%; }
         .ally-side .pos-back-bottom { position: absolute; left: 12%; top: 66%; }
-        
-        .ally-side .pos-invocacao-flor { position: absolute; left: 2%; top: 42%; }
-        .ally-side .pos-invocacao-barreira { position: absolute; left: 55%; top: 18%; }
 
         .enemy-side .pos-back-top { position: absolute; right: 12%; top: 18%; }
         .enemy-side .pos-front { position: absolute; right: 40%; top: 42%; }
         .enemy-side .pos-back-bottom { position: absolute; right: 12%; top: 66%; }
-        
-        .enemy-side .pos-invocacao-flor { position: absolute; right: 2%; top: 42%; }
-        .enemy-side .pos-invocacao-barreira { position: absolute; right: 55%; top: 18%; }
 
         .unit-card {
             width: 105px; background: rgba(255, 248, 220, 0.92); border: 2px solid #5c4033; border-radius: 6px; padding: 6px; text-align: center;
@@ -180,34 +202,7 @@
         }
         .unit-card.selected-target { border: 3px solid #d32f2f; box-shadow: 0 0 10px #d32f2f; transform: scale(1.08); }
         .unit-card.selected-attacker { border: 3px solid #f1c40f; box-shadow: 0 0 10px #f1c40f; transform: scale(1.08); }
-        .unit-card.target-buff-mode { border: 3px solid #2196f3; box-shadow: 0 0 10px #2196f3; transform: scale(1.08); }
         .unit-card.dead { opacity: 0.4; filter: grayscale(80%); cursor: not-allowed; }
-
-        .unit-card.summon-card { background: rgba(232, 245, 233, 0.95); border: 2px dashed #2e7d32; width: 95px; }
-        .unit-card.barrier-card { background: rgba(239, 235, 233, 0.95); border: 2px dashed #5d4037; width: 95px; }
-
-        .unit-card.berserk-mode { border: 3px solid #ff1744; animation: berserkPulse 0.6s infinite alternate; }
-        @keyframes berserkPulse {
-            0% { box-shadow: 0 0 5px #ff1744; }
-            100% { box-shadow: 0 0 18px #ff1744, inset 0 0 8px #d50000; }
-        }
-
-        .unit-card.crow-transformed::after {
-            content: '🐦‍⬛'; position: absolute; top: -12px; left: -8px; font-size: 18px; animation: crowFloat 1s infinite alternate;
-        }
-        @keyframes crowFloat { from { transform: translateY(0); } to { transform: translateY(-6px); } }
-
-        .unit-card.bat-invoked::before {
-            content: '🦇'; position: absolute; top: -18px; right: -6px; font-size: 22px; z-index: 20; animation: batFloat 0.7s infinite alternate ease-in-out;
-        }
-        @keyframes batFloat { from { transform: translateY(0px) scale(1); } to { transform: translateY(-7px) scale(1.15); } }
-
-        .unit-card.buff-pulse { animation: buffGlow 0.8s ease-in-out; }
-        @keyframes buffGlow {
-            0% { box-shadow: 0 0 0px #2196f3; border-color: #5c4033; }
-            50% { box-shadow: 0 0 20px #2196f3, inset 0 0 10px #2196f3; border-color: #2196f3; transform: scale(1.12); }
-            100% { box-shadow: 0 0 0px #2196f3; border-color: #5c4033; }
-        }
 
         .floating-pop {
             position: absolute; top: -10px; left: 50%; transform: translateX(-50%);
@@ -217,7 +212,6 @@
         .pop-dano { color: #ff1744; text-shadow: 0px 0px 4px #000, 1px 1px 0px #000; }
         .pop-cura { color: #00e676; text-shadow: 0px 0px 4px #000, 1px 1px 0px #000; }
         .pop-info { color: #29b6f6; text-shadow: 0px 0px 4px #000, 1px 1px 0px #000; font-size: 12px; }
-        .pop-coin { color: #ffd700; text-shadow: 0px 0px 4px #000, 1px 1px 0px #000; font-size: 14px; font-weight: bold; }
 
         @keyframes floatUp {
             0% { opacity: 1; transform: translate(-50%, 0px) scale(0.8); }
@@ -252,15 +246,13 @@
         .fill-hp { height: 100%; background: #4caf50; width: 100%; transition: width 0.3s; }
         .fill-limit { height: 100%; background: #ffca28; width: 0%; transition: width 0.3s; }
 
-        .marcas-leandro { display: flex; justify-content: center; gap: 4px; margin-top: 2px; font-size: 10px; }
-
         .status-badge {
             font-size: 8px; font-weight: bold; margin-top: 4px; min-height: 14px;
             color: #c62828; text-shadow: 0px 0px 2px rgba(255,255,255,0.9); word-wrap: break-word;
         }
 
-        #turn-indicator { text-align: center; font-weight: bold; font-size: 15px; color: #5c4033; }
-        #log-box { background: #fff; border: 2px solid #5c4033; height: 100px; padding: 8px; font-size: 12px; overflow-y: auto; border-radius: 4px; }
+        #turn-indicator { text-align: center; font-weight: bold; font-size: 15px; color: #5c4033; display: flex; justify-content: space-between; padding: 0 10px; }
+        #log-box { background: #fff; border: 2px solid #5c4033; height: 90px; padding: 8px; font-size: 12px; overflow-y: auto; border-radius: 4px; }
         
         .action-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; position: relative; }
         
@@ -270,18 +262,6 @@
             position: relative;
         }
         button:disabled { opacity: 0.4 !important; background: #ccc !important; color: #666 !important; border-color: #888 !important; cursor: not-allowed; }
-
-        .coin-tag {
-            position: absolute; top: -8px; right: -4px; background: #ffd700; color: #d32f2f;
-            border: 1px solid #000; border-radius: 10px; font-size: 9px; font-weight: bold; padding: 1px 5px;
-            box-shadow: 0 2px 4px rgba(0,0,0,0.3);
-        }
-
-        #coin-counter-center {
-            display: none; grid-column: span 2; background: #fff8dc; border: 2px solid #ffd700;
-            color: #b78103; font-weight: bold; text-align: center; padding: 4px; font-size: 12px;
-            border-radius: 6px; margin-bottom: -4px;
-        }
 
         .elem-Físico { background: #e0e0e0; color: #212121; border-color: #616161; }
         .elem-Fogo { background: #ffcdd2; color: #b71c1c; border-color: #d32f2f; }
@@ -303,28 +283,11 @@
             background: #ff9800; color: #fff; border-color: #e65100;
             animation: pulseLimit 1.2s infinite alternate; font-size: 12px; text-shadow: 0 0 2px #000;
         }
-        #btn-limit.btn-ysma-magia { background: #2196f3; color: #fff; border-color: #0d47a1; }
-        #btn-limit.btn-gigi-form { background: #ab47bc; color: #fff; border-color: #6a1b9a; }
-
-        @keyframes pulseLimit {
-            0% { transform: scale(1); box-shadow: 0 0 4px #ff9800; }
-            100% { transform: scale(1.03); box-shadow: 0 0 14px #ff3d00; background: #ff3d00; }
-        }
     </style>
 </head>
 <body>
 
 <audio id="audio-bg" loop></audio>
-
-<div id="moto-overlay">
-    <div class="moto-icon">🏍️💨</div>
-    <div class="moto-anim-text">CAVALEIRA RÚNICA: ATROPELAMENTO TOTAL!</div>
-</div>
-
-<div id="raissa-overlay">
-    <div class="raissa-icon">👻✨</div>
-    <div class="raissa-anim-text">SURTO FANTASMAGÓRICO!</div>
-</div>
 
 <div id="profile-modal">
     <div class="profile-box">
@@ -333,23 +296,21 @@
     </div>
 </div>
 
-<!-- TELA DE MENU PRINCIPAL -->
+<!-- MENU PRINCIPAL -->
 <div id="menu-screen" class="screen active">
     <div class="game-title">ART OF SHADOW</div>
     <div class="menu-buttons">
-        <button class="btn-menu" onclick="irParaSelecao()">JOGAR</button>
-        <button class="btn-menu" disabled title="Em breve">LOJA</button>
+        <button class="btn-menu" onclick="irParaSelecao()">JOGAR (ROGUELIKE)</button>
     </div>
 </div>
 
+<!-- SELEÇÃO DE TIME -->
 <div id="select-screen" class="screen">
     <div class="select-header">
-        <h2>SELEÇÃO DE PERSONAGENS (24 DISPONÍVEIS)</h2>
-        <p>Escolha 3 personagens para o SEU TIME (Inimigos serão gerados aleatoriamente)</p>
+        <h2>SELEÇÃO DE HERÓIS</h2>
+        <p>Escolha 3 heróis para iniciar a sua run na Masmorra (10 Andares)</p>
     </div>
-
     <div class="roster-grid" id="roster-container"></div>
-
     <div class="slots-container">
         <div class="team-slot-group">
             <h3 style="color: #1976d2;">SEU TIME</h3>
@@ -360,10 +321,46 @@
             </div>
         </div>
     </div>
-
-    <button id="btn-start-game" class="btn-start" disabled onclick="iniciarCombate()">INICIAR BATALHA ⚔</button>
+    <button id="btn-start-game" class="btn-start" disabled onclick="iniciarRun()">ENTRAR NA MASMORRA ⚔</button>
 </div>
 
+<!-- TELA DE ESCOLHA DE CAMINHOS -->
+<div id="dungeon-screen" class="screen">
+    <div class="dungeon-title" id="dungeon-title-run">MASMORRA - ANDAR 1/10</div>
+    <div class="dungeon-subtitle">Escolha o próximo caminho para prosseguir:</div>
+    <div class="paths-container" id="paths-container-box"></div>
+</div>
+
+<!-- LOJA DA ISA -->
+<div id="shop-screen" class="screen">
+    <div class="shop-header">
+        <h2>🛒 LOJA DA ISA</h2>
+        <div>🪙 Ouro: <span id="shop-gold-val">0</span></div>
+    </div>
+    <div class="shop-body">
+        <div class="shop-left">
+            <h3>Isa a Vendedora</h3>
+            <p style="margin-top: 10px;">"Bem-vindo à minha lojinha! Aproveite os suprimentos para sobreviver aos perigos da masmorra."</p>
+        </div>
+        <div class="shop-right">
+            <div class="shop-item">
+                <div><b>Poção de Cura</b><br><span style="font-size:9px;">Cura 50 do HP de um aliado em batalha</span></div>
+                <button onclick="comprarItem('pocao', 15)">Comprar (15 🪙)</button>
+            </div>
+            <div class="shop-item">
+                <div><b>Flecha de Fogo</b><br><span style="font-size:9px;">Deixa um inimigo queimando</span></div>
+                <button onclick="comprarItem('flecha', 20)">Comprar (20 🪙)</button>
+            </div>
+            <div class="shop-item">
+                <div><b>Brigadeirão</b><br><span style="font-size:9px;">Dá regeneração a todos do time</span></div>
+                <button onclick="comprarItem('brigadeirao', 30)">Comprar (30 🪙)</button>
+            </div>
+        </div>
+    </div>
+    <button class="btn-start" onclick="fecharLoja()">CONTINUAR CAMINHO ➡</button>
+</div>
+
+<!-- TELA DE COMBATE -->
 <div id="game-screen" class="screen">
     <div id="end-screen">
         <div class="end-box">
@@ -374,9 +371,12 @@
     </div>
 
     <div id="screen-flash"></div>
-
     <button id="audio-control" onclick="alternarAudio()" title="Ligar/Desligar Música">🔊</button>
-    <div id="turn-indicator">SEU TURNO</div>
+    
+    <div id="turn-indicator">
+        <span id="turn-label">SEU TURNO</span>
+        <span id="run-stage-label" style="font-size: 12px; color: #8b5a2b;">Andar: 1/10 | 🪙: 0</span>
+    </div>
 
     <div id="field-area" class="field">
         <div class="team-side ally-side">
@@ -385,7 +385,6 @@
                 <div id="name-p0">-</div>
                 <div class="bar-bg"><div id="hp-p0" class="fill-hp"></div></div>
                 <div class="bar-bg"><div id="limit-p0" class="fill-limit"></div></div>
-                <div id="marcas-p0" class="marcas-leandro"></div>
                 <div id="status-p0" class="status-badge"></div>
             </div>
             <div id="unit-p1" class="unit-card pos-front" onclick="cliqueCardAliado('p1')">
@@ -393,7 +392,6 @@
                 <div id="name-p1">-</div>
                 <div class="bar-bg"><div id="hp-p1" class="fill-hp"></div></div>
                 <div class="bar-bg"><div id="limit-p1" class="fill-limit"></div></div>
-                <div id="marcas-p1" class="marcas-leandro"></div>
                 <div id="status-p1" class="status-badge"></div>
             </div>
             <div id="unit-p2" class="unit-card pos-back-bottom" onclick="cliqueCardAliado('p2')">
@@ -401,20 +399,7 @@
                 <div id="name-p2">-</div>
                 <div class="bar-bg"><div id="hp-p2" class="fill-hp"></div></div>
                 <div class="bar-bg"><div id="limit-p2" class="fill-limit"></div></div>
-                <div id="marcas-p2" class="marcas-leandro"></div>
                 <div id="status-p2" class="status-badge"></div>
-            </div>
-            <div id="unit-pFlor" class="unit-card pos-invocacao-flor" style="display:none;" onclick="cliqueCardAliado('pFlor')">
-                <div class="dead-overlay">❌</div>
-                <div id="name-pFlor">Flor de Cura</div>
-                <div class="bar-bg"><div id="hp-pFlor" class="fill-hp"></div></div>
-                <div id="status-pFlor" class="status-badge"></div>
-            </div>
-            <div id="unit-pBarreira" class="unit-card pos-invocacao-barreira" style="display:none;" onclick="cliqueCardAliado('pBarreira')">
-                <div class="dead-overlay">❌</div>
-                <div id="name-pBarreira">Barreira</div>
-                <div class="bar-bg"><div id="hp-pBarreira" class="fill-hp"></div></div>
-                <div id="status-pBarreira" class="status-badge"></div>
             </div>
         </div>
 
@@ -426,7 +411,6 @@
                 <div id="name-e0">-</div>
                 <div class="bar-bg"><div id="hp-e0" class="fill-hp"></div></div>
                 <div class="bar-bg"><div id="limit-e0" class="fill-limit"></div></div>
-                <div id="marcas-e0" class="marcas-leandro"></div>
                 <div id="status-e0" class="status-badge"></div>
             </div>
             <div id="unit-e1" class="unit-card pos-front" onclick="selecionarAlvoInimigo('e1')">
@@ -436,7 +420,6 @@
                 <div id="name-e1">-</div>
                 <div class="bar-bg"><div id="hp-e1" class="fill-hp"></div></div>
                 <div class="bar-bg"><div id="limit-e1" class="fill-limit"></div></div>
-                <div id="marcas-e1" class="marcas-leandro"></div>
                 <div id="status-e1" class="status-badge"></div>
             </div>
             <div id="unit-e2" class="unit-card pos-back-bottom" onclick="selecionarAlvoInimigo('e2')">
@@ -446,30 +429,14 @@
                 <div id="name-e2">-</div>
                 <div class="bar-bg"><div id="hp-e2" class="fill-hp"></div></div>
                 <div class="bar-bg"><div id="limit-e2" class="fill-limit"></div></div>
-                <div id="marcas-e2" class="marcas-leandro"></div>
                 <div id="status-e2" class="status-badge"></div>
-            </div>
-            <div id="unit-eFlor" class="unit-card pos-invocacao-flor" style="display:none;" onclick="selecionarAlvoInimigo('eFlor')">
-                <div class="dead-overlay">❌</div>
-                <div class="target-cursor">▼ ALVO</div>
-                <div id="name-eFlor">Flor de Cura</div>
-                <div class="bar-bg"><div id="hp-eFlor" class="fill-hp"></div></div>
-                <div id="status-eFlor" class="status-badge"></div>
-            </div>
-            <div id="unit-eBarreira" class="unit-card pos-invocacao-barreira" style="display:none;" onclick="selecionarAlvoInimigo('eBarreira')">
-                <div class="dead-overlay">❌</div>
-                <div class="target-cursor">▼ ALVO</div>
-                <div id="name-eBarreira">Barreira</div>
-                <div class="bar-bg"><div id="hp-eBarreira" class="fill-hp"></div></div>
-                <div id="status-eBarreira" class="status-badge"></div>
             </div>
         </div>
     </div>
 
-    <div id="log-box">> Bem-vindo ao Art of Shadow! Comece a batalha.</div>
+    <div id="log-box">> Bem-vindo ao Art of Shadow Roguelike! Prepare sua equipe.</div>
 
     <div class="action-grid">
-        <div id="coin-counter-center">🪙 MOEDAS DO GUEDES: <span id="coin-count-val">0</span></div>
         <button id="btn-atq1" onclick="executarAcaoJogador(0)">Habilidade 1</button>
         <button id="btn-atq2" onclick="executarAcaoJogador(1)">Habilidade 2</button>
         <button id="btn-atq3" onclick="executarAcaoJogador(2)">Habilidade 3</button>
@@ -491,7 +458,7 @@
         audioEl.volume = 0.4;
         audioEl.muted = audioMutado;
         audioEl.onended = null;
-        audioEl.play().catch(e => console.log("Aguardando interação do usuário para áudio do menu."));
+        audioEl.play().catch(e => console.log("Áudio aguardando interação."));
     }
 
     function tocarMusicaAleatoria() {
@@ -506,7 +473,7 @@
         audioEl.volume = 0.4;
         audioEl.muted = audioMutado;
         audioEl.onended = tocarMusicaAleatoria;
-        audioEl.play().catch(e => console.log("Aguardando interação para áudio."));
+        audioEl.play().catch(e => console.log("Áudio aguardando interação."));
     }
 
     function alternarAudio() {
@@ -514,9 +481,7 @@
         let audioEl = document.getElementById('audio-bg');
         audioEl.muted = audioMutado;
         document.getElementById('audio-control').innerText = audioMutado ? '🔇' : '🔊';
-        if (!audioMutado && audioEl.paused) {
-            audioEl.play().catch(e => console.log("Erro ao reproduzir áudio."));
-        }
+        if (!audioMutado && audioEl.paused) audioEl.play().catch(e => {});
     }
 
     function aplicarCenarioAleatorio() {
@@ -524,7 +489,6 @@
         campo.classList.remove('bg-cenario-1', 'bg-cenario-2', 'bg-cenario-3', 'bg-cenario-4');
         let num = Math.floor(Math.random() * 4) + 1;
         campo.classList.add(`bg-cenario-${num}`);
-        log(`🎨 <b>Cenário sorteado:</b> Cenário ${num} carregado!`);
     }
 
     function mostrarEfeitoFlutuante(targetId, texto, tipo) {
@@ -537,351 +501,52 @@
         setTimeout(() => pop.remove(), 1000);
     }
 
-    function dispararBuffPulse(targetId) {
-        let card = document.getElementById(`unit-${targetId}`);
-        if (!card) return;
-        card.classList.remove('buff-pulse');
-        void card.offsetWidth;
-        card.classList.add('buff-pulse');
-        setTimeout(() => card.classList.remove('buff-pulse'), 850);
-    }
-
-    function dispararFlashLimites() {
-        let flash = document.getElementById('screen-flash');
-        if (!flash) return;
-        flash.classList.remove('active');
-        void flash.offsetWidth;
-        flash.classList.add('active');
-        setTimeout(() => flash.classList.remove('active'), 700);
-    }
-
-    const COR_ELEMENTOS = {
-        "Físico": "#616161", "Fogo": "#d32f2f", "Gelo": "#00acc1", "Vento": "#4caf50",
-        "Corrupção": "#8e24aa", "Biológico": "#689f38", "Elétrico": "#fbc02d",
-        "Água": "#0288d1", "Mágico": "#c2185b", "Escuridão": "#212121",
-        "Purificação": "#7e57c2", "Terra": "#5d4037", "Surpresa": "#fbc02d", "Suporte": "#00897b"
-    };
-
     const BANCO_DE_DADOS_PERSONAGENS = {
-        "Ysma": {
-            hpMax: 100, danoFisico: 15, elementoBase: "Mágico", fraqueza: "Purificação", imunidade: "Fogo",
-            passiva: { nome: "Magia Hexy", desc: "Ataques elementais causam +15 de dano em inimigos com menos de 50 de vida." },
-            habilidades: [
-                { nome: "Acerto Perfurante", dano: 15, elemento: "Físico", cdMax: 0, cdAtual: 0, tipo: "ataque", desc: "Ataque básico." },
-                { nome: "Bola de Fogo", dano: 35, elemento: "Fogo", cdMax: 2, cdAtual: 0, tipo: "ataque", efeito: "queimadura", desc: "Incendeia o alvo." },
-                { nome: "Raio de Gelo", dano: 10, elemento: "Gelo", cdMax: 4, cdAtual: 0, tipo: "ataque_ysma_gelo", efeito: "congelamento", desc: "Congela o inimigo." },
-                { nome: "Furacão", dano: 25, elemento: "Vento", cdMax: 4, cdAtual: 0, tipo: "ataque", efeito: "leve", desc: "Deixa o alvo LEVE." }
-            ],
-            temImbuirMagia: true
-        },
-        "Campos": {
-            hpMax: 200, danoFisico: 20, elementoBase: "Corrupção", fraqueza: "Purificação", imunidade: "Corrupção",
-            passiva: { nome: "Vampirismo Simbiótico", desc: "Causa dano de Corrupção recupera 10 HP." },
-            habilidades: [
-                { nome: "Garras Vorazes", dano: 20, elemento: "Físico", cdMax: 0, cdAtual: 0, tipo: "ataque", desc: "Golpe físico direto." },
-                { nome: "Surto Corrupto", dano: 35, elemento: "Corrupção", cdMax: 4, cdAtual: 0, tipo: "ataque", desc: "Dano alto de Corrupção." },
-                { nome: "Simbiose", dano: 0, elemento: "Suporte", cdMax: 4, cdAtual: 0, tipo: "buff_aliado", desc: "Concede escudo." },
-                { nome: "Laceração", dano: 20, elemento: "Corrupção", cdMax: 3, cdAtual: 0, tipo: "ataque", efeito: "sangramento", desc: "Causa Sangramento." }
-            ],
-            limitBreak: { nome: "Banquete Simbiótico", dano: 60, elemento: "Corrupção", tipo: "limit_banquete", desc: "Dano devastador e restaura vida para todo o time." }
-        },
-        "Dunnie": {
-            hpMax: 110, danoFisico: 20, elementoBase: "Físico", fraqueza: "Biológico", imunidade: "Purificação",
-            passiva: { nome: "Paciência dos Antigos", desc: "Terminar sem atacar gera Limite." },
-            habilidades: [
-                { nome: "Acerto Perfurante", dano: 20, elemento: "Físico", cdMax: 0, cdAtual: 0, tipo: "ataque", desc: "Ataque rápido." },
-                { nome: "Preparo", dano: 0, elemento: "Físico", cdMax: 5, cdAtual: 0, tipo: "buff_proprio", desc: "Restaura HP." },
-                { nome: "Ataque Rápido", dano: 30, elemento: "Físico", cdMax: 3, cdAtual: 0, tipo: "ataque", desc: "Estocada física." },
-                { nome: "Exílio dos Antigos", dano: 25, elemento: "Biológico", cdMax: 5, cdAtual: 0, tipo: "ataque", efeito: "veneno", desc: "Infesta com veneno." }
-            ],
-            limitBreak: { nome: "Força dos Antigos", dano: 50, elemento: "Biológico", tipo: "limit_aoe", efeito: "veneno", desc: "Ataca todos com veneno." }
-        },
-        "Doctor": {
-            hpMax: 200, danoFisico: 20, elementoBase: "Elétrico", fraqueza: "Água", imunidade: "Elétrico",
-            passiva: { nome: "Sobrecarga", desc: "Ganha bônus de dano elétrico." },
-            habilidades: [
-                { nome: "Soco Turbinado", dano: 20, elemento: "Físico", cdMax: 0, cdAtual: 0, tipo: "ataque", desc: "Soco robótico." },
-                { nome: "Bomba Elétrica", dano: 26, elemento: "Elétrico", cdMax: 6, cdAtual: 0, tipo: "ataque", efeito: "paralisia_50", desc: "Chance de paralisar." },
-                { nome: "Atualizar", dano: 0, elemento: "Elétrico", cdMax: 6, cdAtual: 0, tipo: "buff_doctor", desc: "Ganha ATQ e escudo." },
-                { nome: "Pulso", dano: 20, elemento: "Elétrico", cdMax: 6, cdAtual: 0, tipo: "ataque", efeito: "paralisia_30", desc: "Paralisa." }
-            ],
-            limitBreak: { nome: "Protocolo Secreto", dano: 44, elemento: "Elétrico", tipo: "limit_aoe", desc: "Descarga elétrica em área." }
-        },
-        "Night": {
-            hpMax: 120, danoFisico: 15, elementoBase: "Corrupção", fraqueza: "Purificação", imunidade: "Vento",
-            passiva: { nome: "Sombra Evasiva", desc: "Esquiva com HP baixo." },
-            habilidades: [
-                { nome: "Ataque Sombrio", dano: 15, elemento: "Físico", cdMax: 0, cdAtual: 0, tipo: "ataque", desc: "Ataque físico." },
-                { nome: "Garras Sombrias", dano: 35, elemento: "Corrupção", cdMax: 2, cdAtual: 0, tipo: "ataque", efeito: "sangramento", desc: "Causa sangramento." },
-                { nome: "Escudo de Penas", dano: 0, elemento: "Vento", cdMax: 3, cdAtual: 0, tipo: "buff_escudo_cura", desc: "Escudo e HP." },
-                { nome: "Rugido Poderoso", dano: 0, elemento: "Vento", cdMax: 3, cdAtual: 0, tipo: "cura_propria_20", desc: "Cura própria." }
-            ],
-            limitBreak: { nome: "Meteoro das Trevas", dano: 29, elemento: "Corrupção", tipo: "limit_night", desc: "Atinge todos." }
-        },
-        "Groxy": {
-            hpMax: 100, danoFisico: 15, elementoBase: "Vento", fraqueza: "Fogo", imunidade: "Biológico",
-            passiva: { nome: "Cólera", desc: "Gera limite extra." },
-            habilidades: [
-                { nome: "Corte Tornado", dano: 15, elemento: "Vento", cdMax: 0, cdAtual: 0, tipo: "ataque", desc: "Vento." },
-                { nome: "Lâmina de Fogo", dano: 30, elemento: "Fogo", cdMax: 2, cdAtual: 0, tipo: "ataque", efeito: "queimadura_50", desc: "Fogo." },
-                { nome: "Vendaval Massivo", dano: 28, elemento: "Vento", cdMax: 8, cdAtual: 0, tipo: "groxy_vendaval", efeito: "leve_30", desc: "Área." },
-                { nome: "Corte Maré Baixa", dano: 23, elemento: "Água", cdMax: 5, cdAtual: 0, tipo: "roubo_vida", desc: "Roubo de vida." }
-            ],
-            limitBreak: { nome: "Dança da Abóbora", dano: 30, elemento: "Vento", tipo: "limit_groxy", desc: "Área leve." }
-        },
-        "Silver": {
-            hpMax: 130, danoFisico: 20, elementoBase: "Purificação", fraqueza: "Gelo", imunidade: "Purificação",
-            passiva: { nome: "Aura Pura", desc: "Ignora escudos." },
-            habilidades: [
-                { nome: "Estocada Branca", dano: 20, elemento: "Purificação", cdMax: 0, cdAtual: 0, tipo: "ataque", desc: "Básico sagrado." },
-                { nome: "Floreio Congelante", dano: 35, elemento: "Gelo", cdMax: 3, cdAtual: 0, tipo: "ataque", efeito: "congelamento", desc: "Congela." },
-                { nome: "Off White", dano: 30, elemento: "Purificação", cdMax: 4, cdAtual: 0, tipo: "ataque", efeito: "bloqueio_cura", desc: "Corta buffs." },
-                { nome: "Julgamento", dano: 25, elemento: "Purificação", cdMax: 8, cdAtual: 0, tipo: "ataque", efeito: "julgamento_hp", desc: "Julga." }
-            ],
-            limitBreak: { nome: "Lâmina Divina", dano: 45, elemento: "Purificação", tipo: "limit_silver", desc: "Dano total." }
-        },
-        "Mika": {
-            hpMax: 120, danoFisico: 15, elementoBase: "Água", fraqueza: "Corrupção", imunidade: "Fogo",
-            passiva: { nome: "Estrela Cadente", desc: "Cura gera limite." },
-            habilidades: [
-                { nome: "Disparo de Estrela", dano: 15, elemento: "Água", cdMax: 0, cdAtual: 0, tipo: "ataque", desc: "Disparo." },
-                { nome: "Raio Estelar", dano: 35, elemento: "Água", cdMax: 3, cdAtual: 0, tipo: "ataque", efeito: "paralisia_kevin", desc: "Raio." },
-                { nome: "Poeira Estelar", dano: 0, elemento: "Água", cdMax: 4, cdAtual: 0, tipo: "buff_aliado_cura_mika", desc: "Cura." },
-                { nome: "Bolhas de Lavanda", dano: 25, elemento: "Água", cdMax: 4, cdAtual: 0, tipo: "mika_bolhas", efeito: "molhado", desc: "Bolhas." }
-            ],
-            limitBreak: { nome: "Armadura Cósmica", dano: 0, elemento: "Água", tipo: "limit_mika", desc: "Cura grupo." }
-        },
-        "Kevin": {
-            hpMax: 100, danoFisico: 15, elementoBase: "Físico", fraqueza: "Gelo", imunidade: "Água",
-            passiva: { nome: "Lealdade", desc: "Resistência." },
-            habilidades: [
-                { nome: "Investida", dano: 15, elemento: "Físico", cdMax: 0, cdAtual: 0, tipo: "ataque", desc: "Investida." },
-                { nome: "Avançada Uivante", dano: 20, elemento: "Físico", cdMax: 3, cdAtual: 0, tipo: "ataque_kevin_mika", desc: "Avanço." },
-                { nome: "Escudo da Estrela", dano: 0, elemento: "Físico", cdMax: 4, cdAtual: 0, tipo: "buff_aliado_escudo_kevin", desc: "Escudo." },
-                { nome: "Floreio Ramificado", dano: 27, elemento: "Físico", cdMax: 4, cdAtual: 0, tipo: "ataque_floreio_kevin", efeito: "molhado", desc: "Floreio." }
-            ],
-            limitBreak: { nome: "Avanço do Herói", dano: 50, elemento: "Físico", tipo: "limit_kevin", desc: "Dano." }
-        },
-        "Mariel": {
-            hpMax: 200, danoFisico: 15, elementoBase: "Purificação", fraqueza: "Vento", imunidade: "Terra",
-            passiva: { nome: "Asas", desc: "Ganho com corrupção." },
-            habilidades: [
-                { nome: "Infusão", dano: 0, elemento: "Purificação", cdMax: 1, cdAtual: 0, tipo: "buff_proprio", desc: "Escudo." },
-                { nome: "Lâmina de Luz", dano: 35, elemento: "Purificação", cdMax: 2, cdAtual: 0, tipo: "ataque", efeito: "sangramento", desc: "Luz." },
-                { nome: "Rodeio Divino", dano: 10, elemento: "Purificação", cdMax: 3, cdAtual: 0, tipo: "ataque_buff_grupo", desc: "Buff." },
-                { nome: "Impacto Sísmico", dano: 25, elemento: "Terra", cdMax: 3, cdAtual: 0, tipo: "ataque", efeito: "pesado", desc: "Terra." }
-            ],
-            limitBreak: { nome: "Meteoro Angelical", dano: 29, elemento: "Purificação", tipo: "limit_mariel", desc: "Meteoro." }
-        },
-        "Samael": {
-            hpMax: 120, danoFisico: 15, elementoBase: "Purificação", fraqueza: "Terra", imunidade: "Vento",
-            passiva: { nome: "Leve", desc: "Imune a leves e pesados." },
-            habilidades: [
-                { nome: "Floreio de Penas", dano: 20, elemento: "Purificação", cdMax: 1, cdAtual: 0, tipo: "ataque", desc: "Penas." },
-                { nome: "Floreio Ciano", dano: 35, elemento: "Purificação", cdMax: 2, cdAtual: 0, tipo: "ataque", efeito: "floreio_ciano", desc: "Ciano." },
-                { nome: "Estilhaços Divinos", dano: 20, elemento: "Terra", cdMax: 3, cdAtual: 0, tipo: "estilhacos_divinos", desc: "Estilhaços." },
-                { nome: "Proteção Antiga", dano: 0, elemento: "Terra", cdMax: 3, cdAtual: 0, tipo: "protecao_antiga", desc: "Proteção." }
-            ],
-            limitBreak: { nome: "Floreio Sol e Lua", dano: 40, elemento: "Purificação", tipo: "limit_samael", desc: "Sol e lua." }
-        },
-        "Guedes": {
-            hpMax: 100, danoFisico: 15, elementoBase: "Surpresa", fraqueza: "Terra", imunidade: "Gelo",
-            passiva: { nome: "Vendedor", desc: "Usa moedas." },
-            habilidades: [
-                { nome: "Roubar", dano: 15, elemento: "Vento", cdMax: 0, cdAtual: 0, tipo: "guedes_roubar", custoMoeda: 0, desc: "Rouba." },
-                { nome: "Piada Estranha", dano: 1, elemento: "Mágico", cdMax: 0, cdAtual: 0, tipo: "guedes_piada", custoMoeda: 2, desc: "Piada." },
-                { nome: "Lâmina de Vento", dano: 20, elemento: "Vento", cdMax: 0, cdAtual: 0, tipo: "guedes_lamina", custoMoeda: 3, desc: "Vento." },
-                { nome: "Choque de Loucura", dano: 27, elemento: "Terra", cdMax: 0, cdAtual: 0, tipo: "guedes_choque", custoMoeda: 3, desc: "Choque." }
-            ],
-            limitBreak: { nome: "Faça Chover Ouro", dano: 20, elemento: "Vento", tipo: "limit_guedes", desc: "Ouro." }
-        },
-        "Rhayane": {
-            hpMax: 140, danoFisico: 20, elementoBase: "Fogo", fraqueza: "Gelo", imunidade: "Fogo",
-            temDespertar: true,
-            passiva: { nome: "Esmeralda", desc: "Imunidade terra." },
-            habilidades: [
-                { nome: "Brasas Ardentes", dano: 20, elemento: "Fogo", cdMax: 0, cdAtual: 0, tipo: "ataque", efeito: "queimadura_15", desc: "Brasas." },
-                { nome: "Tornado de Fogo", dano: 30, elemento: "Fogo", cdMax: 2, cdAtual: 0, tipo: "ataque", efeito: "queimadura_50", desc: "Tornado." },
-                { nome: "Pilares de Chamas", dano: 25, elemento: "Fogo", cdMax: 7, cdAtual: 0, tipo: "ataque_buff_bencao_grupo", efeito: "queimadura_30", desc: "Pilares." },
-                { nome: "Lança Chamas", dano: 23, elemento: "Fogo", cdMax: 5, cdAtual: 0, tipo: "ataque_buff_bencao_propria", efeito: "queimadura_20", desc: "Lança." }
-            ],
-            limitBreak: { nome: "Despertar Berserk", dano: 0, elemento: "Fogo", tipo: "modo_berserk", desc: "Berserk." }
-        },
-        "Anna": {
-            hpMax: 150, danoFisico: 15, elementoBase: "Corrupção", fraqueza: "Gelo", imunidade: "Biológico",
-            temTransformacao: true,
-            passiva: { nome: "Corvo", desc: "Penas." },
-            habilidades: [
-                { nome: "Flecha de Corvo", dano: 15, elemento: "Corrupção", cdMax: 0, cdAtual: 0, tipo: "ataque_cd_reducao", desc: "Flecha." },
-                { nome: "Floreio da Neblina", dano: 20, elemento: "Corrupção", cdMax: 2, cdAtual: 0, tipo: "ataque_aoe", desc: "Neblina." },
-                { nome: "Cadência de Penas", dano: 20, elemento: "Corrupção", cdMax: 4, cdAtual: 0, tipo: "ataque_carrega_transf", desc: "Cadência." },
-                { nome: "Sombras Protetoras", dano: 0, elemento: "Corrupção", cdMax: 3, cdAtual: 0, tipo: "buff_anna_grupo", desc: "Sombras." }
-            ],
-            formaMonstro: {
-                nome: "Monstro Corvo", fraqueza: "Purificação", imunidade: "Corrupção",
-                passiva: { nome: "Penas", desc: "Cura." },
-                habilidades: [
-                    { nome: "Rasante", dano: 15, elemento: "Corrupção", cdMax: 3, cdAtual: 0, tipo: "ataque_aoe", desc: "Rasante." },
-                    { nome: "Toxicológica", dano: 20, elemento: "Biológico", cdMax: 2, cdAtual: 0, tipo: "ataque", efeito: "veneno_50", desc: "Tox." },
-                    { nome: "Infiltração", dano: 20, elemento: "Biológico", cdMax: 4, cdAtual: 0, tipo: "ataque_ignora_escudo", desc: "Inf." },
-                    { nome: "Nuvem", dano: 10, elemento: "Corrupção", cdMax: 3, cdAtual: 0, tipo: "ataque_cura_kill", desc: "Nuvem." }
-                ]
-            }
-        },
-        "Sarah": {
-            hpMax: 130, danoFisico: 20, elementoBase: "Biológico", fraqueza: "Terra", imunidade: "Biológico",
-            temPreparoReceita: true,
-            passiva: { nome: "Azul Profundo", desc: "Imune a veneno." },
-            habilidades: [
-                { nome: "Bolo Azul", dano: 20, elemento: "Biológico", cdMax: 1, cdAtual: 0, tipo: "ataque", efeito: "veneno_15", desc: "Bolo." },
-                { nome: "Cetro Real", dano: 30, elemento: "Biológico", cdMax: 2, cdAtual: 0, tipo: "ataque", efeito: "veneno_50", desc: "Cetro." },
-                { nome: "Decreto Real", dano: 0, elemento: "Biológico", cdMax: 5, cdAtual: 0, tipo: "cura_grupo_limpo", desc: "Decreto." },
-                { nome: "Explosão", dano: 23, elemento: "Biológico", cdMax: 5, cdAtual: 0, tipo: "roubo_vida_sarah", efeito: "veneno_20", desc: "Explosão." }
-            ],
-            limitBreak: { nome: "Onda de Receita", dano: 0, elemento: "Biológico", tipo: "onda_sarah", desc: "Onda." }
-        },
-        "Leandro": {
-            hpMax: 110, danoFisico: 10, elementoBase: "Mágico", fraqueza: "Fogo", imunidade: "Biológico",
-            passiva: { nome: "Cristal", desc: "Reflete." },
-            habilidades: [
-                { nome: "Floreio Mágico", dano: 10, elemento: "Mágico", cdMax: 0, cdAtual: 0, tipo: "ataque", efeito: "bloqueio_cura", desc: "Mágico." },
-                { nome: "Remendo", dano: 0, elemento: "Mágico", cdMax: 5, cdAtual: 0, tipo: "cura_grupo_puro", desc: "Remendo." },
-                { nome: "Bibity BOOM", dano: 30, elemento: "Mágico", cdMax: 3, cdAtual: 0, tipo: "ataque", efeito: "leve", desc: "Boom." },
-                { nome: "Florescer da Mana", dano: 0, elemento: "Biológico", cdMax: 11, cdAtual: 0, tipo: "sumonar_flor", desc: "Flor." }
-            ],
-            marcasMagicas: 3
-        },
-        "Niw": {
-            hpMax: 122, danoFisico: 10, elementoBase: "Corrupção", fraqueza: "Água", imunidade: "Corrupção",
-            passiva: { nome: "Contos", desc: "Cura." },
-            habilidades: [
-                { nome: "Garras", dano: 10, elemento: "Corrupção", cdMax: 0, cdAtual: 0, tipo: "ataque", efeito: "obsessao", desc: "Garras." },
-                { nome: "Morcego", dano: 0, elemento: "Corrupção", cdMax: 11, cdAtual: 0, tipo: "invocar_morcego", desc: "Morcego." },
-                { nome: "Pulso", dano: 25, elemento: "Corrupção", cdMax: 3, cdAtual: 0, tipo: "ataque", desc: "Pulso." },
-                { nome: "Energizar", dano: 0, elemento: "Físico", cdMax: 1, cdAtual: 0, tipo: "buff_proprio_niw", desc: "Energizar." }
-            ],
-            limitBreak: { nome: "Amaldiçoada", dano: 38, elemento: "Corrupção", tipo: "limit_niw", desc: "Amaldiçoada." }
-        },
-        "Karin": {
-            hpMax: 180, danoFisico: 10, elementoBase: "Terra", fraqueza: "Biológico", imunidade: "Terra",
-            passiva: { nome: "Paladina", desc: "Defesa." },
-            habilidades: [
-                { nome: "Impulso", dano: 10, elemento: "Terra", cdMax: 0, cdAtual: 0, tipo: "ataque", desc: "Impulso." },
-                { nome: "Cristalização", dano: 0, elemento: "Terra", cdMax: 2, cdAtual: 0, tipo: "buff_aliado_karin", desc: "Cristal." },
-                { nome: "Espada de Cristal", dano: 22, elemento: "Terra", cdMax: 3, cdAtual: 0, tipo: "ataque", efeito: "pesado", desc: "Espada." },
-                { nome: "Barreira", dano: 0, elemento: "Terra", cdMax: 11, cdAtual: 0, tipo: "invocar_barreira", desc: "Barreira." }
-            ],
-            temKarinBarras: true, karinDef: 0, karinAtq: 0
-        },
-        "Din": {
-            hpMax: 200, danoFisico: 20, elementoBase: "Corrupção", fraqueza: "Terra", imunidade: "Vento",
-            passiva: { nome: "Regente", desc: "Cura ao cair." },
-            habilidades: [
-                { nome: "Adaga Sombria", dano: 20, elemento: "Físico", cdMax: 0, cdAtual: 0, tipo: "ataque", desc: "Adaga." },
-                { nome: "Tiro do Ceifador", dano: 30, elemento: "Corrupção", cdMax: 4, cdAtual: 0, tipo: "ataque", efeito: "bloqueio_cura", desc: "Tiro." },
-                { nome: "Escudo das Almas", dano: 0, elemento: "Suporte", cdMax: 4, cdAtual: 0, tipo: "din_escudo_almas", desc: "Escudo." },
-                { nome: "Floreio das Almas", dano: 20, elemento: "Corrupção", cdMax: 3, cdAtual: 0, tipo: "ataque", efeito: "sangramento", desc: "Floreio." }
-            ],
-            limitBreak: { nome: "Lamento das Almas", dano: 0, elemento: "Corrupção", tipo: "limit_din_revive", desc: "Revive." }
-        },
-        "Cristal": {
-            hpMax: 110, danoFisico: 15, elementoBase: "Mágico", fraqueza: "Mágico", imunidade: "Purificação",
-            passiva: { nome: "Poções", desc: "Preparo." },
-            habilidades: [
-                { nome: "Cajado", dano: 15, elemento: "Físico", cdMax: 0, cdAtual: 0, tipo: "ataque", desc: "Cajado." },
-                { nome: "Estilhaços", dano: 20, elemento: "Gelo", cdMax: 6, cdAtual: 0, tipo: "ataque", efeito: "congelamento", desc: "Gelo." },
-                { nome: "Chamas", dano: 23, elemento: "Fogo", cdMax: 4, cdAtual: 0, tipo: "ataque", efeito: "queimadura", desc: "Chamas." },
-                { nome: "Divar", dano: 0, elemento: "Purificação", cdMax: 3, cdAtual: 0, tipo: "cristal_divar", desc: "Divar." }
-            ],
-            temFrascosCristal: true, frascosRestantes: 3
-        },
-        "Shy": {
-            hpMax: 100, danoFisico: 20, elementoBase: "Mágico", fraqueza: "Nenhuma", imunidade: "Nenhuma",
-            passiva: { nome: "Heroína", desc: "Rúnica." },
-            habilidades: [
-                { nome: "Espada Rúnica", dano: 20, elemento: "Físico", cdMax: 0, cdAtual: 0, tipo: "ataque", desc: "Espada." },
-                { nome: "Runa de Fogo", dano: 20, elemento: "Fogo", cdMax: 4, cdAtual: 0, tipo: "ataque", efeito: "queimadura_20", desc: "Fogo." },
-                { nome: "Floreio Rúnico", dano: 20, elemento: "Mágico", cdMax: 4, cdAtual: 0, tipo: "ataque", efeito: "shy_floreio", desc: "Floreio." },
-                { nome: "Runa de Gelo", dano: 20, elemento: "Gelo", cdMax: 3, cdAtual: 0, tipo: "shy_gelo", efeito: "congelamento_30", desc: "Gelo." }
-            ],
-            limitBreak: { nome: "Cavaleira Rúnica", dano: 30, elemento: "Fogo", tipo: "limit_shy", desc: "Moto." }
-        },
-        "Raissa": {
-            hpMax: 180, danoFisico: 20, elementoBase: "Vento", fraqueza: "Elétrico", imunidade: "Terra",
-            passiva: { nome: "Correntes", desc: "Amor." },
-            habilidades: [
-                { nome: "Corrente Fantasma", dano: 20, elemento: "Vento", cdMax: 0, cdAtual: 0, tipo: "ataque", desc: "Fantasma." },
-                { nome: "Trancafiar", dano: 20, elemento: "Vento", cdMax: 3, cdAtual: 0, tipo: "ataque", efeito: "bloqueado", desc: "Trava." },
-                { nome: "Desejo Lunar", dano: 0, elemento: "Suporte", cdMax: 8, cdAtual: 0, tipo: "desejo_lunar", desc: "Lunar." },
-                { nome: "Rasgo Ectoplasma", dano: 40, elemento: "Vento", cdMax: 11, cdAtual: 0, tipo: "ataque", efeito: "paralisia_30", desc: "Rasgo." }
-            ],
-            limitBreak: { nome: "Surto Fantasmagórico", dano: 0, elemento: "Vento", tipo: "limit_raissa", desc: "Surto." }
-        },
-        "Coraly": {
-            hpMax: 200, danoFisico: 20, elementoBase: "Corrupção", fraqueza: "Elétrico", imunidade: "Corrupção",
-            passiva: { nome: "Junte-se", desc: "Vampiro." },
-            habilidades: [
-                { nome: "Garras da Lady", dano: 20, elemento: "Corrupção", cdMax: 0, cdAtual: 0, tipo: "ataque", desc: "Garras." },
-                { nome: "Absorver", dano: 20, elemento: "Corrupção", cdMax: 3, cdAtual: 0, tipo: "coraly_absorver", desc: "Absorver." },
-                { nome: "Desejo por Sangue", dano: 0, elemento: "Suporte", cdMax: 8, cdAtual: 0, tipo: "coraly_desejo", desc: "Sangue." },
-                { nome: "Praga da Dona Morcego", dano: 30, elemento: "Corrupção", cdMax: 10, cdAtual: 0, tipo: "coraly_praga", desc: "Praga." }
-            ],
-            limitBreak: { nome: "Você é Meu", dano: 0, elemento: "Corrupção", tipo: "limit_coraly", desc: "Seu." }
-        },
-        "Gigi": {
-            hpMax: 130, danoFisico: 10, elementoBase: "Biológico", fraqueza: "Fogo", imunidade: "Biológico",
-            passiva: { nome: "Gotas de Morte", desc: "Vírus." },
-            habilidades: [
-                { nome: "Brincar Pesado", dano: 10, elemento: "Biológico", cdMax: 0, cdAtual: 0, tipo: "ataque", desc: "Brincar." },
-                { nome: "Pulso Caótico", dano: 20, elemento: "Corrupção", cdMax: 5, cdAtual: 0, tipo: "gigi_pulso", desc: "Pulso." },
-                { nome: "Armadura Ácida", dano: 0, elemento: "Suporte", cdMax: 10, cdAtual: 0, tipo: "gigi_armadura", desc: "Armadura." },
-                { nome: "Foice de Louva-Deus", dano: 15, elemento: "Biológico", cdMax: 10, cdAtual: 0, tipo: "ataque", efeito: "sangramento", desc: "Foice." }
-            ],
-            temMetamorfose: true, formaAtual: "louvadeus"
-        }
+        "Ysma": { hpMax: 100, danoFisico: 15, elementoBase: "Mágico", fraqueza: "Purificação", imunidade: "Fogo", passiva: { nome: "Magia Hexy", desc: "Dano extra." }, habilidades: [{ nome: "Acerto Perfurante", dano: 15, elemento: "Físico", cdMax: 0, cdAtual: 0, tipo: "ataque" }, { nome: "Bola de Fogo", dano: 35, elemento: "Fogo", cdMax: 2, cdAtual: 0, tipo: "ataque", efeito: "queimadura" }, { nome: "Raio de Gelo", dano: 10, elemento: "Gelo", cdMax: 4, cdAtual: 0, tipo: "ataque" }, { nome: "Furacão", dano: 25, elemento: "Vento", cdMax: 4, cdAtual: 0, tipo: "ataque" }] },
+        "Campos": { hpMax: 200, danoFisico: 20, elementoBase: "Corrupção", fraqueza: "Purificação", imunidade: "Corrupção", passiva: { nome: "Vampirismo", desc: "Cura." }, habilidades: [{ nome: "Garras Vorazes", dano: 20, elemento: "Físico", cdMax: 0, cdAtual: 0, tipo: "ataque" }, { nome: "Surto Corrupto", dano: 35, elemento: "Corrupção", cdMax: 4, cdAtual: 0, tipo: "ataque" }, { nome: "Simbiose", dano: 0, elemento: "Suporte", cdMax: 4, cdAtual: 0, tipo: "suporte" }, { nome: "Laceração", dano: 20, elemento: "Corrupção", cdMax: 3, cdAtual: 0, tipo: "ataque", efeito: "sangramento" }] },
+        "Dunnie": { hpMax: 110, danoFisico: 20, elementoBase: "Físico", fraqueza: "Biológico", imunidade: "Purificação", passiva: { nome: "Paciência", desc: "Limite." }, habilidades: [{ nome: "Acerto Perfurante", dano: 20, elemento: "Físico", cdMax: 0, cdAtual: 0, tipo: "ataque" }, { nome: "Preparo", dano: 0, elemento: "Físico", cdMax: 5, cdAtual: 0, tipo: "suporte" }, { nome: "Ataque Rápido", dano: 30, elemento: "Físico", cdMax: 3, cdAtual: 0, tipo: "ataque" }, { nome: "Exílio", dano: 25, elemento: "Biológico", cdMax: 5, cdAtual: 0, tipo: "ataque", efeito: "veneno" }] },
+        "Doctor": { hpMax: 200, danoFisico: 20, elementoBase: "Elétrico", fraqueza: "Água", imunidade: "Elétrico", passiva: { nome: "Sobrecarga", desc: "Elétrico." }, habilidades: [{ nome: "Soco Turbinado", dano: 20, elemento: "Físico", cdMax: 0, cdAtual: 0, tipo: "ataque" }, { nome: "Bomba Elétrica", dano: 26, elemento: "Elétrico", cdMax: 6, cdAtual: 0, tipo: "ataque" }, { nome: "Atualizar", dano: 0, elemento: "Elétrico", cdMax: 6, cdAtual: 0, tipo: "suporte" }, { nome: "Pulso", dano: 20, elemento: "Elétrico", cdMax: 6, cdAtual: 0, tipo: "ataque" }] },
+        "Night": { hpMax: 120, danoFisico: 15, elementoBase: "Corrupção", fraqueza: "Purificação", imunidade: "Vento", passiva: { nome: "Sombra", desc: "Esquiva." }, habilidades: [{ nome: "Ataque Sombrio", dano: 15, elemento: "Físico", cdMax: 0, cdAtual: 0, tipo: "ataque" }, { nome: "Garras Sombrias", dano: 35, elemento: "Corrupção", cdMax: 2, cdAtual: 0, tipo: "ataque", efeito: "sangramento" }, { nome: "Escudo", dano: 0, elemento: "Vento", cdMax: 3, cdAtual: 0, tipo: "suporte" }, { nome: "Rugido", dano: 0, elemento: "Vento", cdMax: 3, cdAtual: 0, tipo: "suporte" }] },
+        "Groxy": { hpMax: 100, danoFisico: 15, elementoBase: "Vento", fraqueza: "Fogo", imunidade: "Biológico", passiva: { nome: "Cólera", desc: "Limite." }, habilidades: [{ nome: "Corte Tornado", dano: 15, elemento: "Vento", cdMax: 0, cdAtual: 0, tipo: "ataque" }, { nome: "Lâmina Fogo", dano: 30, elemento: "Fogo", cdMax: 2, cdAtual: 0, tipo: "ataque" }, { nome: "Vendaval", dano: 28, elemento: "Vento", cdMax: 8, cdAtual: 0, tipo: "ataque" }, { nome: "Maré", dano: 23, elemento: "Água", cdMax: 5, cdAtual: 0, tipo: "ataque" }] },
+        "Silver": { hpMax: 130, danoFisico: 20, elementoBase: "Purificação", fraqueza: "Gelo", imunidade: "Purificação", passiva: { nome: "Aura", desc: "Sagrado." }, habilidades: [{ nome: "Estocada", dano: 20, elemento: "Purificação", cdMax: 0, cdAtual: 0, tipo: "ataque" }, { nome: "Congelante", dano: 35, elemento: "Gelo", cdMax: 3, cdAtual: 0, tipo: "ataque" }, { nome: "Off White", dano: 30, elemento: "Purificação", cdMax: 4, cdAtual: 0, tipo: "ataque" }, { nome: "Julgamento", dano: 25, elemento: "Purificação", cdMax: 8, cdAtual: 0, tipo: "ataque" }] },
+        "Mika": { hpMax: 120, danoFisico: 15, elementoBase: "Água", fraqueza: "Corrupção", imunidade: "Fogo", passiva: { nome: "Estrela", desc: "Cura." }, habilidades: [{ nome: "Disparo", dano: 15, elemento: "Água", cdMax: 0, cdAtual: 0, tipo: "ataque" }, { nome: "Raio", dano: 35, elemento: "Água", cdMax: 3, cdAtual: 0, tipo: "ataque" }, { nome: "Poeira", dano: 0, elemento: "Água", cdMax: 4, cdAtual: 0, tipo: "suporte" }, { nome: "Bolhas", dano: 25, elemento: "Água", cdMax: 4, cdAtual: 0, tipo: "ataque", efeito: "molhado" }] },
+        "Kevin": { hpMax: 100, danoFisico: 15, elementoBase: "Físico", fraqueza: "Gelo", imunidade: "Água", passiva: { nome: "Lealdade", desc: "Resistência." }, habilidades: [{ nome: "Investida", dano: 15, elemento: "Físico", cdMax: 0, cdAtual: 0, tipo: "ataque" }, { nome: "Avançada", dano: 20, elemento: "Físico", cdMax: 3, cdAtual: 0, tipo: "ataque" }, { nome: "Escudo", dano: 0, elemento: "Físico", cdMax: 4, cdAtual: 0, tipo: "suporte" }, { nome: "Floreio", dano: 27, elemento: "Físico", cdMax: 4, cdAtual: 0, tipo: "ataque", efeito: "molhado" }] },
+        "Mariel": { hpMax: 200, danoFisico: 15, elementoBase: "Purificação", fraqueza: "Vento", imunidade: "Terra", passiva: { nome: "Asas", desc: "Luz." }, habilidades: [{ nome: "Infusão", dano: 0, elemento: "Purificação", cdMax: 1, cdAtual: 0, tipo: "suporte" }, { nome: "Lâmina", dano: 35, elemento: "Purificação", cdMax: 2, cdAtual: 0, tipo: "ataque" }, { nome: "Rodeio", dano: 10, elemento: "Purificação", cdMax: 3, cdAtual: 0, tipo: "ataque" }, { nome: "Impacto", dano: 25, elemento: "Terra", cdMax: 3, cdAtual: 0, tipo: "ataque" }] },
+        "Samael": { hpMax: 120, danoFisico: 15, elementoBase: "Purificação", fraqueza: "Terra", imunidade: "Vento", passiva: { nome: "Leve", desc: "Imunidade." }, habilidades: [{ nome: "Penas", dano: 20, elemento: "Purificação", cdMax: 1, cdAtual: 0, tipo: "ataque" }, { nome: "Ciano", dano: 35, elemento: "Purificação", cdMax: 2, cdAtual: 0, tipo: "ataque" }, { nome: "Estilhaços", dano: 20, elemento: "Terra", cdMax: 3, cdAtual: 0, tipo: "ataque" }, { nome: "Proteção", dano: 0, elemento: "Terra", cdMax: 3, cdAtual: 0, tipo: "suporte" }] },
+        "Guedes": { hpMax: 100, danoFisico: 15, elementoBase: "Surpresa", fraqueza: "Terra", imunidade: "Gelo", passiva: { nome: "Vendedor", desc: "Moedas." }, habilidades: [{ nome: "Roubar", dano: 15, elemento: "Vento", cdMax: 0, cdAtual: 0, tipo: "ataque" }, { nome: "Piada", dano: 1, elemento: "Mágico", cdMax: 0, cdAtual: 0, tipo: "ataque" }, { nome: "Lâmina", dano: 20, elemento: "Vento", cdMax: 0, cdAtual: 0, tipo: "ataque" }, { nome: "Choque", dano: 27, elemento: "Terra", cdMax: 0, cdAtual: 0, tipo: "ataque" }] },
+        "Rhayane": { hpMax: 140, danoFisico: 20, elementoBase: "Fogo", fraqueza: "Gelo", imunidade: "Fogo", passiva: { nome: "Esmeralda", desc: "Fogo." }, habilidades: [{ nome: "Brasas", dano: 20, elemento: "Fogo", cdMax: 0, cdAtual: 0, tipo: "ataque" }, { nome: "Tornado", dano: 30, elemento: "Fogo", cdMax: 2, cdAtual: 0, tipo: "ataque" }, { nome: "Pilares", dano: 25, elemento: "Fogo", cdMax: 7, cdAtual: 0, tipo: "ataque" }, { nome: "Lança", dano: 23, elemento: "Fogo", cdMax: 5, cdAtual: 0, tipo: "ataque" }] },
+        "Anna": { hpMax: 150, danoFisico: 15, elementoBase: "Corrupção", fraqueza: "Gelo", imunidade: "Biológico", passiva: { nome: "Corvo", desc: "Penas." }, habilidades: [{ nome: "Flecha", dano: 15, elemento: "Corrupção", cdMax: 0, cdAtual: 0, tipo: "ataque" }, { nome: "Neblina", dano: 20, elemento: "Corrupção", cdMax: 2, cdAtual: 0, tipo: "ataque" }, { nome: "Cadência", dano: 20, elemento: "Corrupção", cdMax: 4, cdAtual: 0, tipo: "ataque" }, { nome: "Sombras", dano: 0, elemento: "Corrupção", cdMax: 3, cdAtual: 0, tipo: "suporte" }] },
+        "Sarah": { hpMax: 130, danoFisico: 20, elementoBase: "Biológico", fraqueza: "Terra", imunidade: "Biológico", passiva: { nome: "Azul", desc: "Veneno." }, habilidades: [{ nome: "Bolo", dano: 20, elemento: "Biológico", cdMax: 1, cdAtual: 0, tipo: "ataque" }, { nome: "Cetro", dano: 30, elemento: "Biológico", cdMax: 2, cdAtual: 0, tipo: "ataque" }, { nome: "Decreto", dano: 0, elemento: "Biológico", cdMax: 5, cdAtual: 0, tipo: "suporte" }, { nome: "Explosão", dano: 23, elemento: "Biológico", cdMax: 5, cdAtual: 0, tipo: "ataque" }] },
+        "Leandro": { hpMax: 110, danoFisico: 10, elementoBase: "Mágico", fraqueza: "Fogo", imunidade: "Biológico", passiva: { nome: "Cristal", desc: "Mana." }, habilidades: [{ nome: "Floreio", dano: 10, elemento: "Mágico", cdMax: 0, cdAtual: 0, tipo: "ataque" }, { nome: "Remendo", dano: 0, elemento: "Mágico", cdMax: 5, cdAtual: 0, tipo: "suporte" }, { nome: "BOOM", dano: 30, elemento: "Mágico", cdMax: 3, cdAtual: 0, tipo: "ataque" }, { nome: "Mana", dano: 0, elemento: "Biológico", cdMax: 11, cdAtual: 0, tipo: "suporte" }] },
+        "Niw": { hpMax: 122, danoFisico: 10, elementoBase: "Corrupção", fraqueza: "Água", imunidade: "Corrupção", passiva: { nome: "Contos", desc: "Cura." }, habilidades: [{ nome: "Garras", dano: 10, elemento: "Corrupção", cdMax: 0, cdAtual: 0, tipo: "ataque" }, { nome: "Morcego", dano: 0, elemento: "Corrupção", cdMax: 11, cdAtual: 0, tipo: "suporte" }, { nome: "Pulso", dano: 25, elemento: "Corrupção", cdMax: 3, cdAtual: 0, tipo: "ataque" }, { nome: "Energizar", dano: 0, elemento: "Físico", cdMax: 1, cdAtual: 0, tipo: "suporte" }] },
+        "Karin": { hpMax: 180, danoFisico: 10, elementoBase: "Terra", fraqueza: "Biológico", imunidade: "Terra", passiva: { nome: "Paladina", desc: "Defesa." }, habilidades: [{ nome: "Impulso", dano: 10, elemento: "Terra", cdMax: 0, cdAtual: 0, tipo: "ataque" }, { nome: "Cristalização", dano: 0, elemento: "Terra", cdMax: 2, cdAtual: 0, tipo: "suporte" }, { nome: "Espada", dano: 22, elemento: "Terra", cdMax: 3, cdAtual: 0, tipo: "ataque" }, { nome: "Barreira", dano: 0, elemento: "Terra", cdMax: 11, cdAtual: 0, tipo: "suporte" }] },
+        "Din": { hpMax: 200, danoFisico: 20, elementoBase: "Corrupção", fraqueza: "Terra", imunidade: "Vento", passiva: { nome: "Regente", desc: "Almas." }, habilidades: [{ nome: "Adaga", dano: 20, elemento: "Físico", cdMax: 0, cdAtual: 0, tipo: "ataque" }, { nome: "Tiro", dano: 30, elemento: "Corrupção", cdMax: 4, cdAtual: 0, tipo: "ataque" }, { nome: "Escudo", dano: 0, elemento: "Suporte", cdMax: 4, cdAtual: 0, tipo: "suporte" }, { nome: "Floreio", dano: 20, elemento: "Corrupção", cdMax: 3, cdAtual: 0, tipo: "ataque" }] },
+        "Cristal": { hpMax: 110, danoFisico: 15, elementoBase: "Mágico", fraqueza: "Mágico", imunidade: "Purificação", passiva: { nome: "Poções", desc: "Preparo." }, habilidades: [{ nome: "Cajado", dano: 15, elemento: "Físico", cdMax: 0, cdAtual: 0, tipo: "ataque" }, { nome: "Estilhaços", dano: 20, elemento: "Gelo", cdMax: 6, cdAtual: 0, tipo: "ataque" }, { nome: "Chamas", dano: 23, elemento: "Fogo", cdMax: 4, cdAtual: 0, tipo: "ataque" }, { nome: "Divar", dano: 0, elemento: "Purificação", cdMax: 3, cdAtual: 0, tipo: "suporte" }] },
+        "Shy": { hpMax: 100, danoFisico: 20, elementoBase: "Mágico", fraqueza: "Nenhuma", imunidade: "Nenhuma", passiva: { nome: "Heroína", desc: "Rúnica." }, habilidades: [{ nome: "Espada", dano: 20, elemento: "Físico", cdMax: 0, cdAtual: 0, tipo: "ataque" }, { nome: "Runa Fogo", dano: 20, elemento: "Fogo", cdMax: 4, cdAtual: 0, tipo: "ataque" }, { nome: "Floreio", dano: 20, elemento: "Mágico", cdMax: 4, cdAtual: 0, tipo: "ataque" }, { nome: "Runa Gelo", dano: 20, elemento: "Gelo", cdMax: 3, cdAtual: 0, tipo: "ataque" }] },
+        "Raissa": { hpMax: 180, danoFisico: 20, elementoBase: "Vento", fraqueza: "Elétrico", imunidade: "Terra", passiva: { nome: "Correntes", desc: "Fantasma." }, habilidades: [{ nome: "Corrente", dano: 20, elemento: "Vento", cdMax: 0, cdAtual: 0, tipo: "ataque" }, { nome: "Trancafiar", dano: 20, elemento: "Vento", cdMax: 3, cdAtual: 0, tipo: "ataque" }, { nome: "Lunar", dano: 0, elemento: "Suporte", cdMax: 8, cdAtual: 0, tipo: "suporte" }, { nome: "Rasgo", dano: 40, elemento: "Vento", cdMax: 11, cdAtual: 0, tipo: "ataque" }] },
+        "Coraly": { hpMax: 200, danoFisico: 20, elementoBase: "Corrupção", fraqueza: "Elétrico", imunidade: "Corrupção", passiva: { nome: "Vampira", desc: "Sangue." }, habilidades: [{ nome: "Garras", dano: 20, elemento: "Corrupção", cdMax: 0, cdAtual: 0, tipo: "ataque" }, { nome: "Absorver", dano: 20, elemento: "Corrupção", cdMax: 3, cdAtual: 0, tipo: "ataque" }, { nome: "Desejo", dano: 0, elemento: "Suporte", cdMax: 8, cdAtual: 0, tipo: "suporte" }, { nome: "Praga", dano: 30, elemento: "Corrupção", cdMax: 10, cdAtual: 0, tipo: "ataque" }] },
+        "Gigi": { hpMax: 130, danoFisico: 10, elementoBase: "Biológico", fraqueza: "Fogo", imunidade: "Biológico", passiva: { nome: "Gotas", desc: "Vírus." }, habilidades: [{ nome: "Brincar", dano: 10, elemento: "Biológico", cdMax: 0, cdAtual: 0, tipo: "ataque" }, { nome: "Pulso", dano: 20, elemento: "Corrupção", cdMax: 5, cdAtual: 0, tipo: "ataque" }, { nome: "Armadura", dano: 0, elemento: "Suporte", cdMax: 10, cdAtual: 0, tipo: "suporte" }, { nome: "Foice", dano: 15, elemento: "Biológico", cdMax: 10, cdAtual: 0, tipo: "ataque" }] }
     };
 
-    // BANCO DOS 3 INIMIGOS GENÉRICOS
+    // 6 INIMIGOS GENÉRICOS COMPLETOS
     const INIMIGOS_GENERICOS = {
-        "Assassino do Crepúsculo": {
-            hpMax: 100, danoFisico: 20, elementoBase: "Físico", fraqueza: "Fogo", imunidade: "Gelo",
-            passiva: { nome: "Sacrifício Lunar", desc: "Se for acertado por Mika ou Kevin, deixa eles sangrando." },
-            habilidades: [
-                { nome: "Corte Obscuro", dano: 20, elemento: "Físico", cdMax: 0, cdAtual: 0, tipo: "ataque", desc: "Golpe físico direto." },
-                { nome: "Investida Lunar", dano: 35, elemento: "Corrupção", cdMax: 4, cdAtual: 0, tipo: "ataque", desc: "Dano de Corrupção alto." },
-                { nome: "Lágrimas da Lua", dano: 0, elemento: "Suporte", cdMax: 4, cdAtual: 0, tipo: "inimigo_suporte_cura", desc: "Cura 30 do HP do alvo aliado." },
-                { nome: "Corte Profundo", dano: 20, elemento: "Corrupção", cdMax: 3, cdAtual: 0, tipo: "ataque", efeito: "sangramento", desc: "Causa Sangramento." }
-            ]
-        },
-        "Suculenta Carnívora": {
-            hpMax: 300, danoFisico: 20, elementoBase: "Biológico", fraqueza: "Fogo", imunidade: "Biológico",
-            passiva: { nome: "Biologia Pura", desc: "Absorve ataques de água e cura 90 do HP." },
-            habilidades: [
-                { nome: "Corte Laminado", dano: 20, elemento: "Biológico", cdMax: 0, cdAtual: 0, tipo: "ataque", desc: "Golpe elemental básico." },
-                { nome: "Chuva Ácida", dano: 30, elemento: "Biológico", cdMax: 4, cdAtual: 0, tipo: "ataque_aoe", efeito: "veneno", desc: "Dano em todo time oponente e envenena." },
-                { nome: "Adubar a Terra", dano: 0, elemento: "Suporte", cdMax: 4, cdAtual: 0, tipo: "inimigo_suporte_buff", desc: "Cura 30 do próprio HP e dá 22 de escudo." },
-                { nome: "Mastigar", dano: 29, elemento: "Corrupção", cdMax: 3, cdAtual: 0, tipo: "ataque", efeito: "bloqueio_cura", desc: "Causa bloqueio de cura no alvo." }
-            ]
-        },
-        "Corrompido": {
-            hpMax: 140, danoFisico: 20, elementoBase: "Corrupção", fraqueza: "Purificação", imunidade: "Corrupção",
-            passiva: { nome: "Zumbificado", desc: "Imune a sangramento, envenenado, queimado e DNA vamp." },
-            habilidades: [
-                { nome: "Mordida Infectada", dano: 20, elemento: "Corrupção", cdMax: 0, cdAtual: 0, tipo: "ataque", desc: "Golpe de corrupção direto." },
-                { nome: "Alterar Composição", dano: 0, elemento: "Corrupção", cdMax: 4, cdAtual: 0, tipo: "inimigo_escudo_proprio", desc: "Dá escudo de -30 de dano a si mesmo por 1 turno." },
-                { nome: "Floreio da Corrupção", dano: 20, elemento: "Corrupção", cdMax: 4, cdAtual: 0, tipo: "ataque", efeito: "bloqueio_cura", desc: "Dá o estado bloqueio de cura." },
-                { nome: "Corte Profano", dano: 30, elemento: "Corrupção", cdMax: 3, cdAtual: 0, tipo: "ataque", efeito: "sangramento", desc: "Causa Sangramento." }
-            ]
-        }
+        "Assassino do Crepúsculo": { hpMax: 100, danoFisico: 20, elementoBase: "Físico", fraqueza: "Fogo", imunidade: "Gelo", passiva: { nome: "Lunar", desc: "Perigoso." }, habilidades: [{ nome: "Corte Obscuro", dano: 20, elemento: "Físico", cdMax: 0, cdAtual: 0, tipo: "ataque" }, { nome: "Investida", dano: 35, elemento: "Corrupção", cdMax: 4, cdAtual: 0, tipo: "ataque" }, { nome: "Lágrimas", dano: 0, elemento: "Suporte", cdMax: 4, cdAtual: 0, tipo: "suporte" }, { nome: "Corte Profundo", dano: 20, elemento: "Corrupção", cdMax: 3, cdAtual: 0, tipo: "ataque", efeito: "sangramento" }] },
+        "Suculenta Carnívora": { hpMax: 300, danoFisico: 20, elementoBase: "Biológico", fraqueza: "Fogo", imunidade: "Biológico", passiva: { nome: "Biologia Pura", desc: "Absorve água." }, habilidades: [{ nome: "Corte Laminado", dano: 20, elemento: "Biológico", cdMax: 0, cdAtual: 0, tipo: "ataque" }, { nome: "Chuva Ácida", dano: 30, elemento: "Biológico", cdMax: 4, cdAtual: 0, tipo: "ataque" }, { nome: "Adubar", dano: 0, elemento: "Suporte", cdMax: 4, cdAtual: 0, tipo: "suporte" }, { nome: "Mastigar", dano: 29, elemento: "Corrupção", cdMax: 3, cdAtual: 0, tipo: "ataque" }] },
+        "Corrompido": { hpMax: 140, danoFisico: 20, elementoBase: "Corrupção", fraqueza: "Purificação", imunidade: "Corrupção", passiva: { nome: "Zumbi", desc: "Imune a status." }, habilidades: [{ nome: "Mordida", dano: 20, elemento: "Corrupção", cdMax: 0, cdAtual: 0, tipo: "ataque" }, { nome: "Alterar", dano: 0, elemento: "Corrupção", cdMax: 4, cdAtual: 0, tipo: "suporte" }, { nome: "Floreio", dano: 20, elemento: "Corrupção", cdMax: 4, cdAtual: 0, tipo: "ataque" }, { nome: "Profano", dano: 30, elemento: "Corrupção", cdMax: 3, cdAtual: 0, tipo: "ataque", efeito: "sangramento" }] },
+        "Coiote Corrompido": { hpMax: 120, danoFisico: 15, elementoBase: "Corrupção", fraqueza: "Biológico", imunidade: "Vento", passiva: { nome: "Noite", desc: "Esquiva física." }, habilidades: [{ nome: "Mordida Selvagem", dano: 18, elemento: "Físico", cdMax: 0, cdAtual: 0, tipo: "ataque" }, { nome: "Abraço da Noite", dano: 25, elemento: "Escuridão", cdMax: 3, cdAtual: 0, tipo: "ataque" }, { nome: "Uivo Imprudente", dano: 0, elemento: "Suporte", cdMax: 4, cdAtual: 0, tipo: "suporte" }, { nome: "Grito Lúgubre", dano: 15, elemento: "Escuridão", cdMax: 3, cdAtual: 0, tipo: "ataque" }] },
+        "Panda Zumbi": { hpMax: 230, danoFisico: 15, elementoBase: "Terra", fraqueza: "Vento", imunidade: "Biológico", passiva: { nome: "Infestada", desc: "Veneno passivo." }, habilidades: [{ nome: "Investida do Panda", dano: 15, elemento: "Terra", cdMax: 0, cdAtual: 0, tipo: "ataque" }, { nome: "Rocha", dano: 35, elemento: "Escuridão", cdMax: 6, cdAtual: 0, tipo: "ataque" }, { nome: "Rolamento", dano: 30, elemento: "Terra", cdMax: 6, cdAtual: 0, tipo: "ataque" }, { nome: "Mordida Infestação", dano: 20, elemento: "Escuridão", cdMax: 3, cdAtual: 0, tipo: "ataque", efeito: "veneno" }] },
+        "Espectro Afogado": { hpMax: 130, danoFisico: 10, elementoBase: "Água", fraqueza: "Biológico", imunidade: "Água", passiva: { nome: "Molhado", desc: "Bônus d'água." }, habilidades: [{ nome: "Lança da Maré", dano: 10, elemento: "Água", cdMax: 0, cdAtual: 0, tipo: "ataque", efeito: "molhado" }, { nome: "Onda Profunda", dano: 25, elemento: "Água", cdMax: 3, cdAtual: 0, tipo: "ataque", efeito: "molhado" }, { nome: "Lamentos", dano: 0, elemento: "Suporte", cdMax: 4, cdAtual: 0, tipo: "suporte" }, { nome: "Inundar", dano: 20, elemento: "Água", cdMax: 3, cdAtual: 0, tipo: "ataque", efeito: "molhado" }] }
     };
 
     let timeAliadoSelecionado = [];
     let unidades = {};
-    let moedasGuedesTimePlayer = 0;
-    let atacanteAtualId = 'p1'; 
-    let alvoInimigoId = 'e0';   
+    let andarAtual = 1;
+    let ouroRun = 0;
+    let inventarioItens = [];
+    let atacanteAtualId = 'p1';
+    let alvoInimigoId = 'e0';
     let emTurnoInimigo = false;
-    let modoSelecaoSuporte = false; 
+    let modificadorProximaBatalha = null;
 
     function irParaSelecao() {
         document.getElementById('menu-screen').classList.remove('active');
@@ -893,8 +558,13 @@
     function voltarAoMenu() {
         document.getElementById('end-screen').style.display = 'none';
         document.getElementById('game-screen').classList.remove('active');
+        document.getElementById('dungeon-screen').classList.remove('active');
+        document.getElementById('shop-screen').classList.remove('active');
         document.getElementById('menu-screen').classList.add('active');
         timeAliadoSelecionado = [];
+        andarAtual = 1;
+        ouroRun = 0;
+        inventarioItens = [];
         atualizarPainelSlots();
         renderizarRoster();
         tocarMusicaMenu();
@@ -904,56 +574,23 @@
         event.stopPropagation();
         let p = BANCO_DE_DADOS_PERSONAGENS[nomeChar];
         if (!p) return;
-
         let content = document.getElementById('profile-content');
-        let html = `
-            <div class="profile-title">📜 Perfil: ${nomeChar}</div>
-            <div class="profile-stats">
-                <b>HP Máximo:</b> ${p.hpMax} | <b>Dano Físico Base:</b> ${p.danoFisico}<br>
-                <b>Elemento Base:</b> ${p.elementoBase} | <b>Fraqueza:</b> ${p.fraqueza} | <b>Imunidade:</b> ${p.imunidade}
-            </div>
-            <div class="profile-passive">
-                <b>✨ PASSIVA - ${p.passiva.nome}:</b> ${p.passiva.desc}
-            </div>
-            <div class="profile-hab-list">
-                <h4>⚔️ HABILIDADES:</h4>
-        `;
-
-        p.habilidades.forEach((h, idx) => {
-            let infoRecarga = (nomeChar === 'Guedes') ? `<b>Custo:</b> ${h.custoMoeda} Moedas` : `<b>Recarga:</b> ${h.cdMax} turnos`;
-            html += `
-                <div class="profile-hab-item">
-                    <h5>${idx + 1}. ${h.nome} (${h.elemento})</h5>
-                    <b>Dano:</b> ${h.dano} | ${infoRecarga}<br>
-                    <span>${h.desc || 'Sem descrição.'}</span>
-                </div>
-            `;
-        });
-
+        let html = `<div class="profile-title">📜 Perfil: ${nomeChar}</div><div class="profile-stats"><b>HP Máximo:</b> ${p.hpMax} | <b>Elemento:</b> ${p.elementoBase} | <b>Fraqueza:</b> ${p.fraqueza} | <b>Imunidade:</b> ${p.imunidade}</div>`;
         content.innerHTML = html;
         document.getElementById('profile-modal').style.display = 'flex';
     }
 
-    function fecharPerfil() {
-        document.getElementById('profile-modal').style.display = 'none';
-    }
+    function fecharPerfil() { document.getElementById('profile-modal').style.display = 'none'; }
 
     function renderizarRoster() {
         let container = document.getElementById('roster-container');
         container.innerHTML = '';
-        
         for (let nome in BANCO_DE_DADOS_PERSONAGENS) {
             let p = BANCO_DE_DADOS_PERSONAGENS[nome];
             let card = document.createElement('div');
             card.className = 'roster-card';
-            
             if (timeAliadoSelecionado.includes(nome)) card.classList.add('selected-ally');
-
-            card.innerHTML = `
-                <h4>${nome}</h4>
-                <span>HP: ${p.hpMax} | ${p.elementoBase}</span>
-                <button class="btn-profile-info" onclick="abrirPerfil(event, '${nome}')">ℹ️ PERFIL</button>
-            `;
+            card.innerHTML = `<h4>${nome}</h4><span>HP: ${p.hpMax} | ${p.elementoBase}</span><button class="btn-profile-info" onclick="abrirPerfil(event, '${nome}')">ℹ️ PERFIL</button>`;
             card.onclick = () => selecionarPersonagemRoster(nome);
             container.appendChild(card);
         }
@@ -973,73 +610,61 @@
         document.getElementById(`slot-p0`).innerText = timeAliadoSelecionado[0] || "1º";
         document.getElementById(`slot-p1`).innerText = timeAliadoSelecionado[1] || "2º";
         document.getElementById(`slot-p2`).innerText = timeAliadoSelecionado[2] || "3º";
-
-        let btnStart = document.getElementById('btn-start-game');
-        btnStart.disabled = (timeAliadoSelecionado.length !== 3);
+        document.getElementById('btn-start-game').disabled = (timeAliadoSelecionado.length !== 3);
     }
 
     function criarInstancia(nomeModelo, id, ehInimigo = false) {
         let base = ehInimigo ? INIMIGOS_GENERICOS[nomeModelo] : BANCO_DE_DADOS_PERSONAGENS[nomeModelo];
-        let hpM = base.hpMax;
-        
         return {
-            id: id, nome: nomeModelo, hpMax: hpM, hpAtual: hpM,
+            id: id, nome: nomeModelo, hpMax: base.hpMax, hpAtual: base.hpMax,
             danoFisico: base.danoFisico, fraqueza: base.fraqueza, imunidade: base.imunidade,
-            limite: base.temImbuirMagia ? 100 : 0, 
-            habilidades: JSON.parse(JSON.stringify(base.habilidades)),
-            limitBreak: base.limitBreak ? JSON.parse(JSON.stringify(base.limitBreak)) : null,
-            temDespertar: base.temDespertar || false,
-            temTransformacao: base.temTransformacao || false,
-            temPreparoReceita: base.temPreparoReceita || false,
-            temImbuirMagia: base.temImbuirMagia || false,
-            imbuirMagiaTurnos: 0,
-            temFrascosCristal: base.temFrascosCristal || false,
-            frascosRestantes: base.temFrascosCristal ? 3 : 0,
-            modoPocoesTurnos: 0,
-            danoAcumuladoCristal: 0,
-            formaMonstro: base.formaMonstro ? JSON.parse(JSON.stringify(base.formaMonstro)) : null,
-            marcasMagicas: base.marcasMagicas !== undefined ? 3 : null,
-            temKarinBarras: base.temKarinBarras || false,
-            karinDef: 0, karinAtq: 0, buffKarinAtqBonus: 0, escudoKarinPaladina: 0,
-            escudoSimbiose: 0, escudoDunnie: 0, escudoDoctor: 0, escudoKevin: 0, escudoMika: 0, escudoMariel: 0, escudoGroxyGold: 0, escudoAnna: 0, escudoKarin: 0, escudoSilver: 0, escudoDin: 0, escudoShy: 0, escudoGigiArmadura: 0,
-            buffAtqDoctor: 0, buffAtqYsma: 0, buffAtqNightSinergia: 0, debuffAtqNight: 0, bloqueioCuraTurnos: 0, buffAtqDoctorSobrecarga: 0, buffAtqMikaKevin: 0, buffAtqSilverCura: 0,
-            buffMarielGrupo: 0, buffMarielCorrupcao: 0, passoPlumaTurnos: 0, muitoDoceTurnos: 0, bencaoTurnos: 0, regeneracaoTurnos: 0, autoReviver: false, autoReviverTurnos: 0, aceleradoTurnos: 0,
-            paralisiaTurnos: 0, paralisiaChance: 0, sangramento: 0, queimadura: 0, veneno: 0, venenoForte: 0, congelado: false, leve: 0, pesado: 0, molhado: 0,
-            obsessaoTurnos: 0, obsessaoOrigemId: null, maldicaoTurnos: 0, proximoAtqObsessao: false,
-            emBerserk: false, ehMonstroAnna: false, turnosTransformacaoAnna: 0,
-            ehFlorSumonada: false, ehBarreiraSumonada: false, temMorcegoInvocado: false,
-            raissaVinculoId: null,
-            contadorAcertosCorrupcao: 0, dnaVampTurnos: 0, dnaVampEstagio: 0, sedePorSangueTurnos: 0,
-            virusTurnos: 0, temMetamorfose: base.temMetamorfose || false, formaAtual: base.formaAtual || "louvadeus",
-            habilidadesBloqueadasIndices: []
+            limite: 0, habilidades: JSON.parse(JSON.stringify(base.habilidades)),
+            sangramento: 0, veneno: 0, queimadura: 0, molhado: 0, leve: 0
         };
     }
 
-    function iniciarCombate() {
-        let nomesGenericos = ["Assassino do Crepúsculo", "Suculenta Carnívora", "Corrompido"];
+    function iniciarRun() {
+        andarAtual = 1;
+        ouroRun = 0;
+        inventarioItens = [];
+        
+        unidades = {
+            'p0': criarInstancia(timeAliadoSelecionado[0], "p0", false),
+            'p1': criarInstancia(timeAliadoSelecionado[1], "p1", false),
+            'p2': criarInstancia(timeAliadoSelecionado[2], "p2", false)
+        };
+
+        iniciarCombateAndar();
+    }
+
+    function iniciarCombateAndar() {
+        let nomesGenericos = Object.keys(INIMIGOS_GENERICOS);
         let timeInimigoGerado = [
             nomesGenericos[Math.floor(Math.random() * nomesGenericos.length)],
             nomesGenericos[Math.floor(Math.random() * nomesGenericos.length)],
             nomesGenericos[Math.floor(Math.random() * nomesGenericos.length)]
         ];
 
-        unidades = {
-            'p0': criarInstancia(timeAliadoSelecionado[0], "p0", false),
-            'p1': criarInstancia(timeAliadoSelecionado[1], "p1", false),
-            'p2': criarInstancia(timeAliadoSelecionado[2], "p2", false),
-            'e0': criarInstancia(timeInimigoGerado[0], "e0", true),
-            'e1': criarInstancia(timeInimigoGerado[1], "e1", true),
-            'e2': criarInstancia(timeInimigoGerado[2], "e2", true)
-        };
+        unidades['e0'] = criarInstancia(timeInimigoGerado[0], "e0", true);
+        unidades['e1'] = criarInstancia(timeInimigoGerado[1], "e1", true);
+        unidades['e2'] = criarInstancia(timeInimigoGerado[2], "e2", true);
 
-        moedasGuedesTimePlayer = 0;
+        // Aplicar modificador de caminho se houver
+        if (modificadorProximaBatalha === 'lagoa') {
+            ['p0','p1','p2','e0','e1','e2'].forEach(id => { if(unidades[id]) unidades[id].molhado = 2; });
+            log("🌊 <b>Lagoa do Destino:</b> Todos começam a batalha molhados!");
+        } else if (modificadorProximaBatalha === 'gravidade') {
+            ['p0','p1','p2','e0','e1','e2'].forEach(id => { if(unidades[id]) unidades[id].leve = 2; });
+            log("🪨 <b>Sala da Gravidade:</b> Todos começam leves!");
+        }
+        modificadorProximaBatalha = null;
 
-        document.getElementById('end-screen').style.display = 'none';
         document.getElementById('select-screen').classList.remove('active');
+        document.getElementById('dungeon-screen').classList.remove('active');
         document.getElementById('game-screen').classList.add('active');
 
         aplicarCenarioAleatorio();
-        log(`👾 <b>Inimigos gerados no campo:</b> ${timeInimigoGerado.join(', ')}!`);
+        log(`⚔️ <b>Início da Batalha (Andar ${andarAtual}/10):</b> Inimigos: ${timeInimigoGerado.join(', ')}`);
 
         atacanteAtualId = 'p1';
         alvoInimigoId = 'e0';
@@ -1049,125 +674,62 @@
 
     function cliqueCardAliado(id) {
         if (emTurnoInimigo || unidades[id].hpAtual <= 0) return;
-        if (modoSelecaoSuporte) {
-            aplicarSuporteNoAliado(id);
-            return;
-        }
         atacanteAtualId = id;
         atualizarUI();
     }
 
     function selecionarAlvoInimigo(id) {
-        if (emTurnoInimigo || unidades[id].hpAtual <= 0 || modoSelecaoSuporte) return;
+        if (emTurnoInimigo || unidades[id].hpAtual <= 0) return;
         alvoInimigoId = id;
         atualizarUI();
     }
 
-    function calcularDano(atacante, defensor, habilidade, elementoEfetivo) {
-        let elem = elementoEfetivo || habilidade.elemento;
-
-        if (defensor.nome === "Suculenta Carnívora" && elem === "Água") {
-            aplicarCura(defensor, 90, defensor);
-            log(`🌿 <b>Biologia Pura (Suculenta Carnívora):</b> Absorveu o ataque de Água e curou 90 de HP!`);
-            mostrarEfeitoFlutuante(defensor.id, "+90 HP 🌿", "cura");
-            return 0;
-        }
-
+    function calcularDano(atacante, defensor, habilidade) {
+        let elem = habilidade.elemento;
         if (elem === defensor.imunidade) {
-            log(`<b style="color:blue;">IMUNE!</b> ${defensor.nome} não recebeu dano.`);
             mostrarEfeitoFlutuante(defensor.id, "IMUNE!", "info");
             return 0;
         }
-
         let danoBase = habilidade.dano;
-
         if (elem === defensor.fraqueza) {
             danoBase += 30;
             log(`<b style="color:red;">FRAQUEZA! (+30 Dano em ${defensor.nome})</b>`);
         }
-
         return Math.max(0, danoBase);
     }
 
-    function aplicarCura(unidade, qtd, curador) {
-        if (unidade.bloqueioCuraTurnos > 0) {
-            log(`🚫 <b>${unidade.nome}</b> teve a cura BLOQUEADA!`);
-            mostrarEfeitoFlutuante(unidade.id, "CURA BLOQUEADA!", "info");
-            return;
-        }
+    function aplicarCura(unidade, qtd) {
         unidade.hpAtual = Math.min(unidade.hpMax, unidade.hpAtual + qtd);
-        dispararBuffPulse(unidade.id);
         mostrarEfeitoFlutuante(unidade.id, `+${qtd} HP`, "cura");
     }
 
-    function carregarLimite(unidade, qtd) {
-        if (unidade.marcasMagicas !== null || unidade.temKarinBarras || unidade.temImbuirMagia || unidade.temFrascosCristal || unidade.temMetamorfose) return;
-        unidade.limite = Math.min(100, Math.max(0, unidade.limite + qtd));
-    }
-
-    function aplicarDanoPosAtaque(unidade) {
-        if (unidade.hpAtual > 0 && unidade.queimadura > 0) {
-            unidade.hpAtual = Math.max(0, unidade.hpAtual - 10);
-            mostrarEfeitoFlutuante(unidade.id, "-10 🔥", "dano");
-        }
-    }
-
-    function aplicarEfeitoHab(habilidade, defensor, timePrefixAttacker) {
-        if (!defensor || defensor.hpAtual <= 0) return;
-        if (defensor.nome === "Corrompido" && (habilidade.efeito === 'sangramento' || habilidade.efeito === 'veneno' || habilidade.efeito === 'queimadura')) {
-            log(`🧟 <b>Zumbificado (Corrompido):</b> Imune a status alterados!`);
-            return;
-        }
-        if (habilidade.efeito === 'sangramento') defensor.sangramento = 3;
-        if (habilidade.efeito === 'veneno') defensor.veneno = 6;
-        if (habilidade.efeito === 'bloqueio_cura') defensor.bloqueioCuraTurnos = 3;
-    }
-
     function executarAcaoJogador(indiceHab) {
-        if (emTurnoInimigo || modoSelecaoSuporte) return;
-
+        if (emTurnoInimigo) return;
         let atacante = unidades[atacanteAtualId];
         let defensor = unidades[alvoInimigoId];
-
         if (atacante.hpAtual <= 0) return;
 
         let habilidade = (indiceHab === 'limit') ? atacante.limitBreak : atacante.habilidades[indiceHab];
-        if (indiceHab === 'limit') {
-            if (atacante.limite < 100) return;
-            atacante.limite = 0;
-            dispararFlashLimites();
-        }
+        if (habilidade.cdAtual > 0) return;
 
         let dano = calcularDano(atacante, defensor, habilidade);
         defensor.hpAtual = Math.max(0, defensor.hpAtual - dano);
         mostrarEfeitoFlutuante(defensor.id, `-${dano}`, "dano");
 
-        carregarLimite(atacante, 25);
-        carregarLimite(defensor, 15);
         if (habilidade.cdMax > 0) habilidade.cdAtual = habilidade.cdMax;
-
         log(`<b>${atacante.nome}</b> usou <b>${habilidade.nome}</b> em <b>${defensor.nome}</b> causando ${dano} de dano!`);
-        aplicarEfeitoHab(habilidade, defensor, 'p');
 
-        aplicarDanoPosAtaque(atacante);
         if (verificarVitoria()) return;
         iniciarTurnoInimigo();
     }
 
-    function processarEfeitosStatus() {
-        for (let id in unidades) {
+    function processarStatusEFeitos() {
+        ['p0','p1','p2','e0','e1','e2'].forEach(id => {
             let u = unidades[id];
-            if (u.hpAtual <= 0) continue;
-            if (u.sangramento > 0) { u.hpAtual = Math.max(0, u.hpAtual - 10); u.sangramento--; mostrarEfeitoFlutuante(u.id, "-10 🩸", "dano"); }
-            if (u.veneno > 0) { u.hpAtual = Math.max(0, u.hpAtual - 10); u.veneno--; mostrarEfeitoFlutuante(u.id, "-10 🧪", "dano"); }
-            
-            // Decrementa o Cooldown das habilidades de todas as unidades vivas
-            if (u.habilidades) {
-                u.habilidades.forEach(h => {
-                    if (h.cdAtual > 0) h.cdAtual--;
-                });
-            }
-        }
+            if (!u || u.hpAtual <= 0) return;
+            if (u.queimadura > 0) { u.hpAtual = Math.max(0, u.hpAtual - 10); u.queimadura--; mostrarEfeitoFlutuante(u.id, "-10 🔥", "dano"); }
+            if (u.habilidades) { u.habilidades.forEach(h => { if (h.cdAtual > 0) h.cdAtual--; }); }
+        });
     }
 
     function log(m) {
@@ -1179,8 +741,12 @@
     function verificarVitoria() {
         let inimigosMortos = ['e0', 'e1', 'e2'].every(id => unidades[id].hpAtual <= 0);
         if (inimigosMortos) {
-            log("🎉 <b>VITÓRIA!</b> Todos os inimigos genéricos foram derrotados!");
-            exibirTelaFim(true);
+            if (andarAtual >= 10) {
+                exibirTelaFim(true, "🏆 VITÓRIA DEFINITIVA! Você zerou a Masmorra!");
+            } else {
+                log("🎉 <b>Vitória no Andar!</b> Escolha o seu próximo caminho.");
+                setTimeout(abrirTelaCaminhos, 1200);
+            }
             return true;
         }
         return false;
@@ -1189,28 +755,23 @@
     function verificarDerrota() {
         let aliadosMortos = ['p0', 'p1', 'p2'].every(id => unidades[id].hpAtual <= 0);
         if (aliadosMortos) {
-            log("💀 <b>DERROTA!</b> Seu time foi derrotado!");
-            exibirTelaFim(false);
+            exibirTelaFim(false, "💀 SEU TIME CAIU! Fim de run.");
             return true;
         }
         return false;
     }
 
-    function exibirTelaFim(vitoria) {
+    function exibirTelaFim(vitoria, texto) {
         let endScreen = document.getElementById('end-screen');
         let title = document.getElementById('end-title');
         let desc = document.getElementById('end-desc');
-
         if (vitoria) {
-            title.className = 'end-title-win';
-            title.innerText = '🏆 VITÓRIA!';
-            desc.innerText = 'Você sobreviveu à horda inimiga!';
+            title.className = 'end-title-win'; title.innerText = '🏆 VITÓRIA!';
         } else {
-            title.className = 'end-title-lose';
-            title.innerText = '💀 DERROTA!';
-            desc.innerText = 'Seu time caiu em combate.';
+            title.className = 'end-title-lose'; title.innerText = '💀 DERROTA!';
         }
-        setTimeout(() => { endScreen.style.display = 'flex'; }, 600);
+        desc.innerText = texto;
+        endScreen.style.display = 'flex';
     }
 
     function atualizarUI() {
@@ -1219,22 +780,15 @@
             let card = document.getElementById(`unit-${id}`);
             if (!card) continue;
             let hpBar = document.getElementById(`hp-${id}`);
-            let limitBar = document.getElementById(`limit-${id}`);
             let statusBadge = document.getElementById(`status-${id}`);
 
             document.getElementById(`name-${id}`).innerText = u.nome + (id.startsWith('e') ? " (Inimigo)" : "");
             if (hpBar) hpBar.style.width = Math.max(0, (u.hpAtual / u.hpMax) * 100) + "%";
-
-            if (limitBar) {
-                limitBar.style.width = u.limite + "%";
-            }
-
             if (statusBadge) {
-                let listaStatus = [];
-                if (u.veneno > 0) listaStatus.push(`🧪 VENENO`);
-                if (u.sangramento > 0) listaStatus.push(`🩸 SANGRANDO`);
-                if (u.bloqueioCuraTurnos > 0) listaStatus.push(`🚫 SEM CURA`);
-                statusBadge.innerHTML = listaStatus.join("<br>");
+                let statusTxt = [];
+                if (u.queimadura > 0) statusTxt.push("🔥 Queimando");
+                if (u.molhado > 0) statusTxt.push("🌊 Molhado");
+                statusBadge.innerText = statusTxt.join(" | ");
             }
 
             if (u.hpAtual <= 0) card.classList.add('dead');
@@ -1255,119 +809,126 @@
                     btn.innerHTML = `${h.nome} ${h.cdAtual > 0 ? `(${h.cdAtual}t)` : ''}`;
                     btn.className = `elem-${h.elemento}`;
                     btn.disabled = h.cdAtual > 0 || emTurnoInimigo;
-                } else {
-                    btn.style.display = 'none';
-                }
-            }
-
-            let btnL = document.getElementById('btn-limit');
-            if (at.limitBreak) {
-                btnL.style.display = 'block';
-                btnL.disabled = at.limite < 100 || emTurnoInimigo;
-                if (at.limite >= 100) {
-                    btnL.classList.add('ready');
-                    btnL.innerText = `🔥 ${at.limitBreak.nome.toUpperCase()} (PRONTO!) 🔥`;
-                } else {
-                    btnL.classList.remove('ready');
-                    btnL.innerText = `QUEBRA DE LIMITES (${at.limite}%)`;
-                }
-            } else {
-                btnL.style.display = 'none';
+                } else { btn.style.display = 'none'; }
             }
         }
+        document.getElementById('run-stage-label').innerText = `Andar: ${andarAtual}/10 | 🪙: ${ouroRun}`;
     }
 
     function iniciarTurnoInimigo() {
         emTurnoInimigo = true;
-        let turnInd = document.getElementById('turn-indicator');
-        turnInd.innerText = 'TURNO INIMIGO...';
-        turnInd.style.color = 'red';
-        
-        processarEfeitosStatus();
+        document.getElementById('turn-label').innerText = 'TURNO INIMIGO...';
+        processarStatusEFeitos();
         atualizarUI();
 
         if (verificarVitoria() || verificarDerrota()) return;
 
-        // DELAY DE 2 SEGUNDOS
         setTimeout(() => {
             let inimigosVivos = ['e0', 'e1', 'e2'].filter(id => unidades[id] && unidades[id].hpAtual > 0);
             let aliadosVivos = ['p0', 'p1', 'p2'].filter(id => unidades[id] && unidades[id].hpAtual > 0);
 
             if (inimigosVivos.length > 0 && aliadosVivos.length > 0) {
                 inimigosVivos.forEach(eId => {
-                    let atacanteInimigo = unidades[eId];
-                    if (atacanteInimigo.hpAtual <= 0) return;
+                    let atk = unidades[eId];
+                    if (atk.hpAtual <= 0) return;
+                    let hab = atk.habilidades[Math.floor(Math.random() * atk.habilidades.length)];
+                    let alvoId = aliadosVivos[Math.floor(Math.random() * aliadosVivos.length)];
+                    let alvo = unidades[alvoId];
 
-                    let hpPercentual = atacanteInimigo.hpAtual / atacanteInimigo.hpMax;
-                    let habsDisponiveis = atacanteInimigo.habilidades;
-                    let habUsada;
-
-                    if (hpPercentual < 0.30) {
-                        let habsSuporte = habsDisponiveis.filter(h => h.elemento === "Suporte" || h.tipo.includes("suporte") || h.tipo.includes("escudo"));
-                        if (habsSuporte.length > 0) {
-                            habUsada = habsSuporte[Math.floor(Math.random() * habsSuporte.length)];
-                        }
-                    }
-
-                    let alvoAliadoId = null;
-
-                    if (!habUsada) {
-                        let melhorOpcao = null;
-
-                        for (let aId of aliadosVivos) {
-                            let ali = unidades[aId];
-                            for (let h of habsDisponiveis) {
-                                if (h.elemento === "Suporte" || h.tipo.includes("suporte") || h.tipo.includes("escudo")) continue;
-                                if (h.elemento === ali.imunidade) continue;
-
-                                let score = 0;
-                                if (h.elemento === ali.fraqueza) score += 10;
-
-                                if (!melhorOpcao || score > melhorOpcao.score) {
-                                    melhorOpcao = { hab: h, alvoId: aId, score: score };
-                                }
-                            }
-                        }
-
-                        if (melhorOpcao) {
-                            habUsada = melhorOpcao.hab;
-                            alvoAliadoId = melhorOpcao.alvoId;
-                        } else {
-                            let habsAtaque = habsDisponiveis.filter(h => h.elemento !== "Suporte" && !h.tipo.includes("suporte"));
-                            habUsada = habsAtaque.length > 0 ? habsAtaque[Math.floor(Math.random() * habsAtaque.length)] : habsDisponiveis[0];
-                        }
-                    }
-
-                    if (!alvoAliadoId && habUsada && habUsada.elemento !== "Suporte" && !habUsada.tipo.includes("suporte") && !habUsada.tipo.includes("escudo")) {
-                        let alvosValidos = aliadosVivos.filter(aId => unidades[aId].imunidade !== habUsada.elemento);
-                        if (alvosValidos.length === 0) alvosValidos = aliadosVivos;
-
-                        alvoAliadoId = alvosValidos.reduce((menorId, atualId) => {
-                            return unidades[atualId].hpAtual < unidades[menorId].hpAtual ? atualId : menorId;
-                        }, alvosValidos[0]);
-                    }
-
-                    if (habUsada && (habUsada.elemento === "Suporte" || habUsada.tipo.includes("suporte") || habUsada.tipo.includes("escudo"))) {
-                        aplicarCura(atacanteInimigo, 30, atacanteInimigo);
-                        log(`🛡️ <b>${atacanteInimigo.nome} (Inimigo)</b> usou <b>${habUsada.nome}</b> para se regenerar/proteger!`);
-                    } else if (alvoAliadoId) {
-                        let alvoAliado = unidades[alvoAliadoId];
-                        let dano = calcularDano(atacanteInimigo, alvoAliado, habUsada);
-                        alvoAliado.hpAtual = Math.max(0, alvoAliado.hpAtual - dano);
-                        mostrarEfeitoFlutuante(alvoAliado.id, `-${dano}`, "dano");
-                        log(`⚔️ <b>${atacanteInimigo.nome} (Inimigo)</b> usou <b>${habUsada.nome}</b> em ${alvoAliado.nome} causando ${dano} de dano!`);
-                        aplicarEfeitoHab(habUsada, alvoAliado, 'e');
+                    if (hab.elemento === "Suporte") {
+                        aplicarCura(atk, 25);
+                    } else {
+                        let dano = calcularDano(atk, alvo, hab);
+                        alvo.hpAtual = Math.max(0, alvo.hpAtual - dano);
+                        mostrarEfeitoFlutuante(alvo.id, `-${dano}`, "dano");
+                        log(`⚔️ <b>${atk.nome} (Inimigo)</b> usou ${hab.nome} em ${alvo.nome} causando ${dano} de dano!`);
                     }
                 });
             }
 
             emTurnoInimigo = false;
-            turnInd.innerText = 'SEU TURNO';
-            turnInd.style.color = '#5c4033';
-            
+            document.getElementById('turn-label').innerText = 'SEU TURNO';
             atualizarUI();
             verificarDerrota();
         }, 2000); // 2 segundos
+    }
+
+    // SISTEMA DE CAMINHOS E EVENTOS DA MASMORRA
+    const EVENTOS_DISPONIVEIS = [
+        { id: 'descanso', nome: 'Sala de Descanso', icone: '🛏️', desc: 'Cura o HP do time inteiro.', acao: () => { ['p0','p1','p2'].forEach(id => { if(unidades[id]) unidades[id].hpAtual = unidades[id].hpMax; }); log("🛏️ Sala de Descanso: Seu time foi totalmente curado!"); } },
+        { id: 'tesouro', nome: 'Corredor do Tesouro', icone: '💰', desc: 'Adiciona 30 de Ouro na sua run.', acao: () => { ouroRun += 30; log("💰 Corredor do Tesouro: Você encontrou 30 moedas!"); } },
+        { id: 'loja', nome: 'Loja da Isa', icone: '🛒', desc: 'Compre poções e itens úteis para a run.', acao: () => { abrirLoja(); } },
+        { id: 'lagoa', nome: 'Lagoa do Destino', icone: '🌊', desc: 'Deixa todos molhados na próxima batalha.', acao: () => { modificadorProximaBatalha = 'lagoa'; log("🌊 Lagoa do Destino: Umidade aplicada no próximo andar!"); } },
+        { id: 'gravidade', nome: 'Sala da Gravidade', icone: '🪨', desc: 'Deixa todos leves na próxima batalha.', acao: () => { modificadorProximaBatalha = 'gravidade'; log("🪨 Sala da Gravidade: Baixa gravidade aplicada no próximo andar!"); } }
+    ];
+
+    function abrirTelaCaminhos() {
+        document.getElementById('game-screen').classList.remove('active');
+        document.getElementById('dungeon-screen').classList.add('active');
+        andarAtual++;
+        document.getElementById('dungeon-title-run').innerText = `MASMORRA - ANDAR ${andarAtual}/10`;
+
+        // Sorteia 2 caminhos distintos
+        let shuffled = [...EVENTOS_DISPONIVEIS].sort(() => 0.5 - Math.random());
+        let caminho1 = shuffled[0];
+        let caminho2 = shuffled[1];
+
+        let container = document.getElementById('paths-container-box');
+        container.innerHTML = `
+            <div class="path-card" onclick="escolherCaminho('${caminho1.id}')">
+                <div class="path-icon">${caminho1.icone}</div>
+                <div class="path-name">${caminho1.nome}</div>
+                <div class="path-desc">${caminho1.desc}</div>
+            </div>
+            <div class="path-card" onclick="escolherCaminho('${caminho2.id}')">
+                <div class="path-icon">${caminho2.icone}</div>
+                <div class="path-name">${caminho2.nome}</div>
+                <div class="path-desc">${caminho2.desc}</div>
+            </div>
+        `;
+    }
+
+    function escolherCaminho(eventoId) {
+        let evento = EVENTOS_DISPONIVEIS.find(e => e.id === eventoId);
+        if (evento) evento.acao();
+        
+        if (eventoId !== 'loja') {
+            setTimeout(iniciarCombateAndar, 1000);
+        }
+    }
+
+    function abrirLoja() {
+        document.getElementById('dungeon-screen').classList.remove('active');
+        document.getElementById('shop-screen').style.display = 'flex';
+        document.getElementById('shop-gold-val').innerText = ouroRun;
+    }
+
+    function fecharLoja() {
+        document.getElementById('shop-screen').style.display = 'none';
+        iniciarCombateAndar();
+    }
+
+    function comprarItem(tipo, custo) {
+        if (ouroRun >= custo) {
+            ouroRun -= custo;
+            document.getElementById('shop-gold-val').innerText = ouroRun;
+            if (tipo === 'pocao') {
+                let vivo = ['p0','p1','p2'].find(id => unidades[id] && unidades[id].hpAtual > 0);
+                if (vivo) aplicarCura(unidades[vivo], 50);
+                log("🛒 Comprou Poção de Cura!");
+            } else if (tipo === 'flecha') {
+                let inimigosVivos = ['e0','e1','e2'].filter(id => unidades[id] && unidades[id].hpAtual > 0);
+                if (inimigosVivos.length > 0) {
+                    unidades[inimigosVivos[0]].queimadura = 3;
+                    log(`🛒 Comprou Flecha de Fogo em ${unidades[inimigosVivos[0]].nome}!`);
+                }
+            } else if (tipo === 'brigadeirao') {
+                ['p0','p1','p2'].forEach(id => { if(unidades[id]) unidades[id].queimadura = 0; });
+                log("🛒 Comprou Brigadeirão para o time!");
+            }
+        } else {
+            alert("Ouro insuficiente!");
+        }
     }
 
     window.onload = function() {
