@@ -42,12 +42,12 @@
             width: 260px; cursor: pointer; transition: transform 0.2s, background-color 0.2s;
             display: flex; flex-direction: column; align-items: center; gap: 10px; box-shadow: 0 4px 10px rgba(0,0,0,0.2);
         }
-        .path-card:hover { transform: translateY(-50px); background: #fff; border-color: #ff9800; }
+        .path-card:hover { transform: translateY(-5px); background: #fff; border-color: #ff9800; }
         .path-icon { font-size: 36px; }
         .path-name { font-size: 16px; font-weight: bold; color: #5c4033; }
         .path-desc { font-size: 11px; color: #444; text-align: center; }
 
-        /* LOJA DA ISA MODAL / TELA */
+        /* LOJA DA ISA */
         #shop-screen {
             display: none; position: absolute; top: 0; left: 0; width: 100%; height: 100%;
             background: #fff8dc; z-index: 120; padding: 20px; flex-direction: column; justify-content: space-between;
@@ -75,7 +75,6 @@
         .profile-title { font-size: 20px; color: #5c4033; border-bottom: 2px dashed #8b5a2b; padding-bottom: 4px; margin-bottom: 10px; }
         .profile-stats { font-size: 11px; margin-bottom: 12px; background: rgba(0,0,0,0.04); padding: 8px; border-radius: 6px; }
         .profile-passive { font-size: 11px; background: #e8f5e9; border: 1px solid #2e7d32; padding: 8px; border-radius: 6px; margin-bottom: 12px; }
-        .profile-passive b { color: #2e7d32; }
         .profile-hab-list { display: flex; flex-direction: column; gap: 8px; font-size: 11px; }
         .profile-hab-item { background: #fff; border: 1px solid #8b5a2b; border-radius: 6px; padding: 8px; }
         .profile-hab-item h5 { font-size: 12px; color: #8b5a2b; margin-bottom: 2px; }
@@ -111,28 +110,6 @@
             50% { opacity: 0.5; }
             100% { opacity: 0; }
         }
-
-        #moto-overlay {
-            display: none; position: absolute; top: 0; left: 0; width: 100%; height: 100%;
-            background: rgba(0, 0, 0, 0.85); z-index: 150; justify-content: center; align-items: center;
-            flex-direction: column; color: #ff9800; font-family: 'Courier New', Courier, monospace;
-        }
-        .moto-anim-text { font-size: 28px; font-weight: bold; text-shadow: 0 0 10px #ff5722; text-align: center; animation: motoShake 0.1s infinite alternate; }
-        .moto-icon { font-size: 70px; margin-bottom: 10px; animation: motoDrive 0.8s linear forwards; }
-        @keyframes motoShake { 0% { transform: translateX(-3px); } 100% { transform: translateX(3px); } }
-        @keyframes motoDrive { 0% { transform: translateX(-300px) scale(0.5); opacity: 0; } 50% { transform: translateX(0px) scale(1.3); opacity: 1; } 100% { transform: translateX(300px) scale(0.5); opacity: 0; } }
-
-        #raissa-overlay {
-            display: none; position: absolute; top: 0; left: 0; width: 100%; height: 100%;
-            background: radial-gradient(circle, rgba(103, 58, 183, 0.85) 0%, rgba(18, 11, 36, 0.95) 100%);
-            z-index: 150; justify-content: center; align-items: center;
-            flex-direction: column; color: #e040fb; font-family: 'Courier New', Courier, monospace;
-            box-shadow: inset 0 0 50px #7c4dff;
-        }
-        .raissa-anim-text { font-size: 26px; font-weight: bold; text-shadow: 0 0 12px #e040fb, 0 0 20px #7c4dff; text-align: center; animation: raissaPulseText 0.3s infinite alternate; }
-        .raissa-icon { font-size: 75px; margin-bottom: 10px; animation: raissaGhostFloat 0.8s ease-in-out infinite alternate; }
-        @keyframes raissaPulseText { 0% { transform: scale(0.98); text-shadow: 0 0 10px #e040fb; } 100% { transform: scale(1.04); text-shadow: 0 0 25px #00e5ff; } }
-        @keyframes raissaGhostFloat { 0% { transform: translateY(-10px) scale(0.9); opacity: 0.7; } 100% { transform: translateY(10px) scale(1.1); opacity: 1; } }
 
         .select-header { text-align: center; color: #5c4033; border-bottom: 2px dashed #8b5a2b; padding-bottom: 8px; width: 100%; }
         .select-header h2 { font-size: 18px; }
@@ -451,6 +428,7 @@
 
     let indiceMusicaAtual = -1;
     let audioMutado = false;
+    let indiceInimigoTurnoAtual = 0; // Controla qual inimigo age a cada turno inimigo
 
     function tocarMusicaMenu() {
         let audioEl = document.getElementById('audio-bg');
@@ -649,7 +627,6 @@
         unidades['e1'] = criarInstancia(timeInimigoGerado[1], "e1", true);
         unidades['e2'] = criarInstancia(timeInimigoGerado[2], "e2", true);
 
-        // Aplicar modificador de caminho se houver
         if (modificadorProximaBatalha === 'lagoa') {
             ['p0','p1','p2','e0','e1','e2'].forEach(id => { if(unidades[id]) unidades[id].molhado = 2; });
             log("🌊 <b>Lagoa do Destino:</b> Todos começam a batalha molhados!");
@@ -658,6 +635,7 @@
             log("🪨 <b>Sala da Gravidade:</b> Todos começam leves!");
         }
         modificadorProximaBatalha = null;
+        indiceInimigoTurnoAtual = 0;
 
         document.getElementById('select-screen').classList.remove('active');
         document.getElementById('dungeon-screen').classList.remove('active');
@@ -824,26 +802,40 @@
         if (verificarVitoria() || verificarDerrota()) return;
 
         setTimeout(() => {
-            let inimigosVivos = ['e0', 'e1', 'e2'].filter(id => unidades[id] && unidades[id].hpAtual > 0);
+            let listaInimigos = ['e0', 'e1', 'e2'];
             let aliadosVivos = ['p0', 'p1', 'p2'].filter(id => unidades[id] && unidades[id].hpAtual > 0);
 
-            if (inimigosVivos.length > 0 && aliadosVivos.length > 0) {
-                inimigosVivos.forEach(eId => {
-                    let atk = unidades[eId];
-                    if (atk.hpAtual <= 0) return;
-                    let hab = atk.habilidades[Math.floor(Math.random() * atk.habilidades.length)];
-                    let alvoId = aliadosVivos[Math.floor(Math.random() * aliadosVivos.length)];
-                    let alvo = unidades[alvoId];
+            // Procura o próximo inimigo vivo para agir neste turno
+            let atacanteInimigo = null;
+            let tentativas = 0;
 
-                    if (hab.elemento === "Suporte") {
-                        aplicarCura(atk, 25);
-                    } else {
-                        let dano = calcularDano(atk, alvo, hab);
-                        alvo.hpAtual = Math.max(0, alvo.hpAtual - dano);
-                        mostrarEfeitoFlutuante(alvo.id, `-${dano}`, "dano");
-                        log(`⚔️ <b>${atk.nome} (Inimigo)</b> usou ${hab.nome} em ${alvo.nome} causando ${dano} de dano!`);
-                    }
-                });
+            while (tentativas < 3) {
+                let idAtual = listaInimigos[indiceInimigoTurnoAtual];
+                // Avança o índice para o próximo inimigo para o próximo turno
+                indiceInimigoTurnoAtual = (indiceInimigoTurnoAtual + 1) % 3;
+
+                if (unidades[idAtual] && unidades[idAtual].hpAtual > 0) {
+                    atacanteInimigo = unidades[idAtual];
+                    break;
+                }
+                tentativas++;
+            }
+
+            if (atacanteInimigo && aliadosVivos.length > 0) {
+                let habsDisp = atacanteInimigo.habilidades;
+                let hab = habsDisp[Math.floor(Math.random() * habsDisp.length)];
+                let alvoId = aliadosVivos[Math.floor(Math.random() * aliadosVivos.length)];
+                let alvo = unidades[alvoId];
+
+                if (hab.elemento === "Suporte") {
+                    aplicarCura(atacanteInimigo, 25);
+                    log(`🛡️ <b>${atacanteInimigo.nome} (Inimigo)</b> usou ${hab.nome} em si mesmo!`);
+                } else {
+                    let dano = calcularDano(atacanteInimigo, alvo, hab);
+                    alvo.hpAtual = Math.max(0, alvo.hpAtual - dano);
+                    mostrarEfeitoFlutuante(alvo.id, `-${dano}`, "dano");
+                    log(`⚔️ <b>${atacanteInimigo.nome} (Inimigo)</b> usou ${hab.nome} em ${alvo.nome} causando ${dano} de dano!`);
+                }
             }
 
             emTurnoInimigo = false;
@@ -856,7 +848,7 @@
     // SISTEMA DE CAMINHOS E EVENTOS DA MASMORRA
     const EVENTOS_DISPONIVEIS = [
         { id: 'descanso', nome: 'Sala de Descanso', icone: '🛏️', desc: 'Cura o HP do time inteiro.', acao: () => { ['p0','p1','p2'].forEach(id => { if(unidades[id]) unidades[id].hpAtual = unidades[id].hpMax; }); log("🛏️ Sala de Descanso: Seu time foi totalmente curado!"); } },
-        { id: 'tesouro', nome: 'Corredor do Tesouro', icone: '💰', desc: 'Adiciona 30 de Ouro na sua run.', acao: () => { ouroRun += 30; log("💰 Corredor do Tesouro: Você encontrou 30 moedas!"); } },
+        { id: 'tesouro', nome: 'Corredor do Tesouro', icone: '🪙', desc: 'Adiciona 30 de Ouro na sua run.', acao: () => { ouroRun += 30; log("🪙 Corredor do Tesouro: Você encontrou 30 moedas!"); } },
         { id: 'loja', nome: 'Loja da Isa', icone: '🛒', desc: 'Compre poções e itens úteis para a run.', acao: () => { abrirLoja(); } },
         { id: 'lagoa', nome: 'Lagoa do Destino', icone: '🌊', desc: 'Deixa todos molhados na próxima batalha.', acao: () => { modificadorProximaBatalha = 'lagoa'; log("🌊 Lagoa do Destino: Umidade aplicada no próximo andar!"); } },
         { id: 'gravidade', nome: 'Sala da Gravidade', icone: '🪨', desc: 'Deixa todos leves na próxima batalha.', acao: () => { modificadorProximaBatalha = 'gravidade'; log("🪨 Sala da Gravidade: Baixa gravidade aplicada no próximo andar!"); } }
@@ -868,7 +860,6 @@
         andarAtual++;
         document.getElementById('dungeon-title-run').innerText = `MASMORRA - ANDAR ${andarAtual}/10`;
 
-        // Sorteia 2 caminhos distintos
         let shuffled = [...EVENTOS_DISPONIVEIS].sort(() => 0.5 - Math.random());
         let caminho1 = shuffled[0];
         let caminho2 = shuffled[1];
@@ -922,7 +913,7 @@
                     unidades[inimigosVivos[0]].queimadura = 3;
                     log(`🛒 Comprou Flecha de Fogo em ${unidades[inimigosVivos[0]].nome}!`);
                 }
-            } else if (tipo === 'brigadeirao') {
+            } else if (tipo:: 'brigadeirao') {
                 ['p0','p1','p2'].forEach(id => { if(unidades[id]) unidades[id].queimadura = 0; });
                 log("🛒 Comprou Brigadeirão para o time!");
             }
